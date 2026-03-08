@@ -1,0 +1,7 @@
+<svg xmlns='http://www.w3.org/2000/svg' width='192' height='192' viewBox='0 0 192 192'>
+  <rect width='192' height='192' fill='#08080f'/>
+  <circle cx='96' cy='96' r='67.19999999999999' fill='none' stroke='#7eb8f7' stroke-width='3.84' opacity='0.3'/>
+  <circle cx='96' cy='96' r='38.400000000000006' fill='#7eb8f7' opacity='0.1'/>
+  <circle cx='96' cy='96' r='15.36' fill='#7eb8f7'/>
+  <text x='96' y='149.76' text-anchor='middle' font-family='sans-serif' font-weight='bold' font-size='28.799999999999997' fill='#7eb8f7'>CosmosView</text>
+</svg>

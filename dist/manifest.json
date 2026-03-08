@@ -1,0 +1,29 @@
+{
+    "name": "CosmosView — Real-Time Personal Planetarium",
+    "short_name": "CosmosView",
+    "description": "A stunning 3D planetarium that renders the real night sky using your location. Features 5,000+ stars, planets, constellations, meteor showers, NASA data, and more.",
+    "start_url": "/",
+    "display": "standalone",
+    "orientation": "any",
+    "background_color": "#08080f",
+    "theme_color": "#7eb8f7",
+    "categories": [
+        "education",
+        "science",
+        "entertainment"
+    ],
+    "icons": [
+        {
+            "src": "/icon-192.svg",
+            "sizes": "192x192",
+            "type": "image/svg+xml",
+            "purpose": "any maskable"
+        },
+        {
+            "src": "/icon-512.svg",
+            "sizes": "512x512",
+            "type": "image/svg+xml",
+            "purpose": "any maskable"
+        }
+    ]
+}
