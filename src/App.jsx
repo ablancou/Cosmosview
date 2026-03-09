@@ -17,6 +17,7 @@ import AppTutorial from './components/AppTutorial';
 import LiveSkyCameras from './components/LiveSkyCameras';
 import ARCameraMode from './components/ARCameraMode';
 import QuickStartGuide from './components/QuickStartGuide';
+import OrbitalTracker from './components/OrbitalTracker';
 import LoadingScreen from './components/LoadingScreen';
 import useGeolocation from './hooks/useGeolocation';
 import useAstroTime from './hooks/useAstroTime';
@@ -45,6 +46,7 @@ export default function App() {
     });
     const [liveCamsOpen, setLiveCamsOpen] = useState(false);
     const [arMode, setARMode] = useState(false);
+    const [orbitalTrackerOpen, setOrbitalTrackerOpen] = useState(false);
     const [quickStartOpen, setQuickStartOpen] = useState(() => {
         if (!localStorage.getItem('cosmosview_quickstart_seen')) {
             localStorage.setItem('cosmosview_quickstart_seen', '1');
@@ -259,6 +261,14 @@ export default function App() {
                             title="AR Camera Mode"
                             activeClass="bg-lime-900/40 text-lime-300 ring-2 ring-lime-500/40"
                         />
+                        {/* Orbital Tracker */}
+                        <FAB
+                            active={orbitalTrackerOpen}
+                            onClick={() => setOrbitalTrackerOpen((o) => !o)}
+                            emoji="📡"
+                            title="Orbital Tracking System"
+                            activeClass="bg-cyan-900/40 text-cyan-300 ring-2 ring-cyan-500/40"
+                        />
                     </div>
 
                     {/* Column 1 (primary) */}
@@ -361,6 +371,7 @@ export default function App() {
             {!loading && <SolarSystemOrrery open={orreryOpen} onClose={() => setOrreryOpen(false)} />}
             {!loading && <AstroQuiz open={quizOpen} onClose={() => setQuizOpen(false)} />}
             {!loading && <AppTutorial open={tutorialOpen} onClose={() => setTutorialOpen(false)} />}
+            {!loading && <OrbitalTracker open={orbitalTrackerOpen} onClose={() => setOrbitalTrackerOpen(false)} />}
             {!loading && (
                 <QuickStartGuide
                     open={quickStartOpen}
