@@ -109,6 +109,50 @@ export default function CompassRose({ scene }) {
             group.add(new THREE.Line(tickGeom, tickMat));
         }
 
+        // ── Zenith marker (directly overhead) ──
+        const zenithCanvas = document.createElement('canvas');
+        zenithCanvas.width = 128;
+        zenithCanvas.height = 64;
+        const zCtx = zenithCanvas.getContext('2d');
+        zCtx.clearRect(0, 0, 128, 64);
+        // Crosshair
+        zCtx.strokeStyle = 'rgba(255, 200, 100, 0.5)';
+        zCtx.lineWidth = 1;
+        zCtx.beginPath();
+        zCtx.moveTo(54, 12); zCtx.lineTo(54, 22);
+        zCtx.moveTo(74, 12); zCtx.lineTo(74, 22);
+        zCtx.moveTo(54, 12); zCtx.lineTo(74, 12);
+        zCtx.stroke();
+        // Label
+        zCtx.font = 'bold 16px Inter, sans-serif';
+        zCtx.fillStyle = 'rgba(255, 200, 100, 0.8)';
+        zCtx.textAlign = 'center';
+        zCtx.textBaseline = 'middle';
+        zCtx.fillText('ZENITH', 64, 32);
+        zCtx.font = '10px Inter, sans-serif';
+        zCtx.fillStyle = 'rgba(255, 200, 100, 0.4)';
+        zCtx.fillText('90° altitude', 64, 48);
+
+        const zenithTexture = new THREE.CanvasTexture(zenithCanvas);
+        const zenithSprite = new THREE.Sprite(new THREE.SpriteMaterial({
+            map: zenithTexture, transparent: true, depthTest: false,
+        }));
+        zenithSprite.position.set(0, 800, 0);
+        zenithSprite.scale.set(40, 20, 1);
+        zenithSprite.renderOrder = 22;
+        group.add(zenithSprite);
+
+        // Zenith dot (small glowing ring)
+        const zenithRing = new THREE.RingGeometry(3, 4, 32);
+        const zenithRingMat = new THREE.MeshBasicMaterial({
+            color: 0xffc864, transparent: true, opacity: 0.35, side: THREE.DoubleSide,
+        });
+        const zenithMesh = new THREE.Mesh(zenithRing, zenithRingMat);
+        zenithMesh.position.set(0, 790, 0);
+        zenithMesh.rotation.x = Math.PI / 2;
+        zenithMesh.renderOrder = 21;
+        group.add(zenithMesh);
+
         scene.add(group);
 
         return () => {

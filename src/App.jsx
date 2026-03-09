@@ -213,6 +213,14 @@ export default function App() {
                             title="Tonight's Best Objects"
                             activeClass="bg-indigo-900/40 text-indigo-300 ring-2 ring-indigo-500/40"
                         />
+                        {/* Orbital Tracker */}
+                        <FAB
+                            active={orbitalTrackerOpen}
+                            onClick={() => setOrbitalTrackerOpen((o) => !o)}
+                            emoji="📡"
+                            title="Orbital Tracking System"
+                            activeClass="bg-cyan-900/40 text-cyan-300 ring-2 ring-cyan-500/40"
+                        />
                         {/* Solar System */}
                         <FAB
                             active={orreryOpen}
@@ -260,14 +268,6 @@ export default function App() {
                             emoji="📹"
                             title="AR Camera Mode"
                             activeClass="bg-lime-900/40 text-lime-300 ring-2 ring-lime-500/40"
-                        />
-                        {/* Orbital Tracker */}
-                        <FAB
-                            active={orbitalTrackerOpen}
-                            onClick={() => setOrbitalTrackerOpen((o) => !o)}
-                            emoji="📡"
-                            title="Orbital Tracking System"
-                            activeClass="bg-cyan-900/40 text-cyan-300 ring-2 ring-cyan-500/40"
                         />
                     </div>
 
@@ -430,14 +430,21 @@ export default function App() {
  */
 function FAB({ active, onClick, emoji, title, activeClass = '', spin = false }) {
     return (
-        <button
-            onClick={onClick}
-            className={`w-11 h-11 rounded-full flex items-center justify-center transition-all shadow-lg ${active ? activeClass : 'glass-panel text-cosmos-muted hover:text-cosmos-accent'
-                }`}
-            title={title}
-            aria-label={title}
-        >
-            <span className={`text-base ${spin ? 'animate-spin-slow' : ''}`}>{emoji}</span>
-        </button>
+        <div className="relative group">
+            <button
+                onClick={onClick}
+                className={`w-11 h-11 rounded-full flex items-center justify-center transition-all shadow-lg ${active ? activeClass : 'glass-panel text-cosmos-muted hover:text-cosmos-accent'
+                    }`}
+                title={title}
+                aria-label={title}
+            >
+                <span className={`text-base ${spin ? 'animate-spin-slow' : ''}`}>{emoji}</span>
+            </button>
+            {/* Visible tooltip on hover */}
+            <div className="absolute right-full mr-2 top-1/2 -translate-y-1/2 px-2.5 py-1 rounded-md whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50"
+                style={{ background: 'rgba(0,0,0,0.85)', border: '1px solid rgba(255,255,255,0.1)', backdropFilter: 'blur(8px)' }}>
+                <span className="text-[11px] text-white/90 font-medium">{title}</span>
+            </div>
+        </div>
     );
 }
