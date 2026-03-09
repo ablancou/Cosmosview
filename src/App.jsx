@@ -19,6 +19,7 @@ import ARCameraMode from './components/ARCameraMode';
 import QuickStartGuide from './components/QuickStartGuide';
 import OrbitalTracker from './components/OrbitalTracker';
 import DSOInfoCard from './components/DSOInfoCard';
+import AmbientSoundscape from './components/AmbientSoundscape';
 import LoadingScreen from './components/LoadingScreen';
 import useGeolocation from './hooks/useGeolocation';
 import useAstroTime from './hooks/useAstroTime';
@@ -48,6 +49,7 @@ export default function App() {
     const [liveCamsOpen, setLiveCamsOpen] = useState(false);
     const [arMode, setARMode] = useState(false);
     const [orbitalTrackerOpen, setOrbitalTrackerOpen] = useState(false);
+    const [soundEnabled, setSoundEnabled] = useState(false);
     const [quickStartOpen, setQuickStartOpen] = useState(() => {
         if (!localStorage.getItem('cosmosview_quickstart_seen')) {
             localStorage.setItem('cosmosview_quickstart_seen', '1');
@@ -254,6 +256,14 @@ export default function App() {
                             title="Gyroscope Mode"
                             activeClass="bg-green-900/40 text-green-300 ring-2 ring-green-500/40"
                         />
+                        {/* Ambient Sound */}
+                        <FAB
+                            active={soundEnabled}
+                            onClick={() => setSoundEnabled((o) => !o)}
+                            emoji="🎵"
+                            title="Ambient Soundscape"
+                            activeClass="bg-violet-900/40 text-violet-300 ring-2 ring-violet-500/40"
+                        />
                         {/* Live Cameras */}
                         <FAB
                             active={liveCamsOpen}
@@ -366,6 +376,7 @@ export default function App() {
             {!loading && <StarInfoCard />}
             {!loading && <CelestialInfoPanel />}
             {!loading && <DSOInfoCard />}
+            {!loading && <AmbientSoundscape enabled={soundEnabled} />}
             {!loading && <MoonDashboard open={moonDashboardOpen} onClose={() => setMoonDashboardOpen(false)} />}
             {!loading && <SkyEventsPanel open={eventsOpen} onClose={() => setEventsOpen(false)} />}
             {!loading && <NasaApodPanel open={apodOpen} onClose={() => setApodOpen(false)} />}
