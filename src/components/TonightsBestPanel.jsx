@@ -71,6 +71,8 @@ export default function TonightsBestPanel({ open, onClose }) {
                         type: 'Planet',
                         altitude: hor.altitude,
                         magnitude: illum.mag,
+                        ra: eq.ra,
+                        dec: eq.dec,
                         desc: `Magnitude ${illum.mag.toFixed(1)} • Altitude ${hor.altitude.toFixed(0)}°`,
                         score: 80 + hor.altitude * 0.5 - illum.mag * 5,
                         emoji: '🪐',
@@ -82,11 +84,14 @@ export default function TonightsBestPanel({ open, onClose }) {
         // Moon
         if (moonAlt > 5) {
             const phaseName = moonPhase < 90 ? 'Waxing' : moonPhase < 180 ? 'Gibbous/Full' : moonPhase < 270 ? 'Waning' : 'Crescent';
+            const moonEq = Astronomy.Equator('Moon', tonight, observer, true, true);
             scored.push({
                 name: 'Moon',
                 type: 'Moon',
                 altitude: moonAlt,
                 magnitude: -12,
+                ra: moonEq.ra,
+                dec: moonEq.dec,
                 desc: `${phaseName} • Perfect for lunar observation`,
                 score: 90,
                 emoji: '🌙',
@@ -105,6 +110,8 @@ export default function TonightsBestPanel({ open, onClose }) {
                         type: obj.type,
                         altitude: hor.altitude,
                         magnitude: obj.mag,
+                        ra: obj.ra,
+                        dec: obj.dec,
                         desc: obj.desc,
                         score: visScore,
                         emoji: obj.type === 'Nebula' ? '🌫️' : obj.type === 'Galaxy' ? '🌀' : '✨',
@@ -123,6 +130,8 @@ export default function TonightsBestPanel({ open, onClose }) {
                         type: star.type,
                         altitude: hor.altitude,
                         magnitude: star.mag,
+                        ra: star.ra,
+                        dec: star.dec,
                         desc: star.desc,
                         score: 50 + hor.altitude * 0.3 - star.mag * 2,
                         emoji: '⭐',
@@ -135,7 +144,15 @@ export default function TonightsBestPanel({ open, onClose }) {
         return { items: scored.slice(0, 12), moonInterference };
     }, [open, time.current, location]);
 
+    const setSearchTarget = useAppStore((s) => s.setSearchTarget);
+
     if (!open) return null;
+
+    const handleFlyTo = (obj) => {
+        if (obj.ra != null && obj.dec != null) {
+            setSearchTarget({ ra: obj.ra, dec: obj.dec, name: obj.name });
+        }
+    };
 
     return (
         <div
@@ -175,8 +192,10 @@ export default function TonightsBestPanel({ open, onClose }) {
                 {recommendations.items?.map((obj, i) => (
                     <div
                         key={`${obj.name}-${i}`}
-                        className="rounded-xl px-4 py-3 bg-cosmos-border/10 hover:bg-cosmos-border/20 transition-colors"
+                        className="rounded-xl px-4 py-3 bg-cosmos-border/10 hover:bg-cosmos-border/25 transition-all cursor-pointer active:scale-[0.98]"
                         style={{ animation: `fade-in 0.3s ease-out ${0.05 * i}s both` }}
+                        onClick={() => handleFlyTo(obj)}
+                        title={`Tap to navigate to ${obj.name}`}
                     >
                         <div className="flex items-start gap-3">
                             <span className="text-xl flex-shrink-0">{obj.emoji}</span>
@@ -189,9 +208,9 @@ export default function TonightsBestPanel({ open, onClose }) {
                                         </span>
                                     )}
                                     <span className={`text-[9px] px-1.5 py-0.5 rounded ${obj.type === 'Planet' ? 'bg-orange-500/15 text-orange-300' :
-                                            obj.type === 'Star' ? 'bg-yellow-500/15 text-yellow-300' :
-                                                obj.type === 'Moon' ? 'bg-blue-500/15 text-blue-300' :
-                                                    'bg-purple-500/15 text-purple-300'
+                                        obj.type === 'Star' ? 'bg-yellow-500/15 text-yellow-300' :
+                                            obj.type === 'Moon' ? 'bg-blue-500/15 text-blue-300' :
+                                                'bg-purple-500/15 text-purple-300'
                                         }`}>
                                         {obj.type}
                                     </span>
@@ -202,6 +221,7 @@ export default function TonightsBestPanel({ open, onClose }) {
                                 <div className="flex items-center gap-3 mt-1.5 text-[10px] text-cosmos-muted/50">
                                     <span>Alt: {obj.altitude.toFixed(0)}°</span>
                                     <span>Mag: {obj.magnitude.toFixed(1)}</span>
+                                    <span className="ml-auto text-cosmos-accent/40 text-[9px]">Tap to view →</span>
                                 </div>
                             </div>
                         </div>
