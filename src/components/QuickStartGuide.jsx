@@ -120,11 +120,20 @@ export default function QuickStartGuide({ open, onClose, onAction }) {
                             🔭 What am I looking at?
                         </h3>
                         <p className="text-[11px] text-gray-300 leading-relaxed mt-1.5">
-                            This is a <strong className="text-white">3D simulation</strong> of the night sky — not a real photo or video.
-                            Every star, planet, and constellation is rendered using <strong className="text-white">real astronomical data</strong> and
-                            shows <strong className="text-white">exactly what you would see</strong> if you looked up from your location right now.
-                            The positions are scientifically accurate using NASA's astronomical calculations.
+                            This is a <strong className="text-white">real-time 3D simulation</strong> of
+                            your sky — it shows <strong className="text-white">exactly what is happening above you right now</strong>,
+                            calculated using NASA's astronomical algorithms. Every star, planet, and constellation
+                            is in its <strong className="text-white">correct real-time position</strong>.
                         </p>
+                        <p className="text-[11px] text-gray-400 leading-relaxed mt-2">
+                            Why a simulation instead of a camera?
+                        </p>
+                        <ul className="text-[11px] text-gray-400 mt-1 space-y-0.5 pl-4" style={{ listStyleType: "'✦ '" }}>
+                            <li>Works <strong className="text-gray-200">day or night</strong>, even when it's cloudy</li>
+                            <li>Shows <strong className="text-gray-200">100,000+ stars</strong> — more than any camera can capture</li>
+                            <li>Labels every star, planet, and constellation with <strong className="text-gray-200">names and data</strong></li>
+                            <li>Lets you <strong className="text-gray-200">travel in time</strong> — see the sky in the past or future</li>
+                        </ul>
                     </div>
 
                     {/* REAL SKY — link to live cameras */}
@@ -136,12 +145,12 @@ export default function QuickStartGuide({ open, onClose, onAction }) {
                         }}
                     >
                         <h3 className="text-sm font-bold text-green-300 flex items-center gap-2">
-                            🌐 Want to see the REAL sky?
+                            🌐 Want to also see the real sky on video?
                         </h3>
                         <p className="text-[11px] text-gray-300 leading-relaxed mt-1.5">
-                            To see <strong className="text-white">real live video feeds</strong> of the sky, tap the
-                            <strong className="text-teal-300"> 🌐 Live Cameras</strong> button on the right side.
-                            It links to real observatory webcams from around the world (Subaru Telescope, ESO Paranal, and more).
+                            As a complement, you can view <strong className="text-white">real live video feeds</strong> from
+                            observatories around the world — Subaru Telescope (Hawaii), ESO Paranal (Chile),
+                            and more. Tap below or use the <strong className="text-teal-300">🌐</strong> button anytime.
                         </p>
                         <button
                             onClick={() => onAction('liveCams')}
