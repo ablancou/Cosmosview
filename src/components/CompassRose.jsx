@@ -111,34 +111,37 @@ export default function CompassRose({ scene }) {
 
         // ── Zenith marker (directly overhead) ──
         const zenithCanvas = document.createElement('canvas');
-        zenithCanvas.width = 128;
-        zenithCanvas.height = 64;
+        zenithCanvas.width = 256;
+        zenithCanvas.height = 96;
         const zCtx = zenithCanvas.getContext('2d');
-        zCtx.clearRect(0, 0, 128, 64);
+        zCtx.clearRect(0, 0, 256, 96);
         // Crosshair
         zCtx.strokeStyle = 'rgba(255, 200, 100, 0.5)';
-        zCtx.lineWidth = 1;
+        zCtx.lineWidth = 1.5;
         zCtx.beginPath();
-        zCtx.moveTo(54, 12); zCtx.lineTo(54, 22);
-        zCtx.moveTo(74, 12); zCtx.lineTo(74, 22);
-        zCtx.moveTo(54, 12); zCtx.lineTo(74, 12);
+        zCtx.moveTo(118, 6); zCtx.lineTo(118, 18);
+        zCtx.moveTo(138, 6); zCtx.lineTo(138, 18);
+        zCtx.moveTo(118, 6); zCtx.lineTo(138, 6);
         zCtx.stroke();
         // Label
-        zCtx.font = 'bold 16px Inter, sans-serif';
-        zCtx.fillStyle = 'rgba(255, 200, 100, 0.8)';
+        zCtx.font = 'bold 22px Inter, sans-serif';
+        zCtx.fillStyle = 'rgba(255, 200, 100, 0.85)';
         zCtx.textAlign = 'center';
         zCtx.textBaseline = 'middle';
-        zCtx.fillText('ZENITH', 64, 32);
-        zCtx.font = '10px Inter, sans-serif';
-        zCtx.fillStyle = 'rgba(255, 200, 100, 0.4)';
-        zCtx.fillText('90° altitude', 64, 48);
+        zCtx.fillText('ZENITH', 128, 36);
+        zCtx.font = '12px Inter, sans-serif';
+        zCtx.fillStyle = 'rgba(255, 200, 100, 0.5)';
+        zCtx.fillText('90° altitude', 128, 56);
+        zCtx.font = '11px Inter, sans-serif';
+        zCtx.fillStyle = 'rgba(255, 200, 100, 0.35)';
+        zCtx.fillText('The point directly above you', 128, 76);
 
         const zenithTexture = new THREE.CanvasTexture(zenithCanvas);
         const zenithSprite = new THREE.Sprite(new THREE.SpriteMaterial({
             map: zenithTexture, transparent: true, depthTest: false,
         }));
         zenithSprite.position.set(0, 800, 0);
-        zenithSprite.scale.set(40, 20, 1);
+        zenithSprite.scale.set(60, 22, 1);
         zenithSprite.renderOrder = 22;
         group.add(zenithSprite);
 
