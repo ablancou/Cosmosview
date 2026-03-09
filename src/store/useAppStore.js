@@ -95,6 +95,10 @@ const useAppStore = create((set, get) => ({
     setSelectedBody: (body) => set({ selectedBody: body }),
     clearSelectedBody: () => set({ selectedBody: null }),
 
+    selectedDSO: null,
+    setSelectedDSO: (dso) => set({ selectedDSO: dso }),
+    clearSelectedDSO: () => set({ selectedDSO: null }),
+
     // Night Vision Mode (red filter for real stargazing)
     nightVision: false,
     toggleNightVision: () =>

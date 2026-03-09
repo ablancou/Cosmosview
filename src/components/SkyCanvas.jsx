@@ -277,29 +277,45 @@ export default function SkyCanvas() {
         };
     }, []);
 
-    // Star click handler
+    // Star & DSO click handler
     const handleClick = useCallback((e) => {
         const dx = Math.abs(e.clientX - dragStartRef.current.x);
         const dy = Math.abs(e.clientY - dragStartRef.current.y);
         if (dx > 5 || dy > 5) return;
 
-        if (!rendererRef.current || !cameraRef.current || !starFieldRef.current) return;
+        if (!rendererRef.current || !cameraRef.current) return;
 
         const rect = rendererRef.current.domElement.getBoundingClientRect();
         const x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
         const y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
 
         raycasterRef.current.setFromCamera(new THREE.Vector2(x, y), cameraRef.current);
-        raycasterRef.current.params.Points.threshold = 5;
 
-        const intersects = raycasterRef.current.intersectObject(starFieldRef.current, true);
-        if (intersects.length > 0) {
-            const idx = intersects[0].index;
-            if (idx !== undefined && starData[idx]) {
-                const star = starData[idx];
-                const lst = localSiderealTime(time.current, location.lon);
-                const { alt, az } = equatorialToHorizontal(star.ra, star.dec, location.lat, lst);
-                setSelectedStar({ ...star, alt, az });
+        // Check DSO sprites first (they're in the celestial sphere)
+        if (celestialSphereRef.current) {
+            const dsoIntersects = raycasterRef.current.intersectObjects(celestialSphereRef.current.children, true);
+            for (const hit of dsoIntersects) {
+                const ud = hit.object.userData;
+                if (ud && ud.isDSO) {
+                    const { setSelectedDSO } = useAppStore.getState();
+                    setSelectedDSO({ id: ud.dsoId, name: ud.dsoName, ra: ud.dsoRA, dec: ud.dsoDec, type: ud.dsoType });
+                    return;
+                }
+            }
+        }
+
+        // Then check stars
+        if (starFieldRef.current) {
+            raycasterRef.current.params.Points.threshold = 5;
+            const intersects = raycasterRef.current.intersectObject(starFieldRef.current, true);
+            if (intersects.length > 0) {
+                const idx = intersects[0].index;
+                if (idx !== undefined && starData[idx]) {
+                    const star = starData[idx];
+                    const lst = localSiderealTime(time.current, location.lon);
+                    const { alt, az } = equatorialToHorizontal(star.ra, star.dec, location.lat, lst);
+                    setSelectedStar({ ...star, alt, az });
+                }
             }
         }
     }, [starData, time.current, location, setSelectedStar]);

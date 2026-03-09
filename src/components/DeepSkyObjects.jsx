@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import { raDecToCartesian } from '../utils/coordinates';
+import useAppStore from '../store/useAppStore';
 
 /**
  * DeepSkyObjects — Full Messier Catalog (110 objects) + notable NGC/IC.
@@ -163,6 +164,7 @@ const MESSIER_CATALOG = [
 
 export default function DeepSkyObjects({ scene }) {
     const groupRef = useRef(null);
+    const setSelectedDSO = useAppStore.getState().setSelectedDSO;
 
     useEffect(() => {
         if (!scene) return;
@@ -206,9 +208,11 @@ export default function DeepSkyObjects({ scene }) {
             sprite.position.set(pos.x, pos.y, pos.z);
             sprite.scale.set(size, size, 1);
             sprite.renderOrder = 5;
+            // Store DSO data for click detection
+            sprite.userData = { isDSO: true, dsoId: id, dsoName: name, dsoRA: ra, dsoDec: dec, dsoType: type };
             group.add(sprite);
 
-            // Label — only for objects with alpha >= 0.05 (avoid clutter)
+            // Label
             if (alpha >= 0.05) {
                 const labelCanvas = document.createElement('canvas');
                 labelCanvas.width = 96;

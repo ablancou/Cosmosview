@@ -18,6 +18,7 @@ import LiveSkyCameras from './components/LiveSkyCameras';
 import ARCameraMode from './components/ARCameraMode';
 import QuickStartGuide from './components/QuickStartGuide';
 import OrbitalTracker from './components/OrbitalTracker';
+import DSOInfoCard from './components/DSOInfoCard';
 import LoadingScreen from './components/LoadingScreen';
 import useGeolocation from './hooks/useGeolocation';
 import useAstroTime from './hooks/useAstroTime';
@@ -364,6 +365,7 @@ export default function App() {
             {!loading && <ControlPanel />}
             {!loading && <StarInfoCard />}
             {!loading && <CelestialInfoPanel />}
+            {!loading && <DSOInfoCard />}
             {!loading && <MoonDashboard open={moonDashboardOpen} onClose={() => setMoonDashboardOpen(false)} />}
             {!loading && <SkyEventsPanel open={eventsOpen} onClose={() => setEventsOpen(false)} />}
             {!loading && <NasaApodPanel open={apodOpen} onClose={() => setApodOpen(false)} />}
