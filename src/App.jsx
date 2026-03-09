@@ -386,6 +386,9 @@ export default function App() {
                             case 'startrails':
                                 toggleStarTrails();
                                 break;
+                            case 'liveCams':
+                                setLiveCamsOpen(true);
+                                break;
                         }
                     }}
                 />

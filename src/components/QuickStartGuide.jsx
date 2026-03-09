@@ -107,6 +107,61 @@ export default function QuickStartGuide({ open, onClose, onAction }) {
 
                 {/* Cards */}
                 <div className="p-4 overflow-y-auto space-y-2.5" style={{ maxHeight: 'calc(90vh - 130px)' }}>
+
+                    {/* WHAT IS THIS? — critical explanation */}
+                    <div
+                        className="rounded-xl p-3.5"
+                        style={{
+                            background: 'rgba(100,140,255,0.08)',
+                            border: '1px solid rgba(100,140,255,0.15)',
+                        }}
+                    >
+                        <h3 className="text-sm font-bold text-blue-300 flex items-center gap-2">
+                            🔭 What am I looking at?
+                        </h3>
+                        <p className="text-[11px] text-gray-300 leading-relaxed mt-1.5">
+                            This is a <strong className="text-white">3D simulation</strong> of the night sky — not a real photo or video.
+                            Every star, planet, and constellation is rendered using <strong className="text-white">real astronomical data</strong> and
+                            shows <strong className="text-white">exactly what you would see</strong> if you looked up from your location right now.
+                            The positions are scientifically accurate using NASA's astronomical calculations.
+                        </p>
+                    </div>
+
+                    {/* REAL SKY — link to live cameras */}
+                    <div
+                        className="rounded-xl p-3.5"
+                        style={{
+                            background: 'rgba(80,200,120,0.06)',
+                            border: '1px solid rgba(80,200,120,0.12)',
+                        }}
+                    >
+                        <h3 className="text-sm font-bold text-green-300 flex items-center gap-2">
+                            🌐 Want to see the REAL sky?
+                        </h3>
+                        <p className="text-[11px] text-gray-300 leading-relaxed mt-1.5">
+                            To see <strong className="text-white">real live video feeds</strong> of the sky, tap the
+                            <strong className="text-teal-300"> 🌐 Live Cameras</strong> button on the right side.
+                            It links to real observatory webcams from around the world (Subaru Telescope, ESO Paranal, and more).
+                        </p>
+                        <button
+                            onClick={() => onAction('liveCams')}
+                            className="mt-2 px-3.5 py-1.5 rounded-lg text-[11px] font-semibold transition-all active:scale-95"
+                            style={{
+                                background: 'rgba(80,200,120,0.12)',
+                                color: '#50c878',
+                                border: '1px solid rgba(80,200,120,0.2)',
+                            }}
+                        >
+                            🌐 Open Live Cameras
+                        </button>
+                    </div>
+
+                    {/* Section divider */}
+                    <div className="flex items-center gap-3 pt-1">
+                        <div className="flex-1 h-px bg-white/5" />
+                        <span className="text-[10px] text-gray-500 font-medium">FEATURES TO TRY</span>
+                        <div className="flex-1 h-px bg-white/5" />
+                    </div>
                     {SUGGESTIONS.map((s) => {
                         const isDone = dismissed.includes(s.action);
                         return (
