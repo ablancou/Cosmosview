@@ -8,6 +8,14 @@ import React, { useState } from 'react';
 
 const SUGGESTIONS = [
     {
+        emoji: '📡',
+        title: 'Orbital Tracking System',
+        desc: 'Launch a full-screen 3D view of Earth with 30+ satellites orbiting in real-time — ISS, Hubble, Starlink, GPS, and the Moon! Sci-fi HUD with live telemetry.',
+        action: 'orbitalTracker',
+        actionLabel: '🛸 Launch Tracker',
+        color: '#00cccc',
+    },
+    {
         emoji: '🌅',
         title: 'Watch a Sunset',
         desc: 'Move the time slider to see the Sun set with realistic Rayleigh atmospheric scattering — the sky turns orange, pink, and deep blue.',

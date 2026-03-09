@@ -400,6 +400,9 @@ export default function App() {
                             case 'liveCams':
                                 setLiveCamsOpen(true);
                                 break;
+                            case 'orbitalTracker':
+                                setOrbitalTrackerOpen(true);
+                                break;
                         }
                     }}
                 />
