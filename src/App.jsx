@@ -16,6 +16,7 @@ import AstroQuiz from './components/AstroQuiz';
 import AppTutorial from './components/AppTutorial';
 import LiveSkyCameras from './components/LiveSkyCameras';
 import ARCameraMode from './components/ARCameraMode';
+import QuickStartGuide from './components/QuickStartGuide';
 import LoadingScreen from './components/LoadingScreen';
 import useGeolocation from './hooks/useGeolocation';
 import useAstroTime from './hooks/useAstroTime';
@@ -44,6 +45,13 @@ export default function App() {
     });
     const [liveCamsOpen, setLiveCamsOpen] = useState(false);
     const [arMode, setARMode] = useState(false);
+    const [quickStartOpen, setQuickStartOpen] = useState(() => {
+        if (!localStorage.getItem('cosmosview_quickstart_seen')) {
+            localStorage.setItem('cosmosview_quickstart_seen', '1');
+            return true;
+        }
+        return false;
+    });
     const [showShortcuts, setShowShortcuts] = useState(false);
 
     const loading = useAppStore((s) => s.loading);
@@ -56,6 +64,7 @@ export default function App() {
     const time = useAppStore((s) => s.time);
     const nightVision = useAppStore((s) => s.nightVision);
     const toggleNightVision = useAppStore((s) => s.toggleNightVision);
+    const setTimeOffset = useAppStore((s) => s.setTimeOffset);
     const autoRotate = useAppStore((s) => s.autoRotate);
     const toggleAutoRotate = useAppStore((s) => s.toggleAutoRotate);
     const gyroscope = useAppStore((s) => s.gyroscope);
@@ -305,6 +314,14 @@ export default function App() {
                             title="App Guide"
                             activeClass="bg-indigo-900/40 text-indigo-300 ring-2 ring-indigo-500/40"
                         />
+                        {/* Quick Start */}
+                        <FAB
+                            active={quickStartOpen}
+                            onClick={() => setQuickStartOpen((o) => !o)}
+                            emoji="🚀"
+                            title="Try This!"
+                            activeClass="bg-amber-900/40 text-amber-300 ring-2 ring-amber-500/40"
+                        />
                     </div>
                 </div>
             )}
@@ -344,6 +361,35 @@ export default function App() {
             {!loading && <SolarSystemOrrery open={orreryOpen} onClose={() => setOrreryOpen(false)} />}
             {!loading && <AstroQuiz open={quizOpen} onClose={() => setQuizOpen(false)} />}
             {!loading && <AppTutorial open={tutorialOpen} onClose={() => setTutorialOpen(false)} />}
+            {!loading && (
+                <QuickStartGuide
+                    open={quickStartOpen}
+                    onClose={() => setQuickStartOpen(false)}
+                    onAction={(action) => {
+                        setQuickStartOpen(false);
+                        switch (action) {
+                            case 'timeTravel':
+                                setTimeOffset(6 * 3600 * 1000); // Jump +6h (sunset)
+                                break;
+                            case 'tonight':
+                                setTonightOpen(true);
+                                break;
+                            case 'orrery':
+                                setOrreryOpen(true);
+                                break;
+                            case 'moon':
+                                setMoonDashboardOpen(true);
+                                break;
+                            case 'quiz':
+                                setQuizOpen(true);
+                                break;
+                            case 'startrails':
+                                toggleStarTrails();
+                                break;
+                        }
+                    }}
+                />
+            )}
             {!loading && <LiveSkyCameras open={liveCamsOpen} onClose={() => setLiveCamsOpen(false)} />}
             {!loading && (
                 <ARCameraMode
