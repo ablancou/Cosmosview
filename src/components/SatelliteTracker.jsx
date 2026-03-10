@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 import * as satellite from 'satellite.js';
 import useAppStore from '../store/useAppStore';
+import { useLocationContext } from '../contexts/LocationContext';
 import { useTranslation } from 'react-i18next';
 
 /**
