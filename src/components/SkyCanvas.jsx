@@ -24,6 +24,7 @@ import StarTrails from './StarTrails';
 import DeepSkyObjects from './DeepSkyObjects';
 import AtmosphericScattering from './AtmosphericScattering';
 import { localSiderealTime, getObserverRotation, equatorialToHorizontal } from '../utils/coordinates';
+import { useLocationContext } from '../contexts/LocationContext';
 
 /**
  * Main Three.js canvas component.
@@ -50,7 +51,7 @@ export default function SkyCanvas() {
 
     const [sceneReady, setSceneReady] = useState(false);
 
-    const location = useAppStore((s) => s.location);
+    const location = useLocationContext();
     const time = useAppStore((s) => s.time);
     const layers = useAppStore((s) => s.layers);
     const setSelectedStar = useAppStore((s) => s.setSelectedStar);

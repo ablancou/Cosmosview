@@ -113,7 +113,7 @@ export default function SatelliteTracker({ scene }) {
     const spritesRef = useRef({});
     const orbitsRef = useRef({});
     const animRef = useRef(null);
-    const location = useAppStore((s) => s.location);
+    const location = useLocationContext();
     const time = useAppStore((s) => s.time);
     const { t } = useTranslation();
 

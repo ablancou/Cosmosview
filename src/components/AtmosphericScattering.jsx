@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import * as Astronomy from 'astronomy-engine';
+import { useLocationContext } from '../contexts/LocationContext';
 import useAppStore from '../store/useAppStore';
 import atmosphereFragShader from '../shaders/atmosphere.frag.glsl?raw';
 
@@ -15,7 +16,7 @@ export default function AtmosphericScattering({ scene }) {
     const meshRef = useRef(null);
     const materialRef = useRef(null);
     const time = useAppStore((s) => s.time);
-    const location = useAppStore((s) => s.location);
+    const location = useLocationContext();
 
     useEffect(() => {
         if (!scene) return;

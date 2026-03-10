@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import * as Astronomy from 'astronomy-engine';
 import useAppStore from '../store/useAppStore';
+import { useLocationContext } from '../contexts/LocationContext';
 
 /**
  * Renders a subtle atmospheric glow at the horizon.
@@ -11,7 +12,7 @@ export default function HorizonAtmosphere({ scene }) {
     const meshRef = useRef(null);
     const materialRef = useRef(null);
     const time = useAppStore((s) => s.time);
-    const location = useAppStore((s) => s.location);
+    const location = useLocationContext();
 
     useEffect(() => {
         if (!scene) return;

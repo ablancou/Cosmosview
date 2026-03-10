@@ -21,6 +21,7 @@ import OrbitalTracker from './components/OrbitalTracker';
 import DSOInfoCard from './components/DSOInfoCard';
 import AmbientSoundscape from './components/AmbientSoundscape';
 import AstroPhotoPlanner from './components/AstroPhotoPlanner';
+import MultiLocationCompare from './components/MultiLocationCompare';
 import LoadingScreen from './components/LoadingScreen';
 import useGeolocation from './hooks/useGeolocation';
 import useAstroTime from './hooks/useAstroTime';
@@ -52,6 +53,7 @@ export default function App() {
     const [orbitalTrackerOpen, setOrbitalTrackerOpen] = useState(false);
     const [soundEnabled, setSoundEnabled] = useState(false);
     const [photoplannerOpen, setPhotoplannerOpen] = useState(false);
+    const [compareModeOpen, setCompareModeOpen] = useState(false);
     const [quickStartOpen, setQuickStartOpen] = useState(() => {
         if (!localStorage.getItem('cosmosview_quickstart_seen')) {
             localStorage.setItem('cosmosview_quickstart_seen', '1');
@@ -171,7 +173,11 @@ export default function App() {
                 <LoadingScreen progress={loadingProgress} onComplete={handleLoadingComplete} />
             )}
 
-            {!loading && <SkyCanvas />}
+            {!loading && !compareModeOpen && <SkyCanvas />}
+
+            {compareModeOpen && (
+                <MultiLocationCompare onClose={() => setCompareModeOpen(false)} />
+            )}
 
             {/* Monthly Events Banner */}
             <MonthlyEventsBanner />
@@ -289,6 +295,14 @@ export default function App() {
                             emoji="📹"
                             title="AR Camera Mode"
                             activeClass="bg-lime-900/40 text-lime-300 ring-2 ring-lime-500/40"
+                        />
+                        {/* Multi-Location Compare */}
+                        <FAB
+                            active={compareModeOpen}
+                            onClick={() => setCompareModeOpen((o) => !o)}
+                            emoji="🌗"
+                            title="Multi-Location Compare"
+                            activeClass="bg-sky-900/40 text-sky-300 ring-2 ring-sky-500/40"
                         />
                     </div>
 
