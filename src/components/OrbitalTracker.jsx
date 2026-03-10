@@ -100,6 +100,12 @@ export default function OrbitalTracker({ open, onClose }) {
     const [hoveredPanel, setHoveredPanel] = useState(null);
     const location = useAppStore((s) => s.location);
 
+    const [visibleCats, setVisibleCats] = useState(
+        new Set([...Object.keys(CAT_COLORS), 'Moon'])
+    );
+    const visibleCatsRef = useRef(visibleCats);
+    useEffect(() => { visibleCatsRef.current = visibleCats; }, [visibleCats]);
+
     // Parse TLEs once
     const satrecsRef = useRef(null);
     if (!satrecsRef.current) {
@@ -264,7 +270,12 @@ export default function OrbitalTracker({ open, onClose }) {
             const newPositions = [];
 
             dots.forEach(({ dot, orbitLine, satData }) => {
-                if (!satData.satrec) { dot.visible = false; return; }
+                if (!satData.satrec) { dot.visible = false; orbitLine.visible = false; return; }
+                if (!visibleCatsRef.current.has(satData.cat)) {
+                    dot.visible = false;
+                    orbitLine.visible = false;
+                    return;
+                }
                 try {
                     const pv = sat.propagate(satData.satrec, jsDate);
                     if (!pv.position) { dot.visible = false; return; }
@@ -278,6 +289,7 @@ export default function OrbitalTracker({ open, onClose }) {
                     dot.position.set(nx, ny, nz);
                     dot.position.applyEuler(earthGroup.rotation);
                     dot.visible = true;
+                    orbitLine.visible = true;
 
                     const vel = pv.velocity ? Math.sqrt(pv.velocity.x ** 2 + pv.velocity.y ** 2 + pv.velocity.z ** 2) : 0;
                     const geodetic = sat.eciToGeodetic(pv.position, gmst);
@@ -318,38 +330,44 @@ export default function OrbitalTracker({ open, onClose }) {
             if (newPositions.length > 0) setSatPositions(newPositions);
 
             // ── Update Moon ──
-            try {
-                const observer = new Astronomy.Observer(location.lat, location.lon, 0);
-                const moonEq = Astronomy.Equator('Moon', jsDate, observer, true, true);
-                const moonGeo = Astronomy.Ecliptic(moonEq.vec);
-                const moonDist = moonEq.dist; // AU
-                const moonDistKm = moonDist * 149597870.7;
-                const moonR = scale * (moonDistKm / earthRadius) * 0.0001 + scale + 0.8;
-                const moonPos = latLonTo3D(moonGeo.elat, moonGeo.elon, moonR);
-                moonDot.position.copy(moonPos);
-                moonDot.position.applyEuler(earthGroup.rotation);
-                moonDot.visible = true;
+            if (!visibleCatsRef.current.has('Moon')) {
+                if (moonDotRef.current) moonDotRef.current.visible = false;
+                if (moonOrbitRef.current) moonOrbitRef.current.visible = false;
+            } else {
+                try {
+                    const observer = new Astronomy.Observer(location.lat, location.lon, 0);
+                    const moonEq = Astronomy.Equator('Moon', jsDate, observer, true, true);
+                    const moonGeo = Astronomy.Ecliptic(moonEq.vec);
+                    const moonDist = moonEq.dist; // AU
+                    const moonDistKm = moonDist * 149597870.7;
+                    const moonR = scale * (moonDistKm / earthRadius) * 0.0001 + scale + 0.8;
+                    const moonPos = latLonTo3D(moonGeo.elat, moonGeo.elon, moonR);
+                    moonDot.position.copy(moonPos);
+                    moonDot.position.applyEuler(earthGroup.rotation);
+                    moonDot.visible = true;
+                    moonOrbitLine.visible = true;
 
-                setMoonData({
-                    dist: moonDistKm,
-                    phase: Astronomy.MoonPhase(jsDate),
-                    lat: moonGeo.elat,
-                    lon: moonGeo.elon,
-                });
+                    setMoonData({
+                        dist: moonDistKm,
+                        phase: Astronomy.MoonPhase(jsDate),
+                        lat: moonGeo.elat,
+                        lon: moonGeo.elon,
+                    });
 
-                // Moon orbit circle
-                if (frameCount === 1) {
-                    const mOrbitPts = [];
-                    for (let i = 0; i <= 64; i++) {
-                        const angle = (i / 64) * Math.PI * 2;
-                        mOrbitPts.push(new THREE.Vector3(
-                            moonR * Math.cos(angle), 0, moonR * Math.sin(angle)
-                        ));
+                    // Moon orbit circle
+                    if (frameCount === 1) {
+                        const mOrbitPts = [];
+                        for (let i = 0; i <= 64; i++) {
+                            const angle = (i / 64) * Math.PI * 2;
+                            mOrbitPts.push(new THREE.Vector3(
+                                moonR * Math.cos(angle), 0, moonR * Math.sin(angle)
+                            ));
+                        }
+                        moonOrbitLine.geometry.dispose();
+                        moonOrbitLine.geometry = new THREE.BufferGeometry().setFromPoints(mOrbitPts);
                     }
-                    moonOrbitLine.geometry.dispose();
-                    moonOrbitLine.geometry = new THREE.BufferGeometry().setFromPoints(mOrbitPts);
-                }
-            } catch { moonDot.visible = false; }
+                } catch { moonDot.visible = false; moonOrbitLine.visible = false; }
+            } // end Moon visible block
 
             renderer.render(scene, camera);
         };
@@ -466,15 +484,28 @@ export default function OrbitalTracker({ open, onClose }) {
                 <div className="p-2 space-y-0.5">
                     {Object.entries(categories).map(([cat, data]) => (
                         <div key={cat}
-                            className="flex items-center justify-between px-2 py-1.5 rounded cursor-pointer transition-all hover:bg-white/5 relative group"
-                            onClick={() => setSelectedSat(satPositions.find((s) => s.cat === cat)?.name || null)}
+                            className={`flex items-center justify-between px-2 py-1.5 rounded transition-all group ${visibleCats.has(cat) ? 'hover:bg-white/5' : 'opacity-40'}`}
                             onMouseEnter={() => setHoveredPanel(cat)} onMouseLeave={() => setHoveredPanel(null)}>
-                            <div className="flex items-center gap-2">
-                                <span className="w-1.5 h-1.5 rounded-full" style={{ background: CAT_COLORS[cat] }} />
-                                <span style={{ ...mono, color: '#99aabb', fontSize: '10px' }}>{cat}</span>
+                            <div className="flex items-center gap-2 cursor-pointer"
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    setVisibleCats(prev => {
+                                        const next = new Set(prev);
+                                        if (next.has(cat)) next.delete(cat);
+                                        else next.add(cat);
+                                        return next;
+                                    });
+                                }}>
+                                <span className={`w-2 h-2 rounded-full border border-solid transition-all`}
+                                    style={{
+                                        background: visibleCats.has(cat) ? CAT_COLORS[cat] : 'transparent',
+                                        borderColor: CAT_COLORS[cat]
+                                    }} />
+                                <span style={{ ...mono, color: visibleCats.has(cat) ? '#99aabb' : '#556677', fontSize: '10px' }}>{cat}</span>
                             </div>
-                            <div className="flex items-center gap-2">
-                                <span style={{ ...mono, color: CAT_COLORS[cat], fontSize: '10px', fontWeight: 'bold' }}>{data.active}</span>
+                            <div className="flex items-center gap-2 cursor-pointer"
+                                onClick={() => visibleCats.has(cat) && setSelectedSat(satPositions.find((s) => s.cat === cat && s.visible)?.name || null)}>
+                                <span style={{ ...mono, color: visibleCats.has(cat) ? CAT_COLORS[cat] : '#334455', fontSize: '10px', fontWeight: 'bold' }}>{data.active}</span>
                                 <span style={{ ...mono, color: '#445566', fontSize: '9px' }}>/{data.total}</span>
                             </div>
                             {/* Tooltip */}
@@ -490,13 +521,26 @@ export default function OrbitalTracker({ open, onClose }) {
                     ))}
                     {/* Moon entry */}
                     {moonData && (
-                        <div className="flex items-center justify-between px-2 py-1.5 rounded cursor-pointer transition-all hover:bg-white/5"
-                            onClick={() => setSelectedSat('Moon')}>
-                            <div className="flex items-center gap-2">
-                                <span className="w-1.5 h-1.5 rounded-full" style={{ background: '#cccccc' }} />
-                                <span style={{ ...mono, color: '#99aabb', fontSize: '10px' }}>Moon</span>
+                        <div className={`flex items-center justify-between px-2 py-1.5 rounded transition-all ${visibleCats.has('Moon') ? 'hover:bg-white/5' : 'opacity-40'}`}>
+                            <div className="flex items-center gap-2 cursor-pointer"
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    setVisibleCats(prev => {
+                                        const next = new Set(prev);
+                                        if (next.has('Moon')) next.delete('Moon');
+                                        else next.add('Moon');
+                                        return next;
+                                    });
+                                }}>
+                                <span className="w-2 h-2 rounded-full border transition-all"
+                                    style={{
+                                        background: visibleCats.has('Moon') ? '#cccccc' : 'transparent',
+                                        borderColor: '#cccccc'
+                                    }} />
+                                <span style={{ ...mono, color: visibleCats.has('Moon') ? '#99aabb' : '#556677', fontSize: '10px' }}>Moon</span>
                             </div>
-                            <span style={{ ...mono, color: '#cccccc', fontSize: '10px', fontWeight: 'bold' }}>🌙</span>
+                            <span className="cursor-pointer" onClick={() => visibleCats.has('Moon') && setSelectedSat('Moon')}
+                                style={{ ...mono, color: visibleCats.has('Moon') ? '#cccccc' : '#555555', fontSize: '10px', fontWeight: 'bold' }}>🌙</span>
                         </div>
                     )}
                 </div>
