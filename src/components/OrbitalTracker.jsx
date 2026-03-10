@@ -482,11 +482,13 @@ export default function OrbitalTracker({ open, onClose }) {
                     <span style={{ ...mono, color: '#00cccc88', fontSize: '9px', letterSpacing: '2px' }}>// CONSTELLATION STATUS</span>
                 </div>
                 <div className="p-2 space-y-0.5">
-                    {Object.entries(categories).map(([cat, data]) => (
+                    {Object.entries(categories).filter(([cat]) => cat !== 'Moon').map(([cat, data]) => (
                         <div key={cat}
                             className={`flex items-center justify-between px-2 py-1.5 rounded transition-all group ${visibleCats.has(cat) ? 'hover:bg-white/5' : 'opacity-40'}`}
                             onMouseEnter={() => setHoveredPanel(cat)} onMouseLeave={() => setHoveredPanel(null)}>
-                            <div className="flex items-center gap-2 cursor-pointer"
+
+                            {/* Toggle Switch */}
+                            <div className="flex items-center gap-3 cursor-pointer py-1 pr-2"
                                 onClick={(e) => {
                                     e.stopPropagation();
                                     setVisibleCats(prev => {
@@ -496,21 +498,26 @@ export default function OrbitalTracker({ open, onClose }) {
                                         return next;
                                     });
                                 }}>
-                                <span className={`w-2 h-2 rounded-full border border-solid transition-all`}
+                                <span className={`w-3 h-3 rounded-full border border-solid transition-all`}
                                     style={{
                                         background: visibleCats.has(cat) ? CAT_COLORS[cat] : 'transparent',
                                         borderColor: CAT_COLORS[cat]
                                     }} />
-                                <span style={{ ...mono, color: visibleCats.has(cat) ? '#99aabb' : '#556677', fontSize: '10px' }}>{cat}</span>
                             </div>
-                            <div className="flex items-center gap-2 cursor-pointer"
+
+                            {/* Telemetry Select */}
+                            <div className="flex flex-1 items-center justify-between cursor-pointer"
                                 onClick={() => visibleCats.has(cat) && setSelectedSat(satPositions.find((s) => s.cat === cat && s.visible)?.name || null)}>
-                                <span style={{ ...mono, color: visibleCats.has(cat) ? CAT_COLORS[cat] : '#334455', fontSize: '10px', fontWeight: 'bold' }}>{data.active}</span>
-                                <span style={{ ...mono, color: '#445566', fontSize: '9px' }}>/{data.total}</span>
+                                <span style={{ ...mono, color: visibleCats.has(cat) ? '#99aabb' : '#556677', fontSize: '10px' }}>{cat}</span>
+                                <div className="flex items-center gap-2">
+                                    <span style={{ ...mono, color: visibleCats.has(cat) ? CAT_COLORS[cat] : '#334455', fontSize: '10px', fontWeight: 'bold' }}>{data.active}</span>
+                                    <span style={{ ...mono, color: '#445566', fontSize: '9px' }}>/{data.total}</span>
+                                </div>
                             </div>
+
                             {/* Tooltip */}
                             {hoveredPanel === cat && (
-                                <div className="absolute left-full ml-2 top-0 w-48 p-2 rounded z-50"
+                                <div className="absolute left-full ml-2 top-0 w-48 p-2 rounded z-50 pointer-events-none"
                                     style={{ background: 'rgba(0,16,24,0.95)', border: '1px solid rgba(0,200,200,0.2)' }}>
                                     <p style={{ ...mono, color: '#88bbcc', fontSize: '9px', lineHeight: '1.4' }}>
                                         {CAT_DESCS[cat]}
@@ -519,10 +526,13 @@ export default function OrbitalTracker({ open, onClose }) {
                             )}
                         </div>
                     ))}
+
                     {/* Moon entry */}
                     {moonData && (
                         <div className={`flex items-center justify-between px-2 py-1.5 rounded transition-all ${visibleCats.has('Moon') ? 'hover:bg-white/5' : 'opacity-40'}`}>
-                            <div className="flex items-center gap-2 cursor-pointer"
+
+                            {/* Toggle Switch */}
+                            <div className="flex items-center gap-3 cursor-pointer py-1 pr-2"
                                 onClick={(e) => {
                                     e.stopPropagation();
                                     setVisibleCats(prev => {
@@ -532,15 +542,19 @@ export default function OrbitalTracker({ open, onClose }) {
                                         return next;
                                     });
                                 }}>
-                                <span className="w-2 h-2 rounded-full border transition-all"
+                                <span className="w-3 h-3 rounded-full border transition-all"
                                     style={{
                                         background: visibleCats.has('Moon') ? '#cccccc' : 'transparent',
                                         borderColor: '#cccccc'
                                     }} />
-                                <span style={{ ...mono, color: visibleCats.has('Moon') ? '#99aabb' : '#556677', fontSize: '10px' }}>Moon</span>
                             </div>
-                            <span className="cursor-pointer" onClick={() => visibleCats.has('Moon') && setSelectedSat('Moon')}
-                                style={{ ...mono, color: visibleCats.has('Moon') ? '#cccccc' : '#555555', fontSize: '10px', fontWeight: 'bold' }}>🌙</span>
+
+                            {/* Telemetry Select */}
+                            <div className="flex flex-1 items-center justify-between cursor-pointer"
+                                onClick={() => visibleCats.has('Moon') && setSelectedSat('Moon')}>
+                                <span style={{ ...mono, color: visibleCats.has('Moon') ? '#99aabb' : '#556677', fontSize: '10px' }}>Moon</span>
+                                <span style={{ ...mono, color: visibleCats.has('Moon') ? '#cccccc' : '#555555', fontSize: '10px', fontWeight: 'bold' }}>🌙</span>
+                            </div>
                         </div>
                     )}
                 </div>
