@@ -271,11 +271,9 @@ export default function OrbitalTracker({ open, onClose }) {
 
             dots.forEach(({ dot, orbitLine, satData }) => {
                 if (!satData.satrec) { dot.visible = false; orbitLine.visible = false; return; }
-                if (!visibleCatsRef.current.has(satData.cat)) {
-                    dot.visible = false;
-                    orbitLine.visible = false;
-                    return;
-                }
+                const isCatVisible = visibleCatsRef.current.has(satData.cat);
+                dot.visible = isCatVisible;
+                orbitLine.visible = isCatVisible;
                 try {
                     const pv = sat.propagate(satData.satrec, jsDate);
                     if (!pv.position) { dot.visible = false; return; }
@@ -288,8 +286,6 @@ export default function OrbitalTracker({ open, onClose }) {
                     const nx = ecf.x / R * r, ny = ecf.z / R * r, nz = -ecf.y / R * r;
                     dot.position.set(nx, ny, nz);
                     dot.position.applyEuler(earthGroup.rotation);
-                    dot.visible = true;
-                    orbitLine.visible = true;
 
                     const vel = pv.velocity ? Math.sqrt(pv.velocity.x ** 2 + pv.velocity.y ** 2 + pv.velocity.z ** 2) : 0;
                     const geodetic = sat.eciToGeodetic(pv.position, gmst);
@@ -299,8 +295,10 @@ export default function OrbitalTracker({ open, onClose }) {
                         orbit: satData.orbit, desc: satData.desc,
                         lat: sat.degreesLat(geodetic.latitude),
                         lon: sat.degreesLong(geodetic.longitude),
-                        alt: geodetic.height, vel, visible: true,
+                        alt: geodetic.height, vel, visible: isCatVisible,
                     });
+
+                    if (!isCatVisible) return;
 
                     // Orbit path (update every ~60 frames)
                     if (frameCount === 1) {
@@ -426,6 +424,8 @@ export default function OrbitalTracker({ open, onClose }) {
         categories[s.cat].total++;
         if (s.visible) categories[s.cat].active++;
     });
+
+    categories['Moon'] = { active: visibleCats.has('Moon') ? 1 : 0, total: 1, color: '#ffcc00' };
 
     const orbitCounts = {};
     ORBIT_TYPES.forEach((t) => { orbitCounts[t] = 0; });
