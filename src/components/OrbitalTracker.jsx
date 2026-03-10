@@ -438,262 +438,268 @@ export default function OrbitalTracker({ open, onClose }) {
     const mono = { fontFamily: "'Courier New', monospace" };
 
     return (
-        <div className="fixed inset-0 z-[120]" style={{ background: '#000' }}>
-            <canvas
-                ref={canvasRef}
-                className="absolute inset-0 w-full h-full"
-                onPointerDown={onPointerDown}
-                onPointerMove={onPointerMove}
-                onPointerUp={onPointerUp}
-                onPointerLeave={onPointerUp}
-                onWheel={onWheel}
-                style={{ cursor: 'grab' }}
-            />
+        <div className="fixed inset-0 z-[120] flex flex-col md:block" style={{ background: '#000' }}>
+            {/* VIEWPORT */}
+            <div className="relative h-[55%] shrink-0 md:absolute md:inset-0 md:h-full w-full z-0 overflow-hidden"
+                style={{ borderBottom: '1px solid rgba(0,200,200,0.2)' }}>
+                <canvas
+                    ref={canvasRef}
+                    className="absolute inset-0 w-full h-full"
+                    onPointerDown={onPointerDown}
+                    onPointerMove={onPointerMove}
+                    onPointerUp={onPointerUp}
+                    onPointerLeave={onPointerUp}
+                    onWheel={onWheel}
+                    style={{ cursor: 'grab' }}
+                />
 
-            {/* Scanlines */}
-            <div className="absolute inset-0 pointer-events-none" style={{
-                background: 'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,200,200,0.015) 2px, rgba(0,200,200,0.015) 4px)',
-            }} />
+                {/* Scanlines */}
+                <div className="absolute inset-0 pointer-events-none" style={{
+                    background: 'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,200,200,0.015) 2px, rgba(0,200,200,0.015) 4px)',
+                }} />
 
-            {/* ══ TOP BAR ══ */}
-            <div className="absolute top-0 left-0 right-0 flex items-center justify-between px-4 py-2 pointer-events-none"
-                style={{ borderBottom: '1px solid rgba(0,200,200,0.15)', background: 'rgba(0,0,0,0.5)' }}>
-                <div className="flex items-center gap-3">
-                    <span style={{ ...mono, color: '#00cccc', fontSize: '11px', fontWeight: 'bold', letterSpacing: '3px' }}>
-                        ORBITAL TRACKING SYSTEM
-                    </span>
-                    <span style={{ ...mono, color: '#00cccc55', fontSize: '9px' }}>v2.1</span>
-                    <span className="ml-2 w-2 h-2 rounded-full animate-pulse" style={{ background: '#00ff88' }} />
-                    <span style={{ ...mono, color: '#00ff8888', fontSize: '9px' }}>ONLINE</span>
+                {/* ══ TOP BAR ══ */}
+                <div className="absolute top-0 left-0 right-0 flex items-center justify-between px-4 py-2 pointer-events-none"
+                    style={{ borderBottom: '1px solid rgba(0,200,200,0.15)', background: 'rgba(0,0,0,0.5)' }}>
+                    <div className="flex items-center gap-3">
+                        <span style={{ ...mono, color: '#00cccc', fontSize: '11px', fontWeight: 'bold', letterSpacing: '3px' }}>
+                            ORBITAL TRACKING SYSTEM
+                        </span>
+                        <span style={{ ...mono, color: '#00cccc55', fontSize: '9px' }}>v2.1</span>
+                        <span className="ml-2 w-2 h-2 rounded-full animate-pulse" style={{ background: '#00ff88' }} />
+                        <span style={{ ...mono, color: '#00ff8888', fontSize: '9px' }}>ONLINE</span>
+                    </div>
+                    <div className="flex items-center gap-4">
+                        <span style={{ ...mono, color: '#00cccc88', fontSize: '10px' }}>{utcNow} UTC</span>
+                        <span style={{ ...mono, color: '#00cccc55', fontSize: '10px' }}>TRACKING: {satPositions.length + (moonData ? 1 : 0)}</span>
+                    </div>
                 </div>
-                <div className="flex items-center gap-4">
-                    <span style={{ ...mono, color: '#00cccc88', fontSize: '10px' }}>{utcNow} UTC</span>
-                    <span style={{ ...mono, color: '#00cccc55', fontSize: '10px' }}>TRACKING: {satPositions.length + (moonData ? 1 : 0)}</span>
-                    <button onClick={onClose}
-                        className="pointer-events-auto w-7 h-7 rounded flex items-center justify-center transition-all hover:bg-white/10"
-                        style={{ border: '1px solid rgba(0,200,200,0.3)', color: '#00cccc' }}>✕</button>
+
+                {/* ══ TICKER ══ */}
+                <div className="absolute bottom-0 left-0 right-0 z-20"
+                    style={{ borderTop: '1px solid rgba(0,200,200,0.1)', background: 'rgba(0,0,0,0.6)', overflow: 'hidden', height: '24px' }}>
+                    <div className="flex items-center h-full" style={{ animation: 'tickerScroll 60s linear infinite', whiteSpace: 'nowrap' }}>
+                        {[...SATELLITES, { name: '🌙 Moon', color: '#cccccc' }, ...SATELLITES].map((s, i) => (
+                            <span key={i} className="mx-3" style={{ ...mono, color: s.color + '88', fontSize: '9px' }}>{s.name}</span>
+                        ))}
+                    </div>
                 </div>
-            </div>
 
-            {/* ══ LEFT — Constellation Status ══ */}
-            <div className="absolute top-14 left-2 w-[180px] sm:w-48 md:top-12 md:left-3 md:w-56 pointer-events-auto z-10"
-                style={{ background: 'rgba(0,8,16,0.85)', border: '1px solid rgba(0,200,200,0.12)', borderRadius: '4px', backdropFilter: 'blur(8px)' }}>
-                <div className="px-3 py-2" style={{ borderBottom: '1px solid rgba(0,200,200,0.08)' }}>
-                    <span style={{ ...mono, color: '#00cccc88', fontSize: '9px', letterSpacing: '2px' }}>// CONSTELLATION STATUS</span>
-                </div>
-                <div className="p-2 space-y-0.5">
-                    {Object.entries(categories).filter(([cat]) => cat !== 'Moon').map(([cat, data]) => (
-                        <div key={cat}
-                            className={`flex items-center justify-between px-2 py-1.5 rounded transition-all group ${visibleCats.has(cat) ? 'hover:bg-white/5' : 'opacity-40'}`}
-                            onMouseEnter={() => setHoveredPanel(cat)} onMouseLeave={() => setHoveredPanel(null)}>
-
-                            {/* Toggle Switch */}
-                            <div className="flex items-center gap-3 cursor-pointer py-1 pr-2"
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    setVisibleCats(prev => {
-                                        const next = new Set(prev);
-                                        if (next.has(cat)) next.delete(cat);
-                                        else next.add(cat);
-                                        return next;
-                                    });
-                                }}>
-                                <span className={`w-3 h-3 rounded-full border border-solid transition-all`}
-                                    style={{
-                                        background: visibleCats.has(cat) ? CAT_COLORS[cat] : 'transparent',
-                                        borderColor: CAT_COLORS[cat]
-                                    }} />
-                            </div>
-
-                            {/* Telemetry Select */}
-                            <div className="flex flex-1 items-center justify-between cursor-pointer"
-                                onClick={() => visibleCats.has(cat) && setSelectedSat(satPositions.find((s) => s.cat === cat && s.visible)?.name || null)}>
-                                <span style={{ ...mono, color: visibleCats.has(cat) ? '#99aabb' : '#556677', fontSize: '10px' }}>{cat}</span>
-                                <div className="flex items-center gap-2">
-                                    <span style={{ ...mono, color: visibleCats.has(cat) ? CAT_COLORS[cat] : '#334455', fontSize: '10px', fontWeight: 'bold' }}>{data.active}</span>
-                                    <span style={{ ...mono, color: '#445566', fontSize: '9px' }}>/{data.total}</span>
-                                </div>
-                            </div>
-
-                            {/* Tooltip */}
-                            {hoveredPanel === cat && (
-                                <div className="absolute left-full ml-2 top-0 w-48 p-2 rounded z-50 pointer-events-none"
-                                    style={{ background: 'rgba(0,16,24,0.95)', border: '1px solid rgba(0,200,200,0.2)' }}>
-                                    <p style={{ ...mono, color: '#88bbcc', fontSize: '9px', lineHeight: '1.4' }}>
-                                        {CAT_DESCS[cat]}
-                                    </p>
-                                </div>
-                            )}
-                        </div>
+                {/* ══ STATUS BAR ══ */}
+                <div className="absolute bottom-6 left-0 right-0 z-20 flex items-center justify-center gap-2 md:gap-8 pointer-events-none flex-wrap px-1">
+                    {[
+                        `FPS: ${fps}`, 'STATUS: TRACKING', 'FRAME TYPE: SGP4',
+                        'DATA: CELESTRAK.ORG', `LAT: ${location.lat.toFixed(1)}° LON: ${location.lon.toFixed(1)}°`,
+                    ].map((t) => (
+                        <span key={t} style={{ ...mono, color: '#00cccc44', fontSize: '10px', textShadow: '0 0 2px black' }}>{t}</span>
                     ))}
-
-                    {/* Moon entry */}
-                    {moonData && (
-                        <div className={`flex items-center justify-between px-2 py-1.5 rounded transition-all ${visibleCats.has('Moon') ? 'hover:bg-white/5' : 'opacity-40'}`}>
-
-                            {/* Toggle Switch */}
-                            <div className="flex items-center gap-3 cursor-pointer py-1 pr-2"
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    setVisibleCats(prev => {
-                                        const next = new Set(prev);
-                                        if (next.has('Moon')) next.delete('Moon');
-                                        else next.add('Moon');
-                                        return next;
-                                    });
-                                }}>
-                                <span className="w-3 h-3 rounded-full border transition-all"
-                                    style={{
-                                        background: visibleCats.has('Moon') ? '#cccccc' : 'transparent',
-                                        borderColor: '#cccccc'
-                                    }} />
-                            </div>
-
-                            {/* Telemetry Select */}
-                            <div className="flex flex-1 items-center justify-between cursor-pointer"
-                                onClick={() => visibleCats.has('Moon') && setSelectedSat('Moon')}>
-                                <span style={{ ...mono, color: visibleCats.has('Moon') ? '#99aabb' : '#556677', fontSize: '10px' }}>Moon</span>
-                                <span style={{ ...mono, color: visibleCats.has('Moon') ? '#cccccc' : '#555555', fontSize: '10px', fontWeight: 'bold' }}>🌙</span>
-                            </div>
-                        </div>
-                    )}
                 </div>
-            </div>
+            </div> {/* END VIEWPORT */}
 
-            {/* ══ RIGHT — Telemetry ══ */}
-            <div className="absolute bottom-16 right-2 w-[180px] sm:w-48 md:bottom-auto md:top-12 md:right-3 md:w-60 pointer-events-auto z-10"
-                style={{ background: 'rgba(0,8,16,0.85)', border: '1px solid rgba(0,200,200,0.12)', borderRadius: '4px', backdropFilter: 'blur(8px)' }}>
-                <div className="px-3 py-2" style={{ borderBottom: '1px solid rgba(0,200,200,0.08)' }}>
-                    <span style={{ ...mono, color: '#00cccc88', fontSize: '9px', letterSpacing: '2px' }}>// SATELLITE TELEMETRY</span>
-                </div>
-                <div className="p-3">
-                    {selectedSat === 'Moon' && moonData ? (
-                        <div className="space-y-2">
-                            <div className="flex items-center gap-2">
-                                <span className="text-lg">🌙</span>
-                                <span style={{ ...mono, color: '#eee', fontSize: '11px', fontWeight: 'bold' }}>Moon</span>
-                            </div>
-                            {[
-                                ['DISTANCE', `${(moonData.dist).toFixed(0)} km`],
-                                ['PHASE', `${moonData.phase.toFixed(1)}°`],
-                                ['ECL.LAT', `${moonData.lat.toFixed(2)}°`],
-                                ['ECL.LON', `${moonData.lon.toFixed(2)}°`],
-                                ['TYPE', 'Natural Satellite'],
-                            ].map(([l, v]) => (
-                                <div key={l} className="flex items-center justify-between">
-                                    <span style={{ ...mono, color: '#00cccc66', fontSize: '9px', letterSpacing: '1px' }}>{l}</span>
-                                    <span style={{ ...mono, color: '#00cccc', fontSize: '10px' }}>{v}</span>
-                                </div>
-                            ))}
-                        </div>
-                    ) : sel ? (
-                        <div className="space-y-2">
-                            <div className="flex items-center gap-2">
-                                <span className="w-2 h-2 rounded-full animate-pulse" style={{ background: sel.color }} />
-                                <span style={{ ...mono, color: '#eee', fontSize: '11px', fontWeight: 'bold' }}>{sel.name}</span>
-                            </div>
-                            <p style={{ ...mono, color: '#557788', fontSize: '8px', marginTop: '2px' }}>{sel.desc}</p>
-                            {[
-                                ['ALT', `${sel.alt.toFixed(1)} km`],
-                                ['VEL', `${sel.vel.toFixed(2)} km/s`],
-                                ['LAT', `${sel.lat.toFixed(2)}°`],
-                                ['LON', `${sel.lon.toFixed(2)}°`],
-                                ['ORBIT', sel.orbit],
-                                ['TYPE', sel.cat],
-                            ].map(([l, v]) => (
-                                <div key={l} className="flex items-center justify-between">
-                                    <span style={{ ...mono, color: '#00cccc66', fontSize: '9px', letterSpacing: '1px' }}>{l}</span>
-                                    <span style={{ ...mono, color: '#00cccc', fontSize: '10px' }}>{v}</span>
-                                </div>
-                            ))}
-                        </div>
-                    ) : (
-                        <div style={{ ...mono, color: '#334455', fontSize: '10px', textAlign: 'center', padding: '16px 0' }}>
-                            NO TARGET SELECTED
-                            <br />
-                            <span style={{ fontSize: '8px', color: '#223344' }}>click a category or Moon to select</span>
-                        </div>
-                    )}
-                </div>
-            </div>
+            {/* DASHBOARD / HUD RECEPTACLE */}
+            <div className="flex-1 w-full md:absolute md:inset-0 z-10 overflow-y-auto md:overflow-hidden pointer-events-auto md:pointer-events-none p-4 md:p-0 flex flex-col md:block gap-4 bg-[#000a14] md:bg-transparent pb-10">
 
-            {/* ══ BOTTOM LEFT — Orbital Distribution ══ */}
-            <div className="hidden md:block absolute bottom-10 left-3 w-56 pointer-events-auto z-10"
-                style={{ background: 'rgba(0,8,16,0.85)', border: '1px solid rgba(0,200,200,0.12)', borderRadius: '4px' }}>
-                <div className="px-3 py-2" style={{ borderBottom: '1px solid rgba(0,200,200,0.08)' }}>
-                    <span style={{ ...mono, color: '#00cccc88', fontSize: '9px', letterSpacing: '2px' }}>// ORBITAL DISTRIBUTION</span>
-                </div>
-                <div className="p-3 space-y-1.5">
-                    {ORBIT_TYPES.map((type) => (
-                        <div key={type} className="relative group">
-                            <div className="flex items-center gap-2">
-                                <span style={{ ...mono, color: '#667788', fontSize: '9px', width: '24px' }}>{type}</span>
-                                <div className="flex-1 h-3 rounded-sm overflow-hidden" style={{ background: 'rgba(0,200,200,0.05)' }}>
-                                    <div className="h-full rounded-sm transition-all duration-1000"
+                {/* ══ LEFT — Constellation Status ══ */}
+                <div className="relative w-full md:absolute md:top-14 md:left-3 md:w-56 pointer-events-auto z-10"
+                    style={{ background: 'rgba(0,8,16,0.85)', border: '1px solid rgba(0,200,200,0.12)', borderRadius: '4px', backdropFilter: 'blur(8px)' }}>
+                    <div className="px-3 py-2" style={{ borderBottom: '1px solid rgba(0,200,200,0.08)' }}>
+                        <span style={{ ...mono, color: '#00cccc88', fontSize: '9px', letterSpacing: '2px' }}>// CONSTELLATION STATUS</span>
+                    </div>
+                    <div className="p-2 space-y-0.5">
+                        {Object.entries(categories).filter(([cat]) => cat !== 'Moon').map(([cat, data]) => (
+                            <div key={cat}
+                                className={`flex items-center justify-between px-2 py-1.5 rounded transition-all group ${visibleCats.has(cat) ? 'hover:bg-white/5' : 'opacity-40'}`}
+                                onMouseEnter={() => setHoveredPanel(cat)} onMouseLeave={() => setHoveredPanel(null)}>
+
+                                {/* Toggle Switch */}
+                                <div className="flex items-center gap-3 cursor-pointer py-1 pr-2"
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        setVisibleCats(prev => {
+                                            const next = new Set(prev);
+                                            if (next.has(cat)) next.delete(cat);
+                                            else next.add(cat);
+                                            return next;
+                                        });
+                                    }}>
+                                    <span className={`w-3 h-3 rounded-full border border-solid transition-all`}
                                         style={{
-                                            width: `${(orbitCounts[type] / maxOrbit) * 100}%`,
-                                            background: type === 'LEO' ? '#00cccc' : type === 'MEO' ? '#88ff44' : type === 'GEO' ? '#ffaa00' : '#ff66ff',
-                                            boxShadow: `0 0 8px ${type === 'LEO' ? '#00cccc44' : type === 'MEO' ? '#88ff4444' : '#ffaa0044'}`,
+                                            background: visibleCats.has(cat) ? CAT_COLORS[cat] : 'transparent',
+                                            borderColor: CAT_COLORS[cat]
                                         }} />
                                 </div>
-                                <span style={{ ...mono, color: '#00cccc88', fontSize: '9px', width: '16px', textAlign: 'right' }}>{orbitCounts[type]}</span>
+
+                                {/* Telemetry Select */}
+                                <div className="flex flex-1 items-center justify-between cursor-pointer"
+                                    onClick={() => visibleCats.has(cat) && setSelectedSat(satPositions.find((s) => s.cat === cat && s.visible)?.name || null)}>
+                                    <span style={{ ...mono, color: visibleCats.has(cat) ? '#99aabb' : '#556677', fontSize: '10px' }}>{cat}</span>
+                                    <div className="flex items-center gap-2">
+                                        <span style={{ ...mono, color: visibleCats.has(cat) ? CAT_COLORS[cat] : '#334455', fontSize: '10px', fontWeight: 'bold' }}>{data.active}</span>
+                                        <span style={{ ...mono, color: '#445566', fontSize: '9px' }}>/{data.total}</span>
+                                    </div>
+                                </div>
+
+                                {/* Tooltip */}
+                                {hoveredPanel === cat && (
+                                    <div className="absolute left-full ml-2 top-0 w-48 p-2 rounded z-50 pointer-events-none"
+                                        style={{ background: 'rgba(0,16,24,0.95)', border: '1px solid rgba(0,200,200,0.2)' }}>
+                                        <p style={{ ...mono, color: '#88bbcc', fontSize: '9px', lineHeight: '1.4' }}>
+                                            {CAT_DESCS[cat]}
+                                        </p>
+                                    </div>
+                                )}
                             </div>
-                            {/* Tooltip */}
-                            <div className="hidden group-hover:block absolute bottom-full mb-1 left-0 w-52 p-2 rounded z-50"
-                                style={{ background: 'rgba(0,16,24,0.95)', border: '1px solid rgba(0,200,200,0.2)' }}>
-                                <p style={{ ...mono, color: '#88bbcc', fontSize: '8px', lineHeight: '1.4' }}>{ORBIT_DESCS[type]}</p>
+                        ))}
+
+                        {/* Moon entry */}
+                        {moonData && (
+                            <div className={`flex items-center justify-between px-2 py-1.5 rounded transition-all ${visibleCats.has('Moon') ? 'hover:bg-white/5' : 'opacity-40'}`}>
+
+                                {/* Toggle Switch */}
+                                <div className="flex items-center gap-3 cursor-pointer py-1 pr-2"
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        setVisibleCats(prev => {
+                                            const next = new Set(prev);
+                                            if (next.has('Moon')) next.delete('Moon');
+                                            else next.add('Moon');
+                                            return next;
+                                        });
+                                    }}>
+                                    <span className="w-3 h-3 rounded-full border transition-all"
+                                        style={{
+                                            background: visibleCats.has('Moon') ? '#cccccc' : 'transparent',
+                                            borderColor: '#cccccc'
+                                        }} />
+                                </div>
+
+                                {/* Telemetry Select */}
+                                <div className="flex flex-1 items-center justify-between cursor-pointer"
+                                    onClick={() => visibleCats.has('Moon') && setSelectedSat('Moon')}>
+                                    <span style={{ ...mono, color: visibleCats.has('Moon') ? '#99aabb' : '#556677', fontSize: '10px' }}>Moon</span>
+                                    <span style={{ ...mono, color: visibleCats.has('Moon') ? '#cccccc' : '#555555', fontSize: '10px', fontWeight: 'bold' }}>🌙</span>
+                                </div>
                             </div>
-                        </div>
-                    ))}
+                        )}
+                    </div>
                 </div>
-            </div>
 
-            {/* ══ BOTTOM RIGHT — Controls Help ══ */}
-            <div className="hidden md:block absolute bottom-10 right-3 w-48 pointer-events-none z-10"
-                style={{ background: 'rgba(0,8,16,0.75)', border: '1px solid rgba(0,200,200,0.08)', borderRadius: '4px' }}>
-                <div className="px-3 py-2" style={{ borderBottom: '1px solid rgba(0,200,200,0.06)' }}>
-                    <span style={{ ...mono, color: '#00cccc66', fontSize: '9px', letterSpacing: '2px' }}>// CONTROLS</span>
+                {/* ══ RIGHT — Telemetry ══ */}
+                <div className="relative w-full md:absolute md:top-14 md:right-3 md:w-60 pointer-events-auto z-10"
+                    style={{ background: 'rgba(0,8,16,0.85)', border: '1px solid rgba(0,200,200,0.12)', borderRadius: '4px', backdropFilter: 'blur(8px)' }}>
+                    <div className="px-3 py-2" style={{ borderBottom: '1px solid rgba(0,200,200,0.08)' }}>
+                        <span style={{ ...mono, color: '#00cccc88', fontSize: '9px', letterSpacing: '2px' }}>// SATELLITE TELEMETRY</span>
+                    </div>
+                    <div className="p-3">
+                        {selectedSat === 'Moon' && moonData ? (
+                            <div className="space-y-2">
+                                <div className="flex items-center gap-2">
+                                    <span className="text-lg">🌙</span>
+                                    <span style={{ ...mono, color: '#eee', fontSize: '11px', fontWeight: 'bold' }}>Moon</span>
+                                </div>
+                                {[
+                                    ['DISTANCE', `${(moonData.dist).toFixed(0)} km`],
+                                    ['PHASE', `${moonData.phase.toFixed(1)}°`],
+                                    ['ECL.LAT', `${moonData.lat.toFixed(2)}°`],
+                                    ['ECL.LON', `${moonData.lon.toFixed(2)}°`],
+                                    ['TYPE', 'Natural Satellite'],
+                                ].map(([l, v]) => (
+                                    <div key={l} className="flex items-center justify-between">
+                                        <span style={{ ...mono, color: '#00cccc66', fontSize: '9px', letterSpacing: '1px' }}>{l}</span>
+                                        <span style={{ ...mono, color: '#00cccc', fontSize: '10px' }}>{v}</span>
+                                    </div>
+                                ))}
+                            </div>
+                        ) : sel ? (
+                            <div className="space-y-2">
+                                <div className="flex items-center gap-2">
+                                    <span className="w-2 h-2 rounded-full animate-pulse" style={{ background: sel.color }} />
+                                    <span style={{ ...mono, color: '#eee', fontSize: '11px', fontWeight: 'bold' }}>{sel.name}</span>
+                                </div>
+                                <p style={{ ...mono, color: '#557788', fontSize: '8px', marginTop: '2px' }}>{sel.desc}</p>
+                                {[
+                                    ['ALT', `${sel.alt.toFixed(1)} km`],
+                                    ['VEL', `${sel.vel.toFixed(2)} km/s`],
+                                    ['LAT', `${sel.lat.toFixed(2)}°`],
+                                    ['LON', `${sel.lon.toFixed(2)}°`],
+                                    ['ORBIT', sel.orbit],
+                                    ['TYPE', sel.cat],
+                                ].map(([l, v]) => (
+                                    <div key={l} className="flex items-center justify-between">
+                                        <span style={{ ...mono, color: '#00cccc66', fontSize: '9px', letterSpacing: '1px' }}>{l}</span>
+                                        <span style={{ ...mono, color: '#00cccc', fontSize: '10px' }}>{v}</span>
+                                    </div>
+                                ))}
+                            </div>
+                        ) : (
+                            <div style={{ ...mono, color: '#334455', fontSize: '10px', textAlign: 'center', padding: '16px 0' }}>
+                                NO TARGET SELECTED
+                                <br />
+                                <span style={{ fontSize: '8px', color: '#223344' }}>click a category or Moon to select</span>
+                            </div>
+                        )}
+                    </div>
                 </div>
-                <div className="p-2 space-y-1">
-                    {[
-                        ['🖱️ Drag', 'Rotate globe'],
-                        ['🔍 Scroll', 'Zoom in/out'],
-                        ['👆 Click', 'Select category'],
-                        ['🌙 Moon', 'Click to see data'],
-                    ].map(([k, v]) => (
-                        <div key={k} className="flex items-center justify-between">
-                            <span style={{ ...mono, color: '#557788', fontSize: '9px' }}>{k}</span>
-                            <span style={{ ...mono, color: '#335566', fontSize: '8px' }}>{v}</span>
-                        </div>
-                    ))}
-                </div>
-                <div className="px-3 py-2" style={{ borderTop: '1px solid rgba(0,200,200,0.06)' }}>
-                    <p style={{ ...mono, color: '#334455', fontSize: '7px', lineHeight: '1.5' }}>
-                        Globe rotates slowly to match Earth's scale.
-                        Satellite positions update in real-time via SGP4 orbital propagation.
-                    </p>
-                </div>
-            </div>
 
-            {/* ══ TICKER ══ */}
-            <div className="absolute bottom-0 left-0 right-0"
-                style={{ borderTop: '1px solid rgba(0,200,200,0.1)', background: 'rgba(0,0,0,0.6)', overflow: 'hidden', height: '24px' }}>
-                <div className="flex items-center h-full" style={{ animation: 'tickerScroll 60s linear infinite', whiteSpace: 'nowrap' }}>
-                    {[...SATELLITES, { name: '🌙 Moon', color: '#cccccc' }, ...SATELLITES].map((s, i) => (
-                        <span key={i} className="mx-3" style={{ ...mono, color: s.color + '88', fontSize: '9px' }}>{s.name}</span>
-                    ))}
+                {/* ══ BOTTOM LEFT — Orbital Distribution ══ */}
+                <div className="relative w-full md:absolute md:bottom-12 md:left-3 md:w-56 pointer-events-auto z-10"
+                    style={{ background: 'rgba(0,8,16,0.85)', border: '1px solid rgba(0,200,200,0.12)', borderRadius: '4px' }}>
+                    <div className="px-3 py-2" style={{ borderBottom: '1px solid rgba(0,200,200,0.08)' }}>
+                        <span style={{ ...mono, color: '#00cccc88', fontSize: '9px', letterSpacing: '2px' }}>// ORBITAL DISTRIBUTION</span>
+                    </div>
+                    <div className="p-3 space-y-1.5">
+                        {ORBIT_TYPES.map((type) => (
+                            <div key={type} className="relative group">
+                                <div className="flex items-center gap-2">
+                                    <span style={{ ...mono, color: '#667788', fontSize: '9px', width: '24px' }}>{type}</span>
+                                    <div className="flex-1 h-3 rounded-sm overflow-hidden" style={{ background: 'rgba(0,200,200,0.05)' }}>
+                                        <div className="h-full rounded-sm transition-all duration-1000"
+                                            style={{
+                                                width: `${(orbitCounts[type] / maxOrbit) * 100}%`,
+                                                background: type === 'LEO' ? '#00cccc' : type === 'MEO' ? '#88ff44' : type === 'GEO' ? '#ffaa00' : '#ff66ff',
+                                                boxShadow: `0 0 8px ${type === 'LEO' ? '#00cccc44' : type === 'MEO' ? '#88ff4444' : '#ffaa0044'}`,
+                                            }} />
+                                    </div>
+                                    <span style={{ ...mono, color: '#00cccc88', fontSize: '9px', width: '16px', textAlign: 'right' }}>{orbitCounts[type]}</span>
+                                </div>
+                                {/* Tooltip */}
+                                <div className="hidden group-hover:block absolute bottom-full mb-1 left-0 w-52 p-2 rounded z-50"
+                                    style={{ background: 'rgba(0,16,24,0.95)', border: '1px solid rgba(0,200,200,0.2)' }}>
+                                    <p style={{ ...mono, color: '#88bbcc', fontSize: '8px', lineHeight: '1.4' }}>{ORBIT_DESCS[type]}</p>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
                 </div>
-            </div>
 
-            {/* ══ STATUS BAR ══ */}
-            <div className="absolute bottom-6 left-0 right-0 flex items-center justify-center gap-2 md:gap-8 pointer-events-none flex-wrap px-1">
-                {[
-                    `FPS: ${fps}`, 'STATUS: TRACKING', 'FRAME TYPE: SGP4',
-                    'DATA: CELESTRAK.ORG', `LAT: ${location.lat.toFixed(1)}° LON: ${location.lon.toFixed(1)}°`,
-                ].map((t) => (
-                    <span key={t} style={{ ...mono, color: '#00cccc44', fontSize: '9px' }}>{t}</span>
-                ))}
-            </div>
+                {/* ══ BOTTOM RIGHT — Controls Help ══ */}
+                <div className="relative w-full md:absolute md:bottom-12 md:right-3 md:w-48 pointer-events-auto md:pointer-events-none z-10"
+                    style={{ background: 'rgba(0,8,16,0.75)', border: '1px solid rgba(0,200,200,0.08)', borderRadius: '4px' }}>
+                    <div className="px-3 py-2" style={{ borderBottom: '1px solid rgba(0,200,200,0.06)' }}>
+                        <span style={{ ...mono, color: '#00cccc66', fontSize: '9px', letterSpacing: '2px' }}>// CONTROLS</span>
+                    </div>
+                    <div className="p-2 space-y-1">
+                        {[
+                            ['🖱️ Drag', 'Rotate globe'],
+                            ['🔍 Scroll', 'Zoom in/out'],
+                            ['👆 Click', 'Select category'],
+                            ['🌙 Moon', 'Click to see data'],
+                        ].map(([k, v]) => (
+                            <div key={k} className="flex items-center justify-between">
+                                <span style={{ ...mono, color: '#557788', fontSize: '9px' }}>{k}</span>
+                                <span style={{ ...mono, color: '#335566', fontSize: '8px' }}>{v}</span>
+                            </div>
+                        ))}
+                    </div>
+                    <div className="px-3 py-2" style={{ borderTop: '1px solid rgba(0,200,200,0.06)' }}>
+                        <p style={{ ...mono, color: '#334455', fontSize: '7px', lineHeight: '1.5' }}>
+                            Globe rotates slowly to match Earth's scale.
+                            Satellite positions update in real-time via SGP4 orbital propagation.
+                        </p>
+                    </div>
+                </div>
+
+            </div> {/* END DASHBOARD */}
 
             <style>{`
                 @keyframes tickerScroll {
