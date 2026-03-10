@@ -56,8 +56,11 @@ export default function MultiLocationCompare({ onClose }) {
                 ✕
             </button>
 
-            <div className="absolute bottom-10 left-1/2 -translate-x-1/2 z-50 pointer-events-none text-white/70 bg-black/60 px-5 py-2 rounded-full backdrop-blur-md text-sm border border-white/20 shadow-xl font-mono tracking-wider">
-                SYNCED TIME COMPARISON
+            <div className="absolute bottom-10 left-1/2 -translate-x-1/2 z-50 pointer-events-none text-white/80 bg-black/70 px-6 py-3 rounded-xl backdrop-blur-md text-sm border border-white/20 shadow-xl flex flex-col items-center gap-1">
+                <span className="font-mono tracking-wide text-xs text-cosmos-accent">// SYNCED MULTI-LOCATION</span>
+                <span className="text-center w-80 text-[13px]">
+                    Drag to pan. Use the main clock dial below to time&#8209;lapse both skies simultaneously.
+                </span>
             </div>
         </div>
     );
