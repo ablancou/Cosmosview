@@ -476,7 +476,7 @@ export default function OrbitalTracker({ open, onClose }) {
             </div>
 
             {/* ══ LEFT — Constellation Status ══ */}
-            <div className="absolute top-12 left-3 w-56 pointer-events-auto"
+            <div className="absolute top-14 left-2 right-2 md:right-auto md:top-12 md:left-3 md:w-56 pointer-events-auto z-10 mx-auto max-w-[400px] md:max-w-none md:mx-0"
                 style={{ background: 'rgba(0,8,16,0.85)', border: '1px solid rgba(0,200,200,0.12)', borderRadius: '4px', backdropFilter: 'blur(8px)' }}>
                 <div className="px-3 py-2" style={{ borderBottom: '1px solid rgba(0,200,200,0.08)' }}>
                     <span style={{ ...mono, color: '#00cccc88', fontSize: '9px', letterSpacing: '2px' }}>// CONSTELLATION STATUS</span>
@@ -561,7 +561,7 @@ export default function OrbitalTracker({ open, onClose }) {
             </div>
 
             {/* ══ RIGHT — Telemetry ══ */}
-            <div className="absolute top-12 right-3 w-60 pointer-events-auto"
+            <div className="absolute bottom-20 left-2 right-2 md:bottom-auto md:left-auto md:top-12 md:right-3 md:w-60 pointer-events-auto z-10 mx-auto max-w-[400px] md:max-w-none md:mx-0"
                 style={{ background: 'rgba(0,8,16,0.85)', border: '1px solid rgba(0,200,200,0.12)', borderRadius: '4px', backdropFilter: 'blur(8px)' }}>
                 <div className="px-3 py-2" style={{ borderBottom: '1px solid rgba(0,200,200,0.08)' }}>
                     <span style={{ ...mono, color: '#00cccc88', fontSize: '9px', letterSpacing: '2px' }}>// SATELLITE TELEMETRY</span>
@@ -618,7 +618,7 @@ export default function OrbitalTracker({ open, onClose }) {
             </div>
 
             {/* ══ BOTTOM LEFT — Orbital Distribution ══ */}
-            <div className="absolute bottom-10 left-3 w-56 pointer-events-auto"
+            <div className="hidden md:block absolute bottom-10 left-3 w-56 pointer-events-auto z-10"
                 style={{ background: 'rgba(0,8,16,0.85)', border: '1px solid rgba(0,200,200,0.12)', borderRadius: '4px' }}>
                 <div className="px-3 py-2" style={{ borderBottom: '1px solid rgba(0,200,200,0.08)' }}>
                     <span style={{ ...mono, color: '#00cccc88', fontSize: '9px', letterSpacing: '2px' }}>// ORBITAL DISTRIBUTION</span>
@@ -649,7 +649,7 @@ export default function OrbitalTracker({ open, onClose }) {
             </div>
 
             {/* ══ BOTTOM RIGHT — Controls Help ══ */}
-            <div className="absolute bottom-10 right-3 w-48 pointer-events-none"
+            <div className="hidden md:block absolute bottom-10 right-3 w-48 pointer-events-none z-10"
                 style={{ background: 'rgba(0,8,16,0.75)', border: '1px solid rgba(0,200,200,0.08)', borderRadius: '4px' }}>
                 <div className="px-3 py-2" style={{ borderBottom: '1px solid rgba(0,200,200,0.06)' }}>
                     <span style={{ ...mono, color: '#00cccc66', fontSize: '9px', letterSpacing: '2px' }}>// CONTROLS</span>
@@ -686,7 +686,7 @@ export default function OrbitalTracker({ open, onClose }) {
             </div>
 
             {/* ══ STATUS BAR ══ */}
-            <div className="absolute bottom-6 left-0 right-0 flex items-center justify-center gap-6 sm:gap-8 pointer-events-none flex-wrap">
+            <div className="absolute bottom-6 left-0 right-0 flex items-center justify-center gap-2 md:gap-8 pointer-events-none flex-wrap px-1">
                 {[
                     `FPS: ${fps}`, 'STATUS: TRACKING', 'FRAME TYPE: SGP4',
                     'DATA: CELESTRAK.ORG', `LAT: ${location.lat.toFixed(1)}° LON: ${location.lon.toFixed(1)}°`,
