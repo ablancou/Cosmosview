@@ -20,6 +20,7 @@ import QuickStartGuide from './components/QuickStartGuide';
 import OrbitalTracker from './components/OrbitalTracker';
 import DSOInfoCard from './components/DSOInfoCard';
 import AmbientSoundscape from './components/AmbientSoundscape';
+import AstroPhotoPlanner from './components/AstroPhotoPlanner';
 import LoadingScreen from './components/LoadingScreen';
 import useGeolocation from './hooks/useGeolocation';
 import useAstroTime from './hooks/useAstroTime';
@@ -50,6 +51,7 @@ export default function App() {
     const [arMode, setARMode] = useState(false);
     const [orbitalTrackerOpen, setOrbitalTrackerOpen] = useState(false);
     const [soundEnabled, setSoundEnabled] = useState(false);
+    const [photoplannerOpen, setPhotoplannerOpen] = useState(false);
     const [quickStartOpen, setQuickStartOpen] = useState(() => {
         if (!localStorage.getItem('cosmosview_quickstart_seen')) {
             localStorage.setItem('cosmosview_quickstart_seen', '1');
@@ -263,6 +265,14 @@ export default function App() {
                             emoji="🎵"
                             title="Ambient Soundscape"
                             activeClass="bg-violet-900/40 text-violet-300 ring-2 ring-violet-500/40"
+                        />
+                        {/* Astrophotography Planner */}
+                        <FAB
+                            active={photoplannerOpen}
+                            onClick={() => setPhotoplannerOpen((o) => !o)}
+                            emoji="📸"
+                            title="Astrophotography Planner"
+                            activeClass="bg-rose-900/40 text-rose-300 ring-2 ring-rose-500/40"
                         />
                         {/* Live Cameras */}
                         <FAB

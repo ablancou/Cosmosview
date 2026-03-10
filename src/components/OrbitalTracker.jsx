@@ -125,7 +125,7 @@ export default function OrbitalTracker({ open, onClose }) {
         sceneRef.current = scene;
 
         const camera = new THREE.PerspectiveCamera(50, w / h, 0.1, 1000);
-        camera.position.set(0, 0, 5);
+        camera.position.set(0, 0, 7.5);
         cameraRef.current = camera;
 
         // ── Earth Globe ──
@@ -395,7 +395,7 @@ export default function OrbitalTracker({ open, onClose }) {
     const onPointerUp = useCallback(() => { mouseRef.current.isDown = false; }, []);
     const onWheel = useCallback((e) => {
         if (cameraRef.current) {
-            cameraRef.current.position.z = Math.max(2.5, Math.min(10, cameraRef.current.position.z + e.deltaY * 0.005));
+            cameraRef.current.position.z = Math.max(4.5, Math.min(15, cameraRef.current.position.z + e.deltaY * 0.008));
         }
     }, []);
 
