@@ -1,6 +1,6 @@
 {
     "app": {
-        "title": "CosmosView",
+        "title": "Orbital Dome",
         "subtitle": "リアルタイム・パーソナル・プラネタリウム",
         "loading": "宇宙を読み込み中...",
         "loadingStars": "星カタログを読み込み中...",
@@ -81,7 +81,7 @@
         "credits": "クレジット"
     },
     "about": {
-        "description": "CosmosViewは、ブラウザ上で完全に動作するリアルタイムのパーソナル・プラネタリウムです。インストール不要。",
+        "description": "Orbital Domeは、ブラウザ上で完全に動作するリアルタイムのパーソナル・プラネタリウムです。インストール不要。",
         "starData": "星データ：HYG Database v3 (CC BY-SA 4.0)",
         "astroEngine": "天文計算：astronomy-engine (MIT)",
         "constellationData": "星座データ：IAU",

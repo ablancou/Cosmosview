@@ -166,18 +166,23 @@ export default function MoonDashboard({ open, onClose }) {
     if (!open) return null;
 
     return (
-        <div className="fixed inset-y-0 right-0 w-96 z-50 glass-panel overflow-y-auto animate-slideRight"
-            style={{ backdropFilter: 'blur(20px)' }}>
+        <div className="fixed inset-y-0 right-0 w-full sm:w-96 max-w-full z-50 glass-panel overflow-y-auto animate-slideRight" style={{ backdropFilter: 'blur(20px)' }}>
             {/* Header */}
-            <div className="sticky top-0 z-10 px-5 py-4 border-b border-cosmos-border/30 flex items-center justify-between"
+            <div className="sticky top-0 z-10 px-5 flex items-center gap-4 border-b border-cosmos-border/30 h-[64px] min-h-[64px]"
                 style={{ background: 'inherit' }}>
-                <h2 className="text-lg font-bold text-cosmos-accent flex items-center gap-2">
+                <button
+                    onClick={onClose}
+                    className="w-10 h-10 flex flex-shrink-0 items-center justify-center rounded-full hover:bg-cosmos-border/30 transition-colors text-cosmos-muted hover:text-cosmos-accent touch-manipulation"
+                    aria-label="Close"
+                >
+                    <svg className="w-5 h-5 opacity-80" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+                <h2 className="text-lg font-bold text-cosmos-accent flex items-center gap-2 truncate">
                     🌙 Moon Dashboard
                 </h2>
-                <button onClick={onClose}
-                    className="text-cosmos-muted hover:text-cosmos-text text-xl transition-colors">×</button>
             </div>
-
             <div className="p-5 space-y-5">
                 {/* Current Phase Hero */}
                 <div className="text-center">

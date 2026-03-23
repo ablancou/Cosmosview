@@ -33,7 +33,7 @@ i18n
         detection: {
             order: ['localStorage', 'navigator'],
             caches: ['localStorage'],
-            lookupLocalStorage: 'cosmosview-lang',
+            lookupLocalStorage: 'od-lang',
         },
     });
 

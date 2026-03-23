@@ -119,14 +119,14 @@ const CATEGORIES = [
 // ──────────────────────────────────────────────────────
 function loadProgress() {
     try {
-        const saved = localStorage.getItem('cosmosview-quiz-progress');
+        const saved = localStorage.getItem('od-quiz-progress');
         return saved ? JSON.parse(saved) : null;
     } catch { return null; }
 }
 
 function saveProgress(data) {
     try {
-        localStorage.setItem('cosmosview-quiz-progress', JSON.stringify(data));
+        localStorage.setItem('od-quiz-progress', JSON.stringify(data));
     } catch (e) { }
 }
 
@@ -258,9 +258,13 @@ export default function AstroQuiz({ open, onClose }) {
                     <div className="flex items-center gap-3">
                         <button
                             onClick={view === 'categories' ? onClose : () => setView('categories')}
-                            className="text-white/50 hover:text-white text-lg"
+                            className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-white/10 transition-colors text-white/50 hover:text-white touch-manipulation"
                         >
-                            {view === 'categories' ? '×' : '←'}
+                            {view === 'categories' ? (
+                                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                            ) : (
+                                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
+                            )}
                         </button>
                         <h2 className="text-lg font-bold text-white">🎓 AstroQuiz</h2>
                     </div>

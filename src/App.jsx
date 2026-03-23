@@ -2,7 +2,8 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import useAppStore from './store/useAppStore';
 import SkyCanvas from './components/SkyCanvas';
-import ControlPanel from './components/ControlPanel';
+import ImmersiveNav from './components/ImmersiveNav';
+import FeatureTooltip, { hasSeenTooltip, markTooltipSeen, hasTooltipFor } from './components/FeatureTooltip';
 import StarInfoCard from './components/StarInfoCard';
 import CelestialInfoPanel from './components/CelestialInfoPanel';
 import MoonDashboard from './components/MoonDashboard';
@@ -18,17 +19,26 @@ import LiveSkyCameras from './components/LiveSkyCameras';
 import ARCameraMode from './components/ARCameraMode';
 import QuickStartGuide from './components/QuickStartGuide';
 import OrbitalTracker from './components/OrbitalTracker';
+import EarthGlobe from './components/EarthGlobe';
 import DSOInfoCard from './components/DSOInfoCard';
 import AmbientSoundscape from './components/AmbientSoundscape';
 import AstroPhotoPlanner from './components/AstroPhotoPlanner';
 import MultiLocationCompare from './components/MultiLocationCompare';
+import ShareThisSky from './components/ShareThisSky';
+import EventNotifications from './components/EventNotifications';
+import TelescopeMode from './components/TelescopeMode';
+import AstroWeather from './components/AstroWeather';
+import ConstellationNarrator from './components/ConstellationNarrator';
+import AccessibilityPanel from './components/AccessibilityPanel';
 import LoadingScreen from './components/LoadingScreen';
+import TermsPopup from './components/TermsPopup';
 import useGeolocation from './hooks/useGeolocation';
 import useAstroTime from './hooks/useAstroTime';
 import useKeyboardShortcuts from './hooks/useKeyboardShortcuts';
 
 /**
- * Root application component — 33 features, 106 modules.
+ * Root application component — Immersive sky-first design.
+ * Single floating button + radial menu navigation.
  */
 export default function App() {
     const { t } = useTranslation();
@@ -41,9 +51,8 @@ export default function App() {
     const [tonightOpen, setTonightOpen] = useState(false);
     const [quizOpen, setQuizOpen] = useState(false);
     const [tutorialOpen, setTutorialOpen] = useState(() => {
-        // Auto-open on first visit
-        if (!localStorage.getItem('cosmosview_tutorial_seen')) {
-            localStorage.setItem('cosmosview_tutorial_seen', '1');
+        if (!localStorage.getItem('od_tutorial_seen')) {
+            localStorage.setItem('od_tutorial_seen', '1');
             return true;
         }
         return false;
@@ -54,14 +63,25 @@ export default function App() {
     const [soundEnabled, setSoundEnabled] = useState(false);
     const [photoplannerOpen, setPhotoplannerOpen] = useState(false);
     const [compareModeOpen, setCompareModeOpen] = useState(false);
+    const [earthGlobeOpen, setEarthGlobeOpen] = useState(false);
+    const [shareOpen, setShareOpen] = useState(false);
+    const [eventNotifOpen, setEventNotifOpen] = useState(false);
+    const [telescopeOpen, setTelescopeOpen] = useState(false);
+    const [astroWeatherOpen, setAstroWeatherOpen] = useState(false);
+    const [narratorOpen, setNarratorOpen] = useState(false);
+    const [narratorConstellation, setNarratorConstellation] = useState(null);
+    const [accessibilityOpen, setAccessibilityOpen] = useState(false);
     const [quickStartOpen, setQuickStartOpen] = useState(() => {
-        if (!localStorage.getItem('cosmosview_quickstart_seen')) {
-            localStorage.setItem('cosmosview_quickstart_seen', '1');
+        if (!localStorage.getItem('od_quickstart_seen')) {
+            localStorage.setItem('od_quickstart_seen', '1');
             return true;
         }
         return false;
     });
-    const [showShortcuts, setShowShortcuts] = useState(false);
+
+    // Feature tooltip state
+    const [pendingTooltip, setPendingTooltip] = useState(null);
+    const [pendingAction, setPendingAction] = useState(null);
 
     const loading = useAppStore((s) => s.loading);
     const setLoading = useAppStore((s) => s.setLoading);
@@ -69,16 +89,8 @@ export default function App() {
     const setConstellationData = useAppStore((s) => s.setConstellationData);
     const setLowPerf = useAppStore((s) => s.setLowPerf);
     const darkMode = useAppStore((s) => s.darkMode);
-    const location = useAppStore((s) => s.location);
-    const time = useAppStore((s) => s.time);
     const nightVision = useAppStore((s) => s.nightVision);
-    const toggleNightVision = useAppStore((s) => s.toggleNightVision);
     const setTimeOffset = useAppStore((s) => s.setTimeOffset);
-    const autoRotate = useAppStore((s) => s.autoRotate);
-    const toggleAutoRotate = useAppStore((s) => s.toggleAutoRotate);
-    const gyroscope = useAppStore((s) => s.gyroscope);
-    const toggleGyroscope = useAppStore((s) => s.toggleGyroscope);
-    const starTrails = useAppStore((s) => s.starTrails);
     const toggleStarTrails = useAppStore((s) => s.toggleStarTrails);
     const selectedConstellation = useAppStore((s) => s.selectedConstellation);
     const clearSelectedConstellation = useAppStore((s) => s.clearSelectedConstellation);
@@ -145,7 +157,7 @@ export default function App() {
         if (!canvas) return;
         try {
             const link = document.createElement('a');
-            link.download = `cosmosview_${new Date().toISOString().slice(0, 19).replace(/[T:]/g, '_')}.png`;
+            link.download = `orbitaldome_${new Date().toISOString().slice(0, 19).replace(/[T:]/g, '_')}.png`;
             link.href = canvas.toDataURL('image/png');
             link.click();
         } catch (e) {
@@ -167,6 +179,62 @@ export default function App() {
         }
     }, [darkMode]);
 
+    /* ─── Execute a feature action ─── */
+    const executeAction = useCallback((actionId) => {
+        switch (actionId) {
+            case 'tonight': setTonightOpen(true); break;
+            case 'events': setEventsOpen(true); break;
+            case 'moon': setMoonDashboardOpen(true); break;
+            case 'orrery': setOrreryOpen(true); break;
+            case 'orbitalTracker': setOrbitalTrackerOpen(true); break;
+            case 'apod': setApodOpen(true); break;
+            case 'liveCams': setLiveCamsOpen(true); break;
+            case 'arMode': setARMode(true); break;
+            case 'quiz': setQuizOpen(true); break;
+            case 'tutorial': setTutorialOpen(true); break;
+            case 'quickStart': setQuickStartOpen(true); break;
+            case 'photoPlanner': setPhotoplannerOpen(true); break;
+            case 'compare': setCompareModeOpen(true); break;
+            case 'earthGlobe': setEarthGlobeOpen(true); break;
+            case 'share': setShareOpen(true); break;
+            case 'eventNotif': setEventNotifOpen(true); break;
+            case 'telescope': setTelescopeOpen(true); break;
+            case 'astroWeather': setAstroWeatherOpen(true); break;
+            case 'accessibility': setAccessibilityOpen(true); break;
+            case 'screenshot': handleScreenshot(); break;
+            case 'toggleSound': setSoundEnabled((s) => !s); break;
+            default: break;
+        }
+    }, [handleScreenshot]);
+
+    /* ─── Handle nav action with tooltip check ─── */
+    const handleNavAction = useCallback((actionId) => {
+        // Skip tooltip for instant actions
+        if (actionId === 'screenshot' || actionId === 'toggleSound') {
+            executeAction(actionId);
+            return;
+        }
+        // Check if tooltip should be shown
+        if (hasTooltipFor(actionId) && !hasSeenTooltip(actionId)) {
+            setPendingTooltip(actionId);
+            setPendingAction(actionId);
+            return;
+        }
+        executeAction(actionId);
+    }, [executeAction]);
+
+    /* ─── Dismiss tooltip and execute pending action ─── */
+    const handleTooltipDismiss = useCallback(() => {
+        if (pendingTooltip) {
+            markTooltipSeen(pendingTooltip);
+        }
+        if (pendingAction) {
+            executeAction(pendingAction);
+        }
+        setPendingTooltip(null);
+        setPendingAction(null);
+    }, [pendingTooltip, pendingAction, executeAction]);
+
     return (
         <div className={`w-full h-full relative ${darkMode ? '' : 'light'}`}>
             {showLoading && (
@@ -182,7 +250,10 @@ export default function App() {
             {/* Monthly Events Banner */}
             <MonthlyEventsBanner />
 
-            {/* Night Vision */}
+            {/* Terms and Privacy Popup */}
+            <TermsPopup />
+
+            {/* Night Vision Overlay */}
             {!loading && nightVision && (
                 <div
                     className="fixed inset-0 pointer-events-none z-40"
@@ -190,213 +261,23 @@ export default function App() {
                 />
             )}
 
-            {/* HUD Top Bar */}
+            {/* ═══ Immersive Navigation ═══ */}
             {!loading && (
-                <div className="hidden lg:flex fixed top-4 left-[340px] right-4 z-20 items-center justify-between">
-                    <div className="glass-panel px-4 py-2 flex items-center gap-4">
-                        <span className="text-xs text-cosmos-muted">📍 {location.city}</span>
-                        <span className="text-xs font-mono text-cosmos-text">
-                            {time.current.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
-                        </span>
-                        <span className="text-xs text-cosmos-muted">
-                            {time.current.toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' })}
-                        </span>
-                        {time.speed > 1 && (
-                            <span className="text-xs font-mono text-cosmos-accent">⏩ {time.speed}×</span>
-                        )}
-                        {starTrails && (
-                            <span className="text-xs font-mono text-purple-400">📷 Star Trails</span>
-                        )}
-                    </div>
-                </div>
+                <ImmersiveNav
+                    onAction={handleNavAction}
+                    activeStates={{ sound: soundEnabled }}
+                />
             )}
 
-            {/* Floating Action Buttons — 2 columns for 10 buttons */}
-            {!loading && (
-                <div className="fixed bottom-6 right-6 z-30 flex gap-2">
-                    {/* Column 2 (secondary) */}
-                    <div className="flex flex-col gap-2">
-                        {/* Tonight's Best */}
-                        <FAB
-                            active={tonightOpen}
-                            onClick={() => setTonightOpen((o) => !o)}
-                            emoji="🌟"
-                            title="Tonight's Best Objects"
-                            activeClass="bg-indigo-900/40 text-indigo-300 ring-2 ring-indigo-500/40"
-                        />
-                        {/* Orbital Tracker */}
-                        <FAB
-                            active={orbitalTrackerOpen}
-                            onClick={() => setOrbitalTrackerOpen((o) => !o)}
-                            emoji="📡"
-                            title="Orbital Tracking System"
-                            activeClass="bg-cyan-900/40 text-cyan-300 ring-2 ring-cyan-500/40"
-                        />
-                        {/* Solar System */}
-                        <FAB
-                            active={orreryOpen}
-                            onClick={() => setOrreryOpen((o) => !o)}
-                            emoji="☀️"
-                            title="Solar System Orrery"
-                            activeClass="bg-orange-900/40 text-orange-300 ring-2 ring-orange-500/40"
-                        />
-                        {/* Star Trails */}
-                        <FAB
-                            active={starTrails}
-                            onClick={toggleStarTrails}
-                            emoji="📷"
-                            title="Star Trails"
-                            activeClass="bg-purple-900/40 text-purple-300 ring-2 ring-purple-500/40"
-                        />
-                        {/* AstroQuiz */}
-                        <FAB
-                            active={quizOpen}
-                            onClick={() => setQuizOpen((o) => !o)}
-                            emoji="🎓"
-                            title="AstroQuiz"
-                            activeClass="bg-emerald-900/40 text-emerald-300 ring-2 ring-emerald-500/40"
-                        />
-                        {/* Gyroscope */}
-                        <FAB
-                            active={gyroscope}
-                            onClick={toggleGyroscope}
-                            emoji="📱"
-                            title="Gyroscope Mode"
-                            activeClass="bg-green-900/40 text-green-300 ring-2 ring-green-500/40"
-                        />
-                        {/* Ambient Sound */}
-                        <FAB
-                            active={soundEnabled}
-                            onClick={() => setSoundEnabled((o) => !o)}
-                            emoji="🎵"
-                            title="Ambient Soundscape"
-                            activeClass="bg-violet-900/40 text-violet-300 ring-2 ring-violet-500/40"
-                        />
-                        {/* Astrophotography Planner */}
-                        <FAB
-                            active={photoplannerOpen}
-                            onClick={() => setPhotoplannerOpen((o) => !o)}
-                            emoji="📸"
-                            title="Astrophotography Planner"
-                            activeClass="bg-rose-900/40 text-rose-300 ring-2 ring-rose-500/40"
-                        />
-                        {/* Live Cameras */}
-                        <FAB
-                            active={liveCamsOpen}
-                            onClick={() => setLiveCamsOpen((o) => !o)}
-                            emoji="🌐"
-                            title="Live Observatory Cameras"
-                            activeClass="bg-teal-900/40 text-teal-300 ring-2 ring-teal-500/40"
-                        />
-                        {/* AR Camera */}
-                        <FAB
-                            active={arMode}
-                            onClick={() => setARMode((o) => !o)}
-                            emoji="📹"
-                            title="AR Camera Mode"
-                            activeClass="bg-lime-900/40 text-lime-300 ring-2 ring-lime-500/40"
-                        />
-                        {/* Multi-Location Compare */}
-                        <FAB
-                            active={compareModeOpen}
-                            onClick={() => setCompareModeOpen((o) => !o)}
-                            emoji="🌗"
-                            title="Multi-Location Compare"
-                            activeClass="bg-sky-900/40 text-sky-300 ring-2 ring-sky-500/40"
-                        />
-                    </div>
-
-                    {/* Column 1 (primary) */}
-                    <div className="flex flex-col gap-2">
-                        {/* NASA APOD */}
-                        <FAB
-                            active={apodOpen}
-                            onClick={() => setApodOpen((o) => !o)}
-                            emoji="🛸"
-                            title="NASA Picture of the Day"
-                            activeClass="bg-blue-900/40 text-blue-300 ring-2 ring-blue-500/40"
-                        />
-                        {/* Sky Events */}
-                        <FAB
-                            active={eventsOpen}
-                            onClick={() => setEventsOpen((o) => !o)}
-                            emoji="🔭"
-                            title="Sky Events (E)"
-                            activeClass="bg-purple-900/40 text-purple-300 ring-2 ring-purple-500/40"
-                        />
-                        {/* Moon Dashboard */}
-                        <FAB
-                            active={moonDashboardOpen}
-                            onClick={() => setMoonDashboardOpen((o) => !o)}
-                            emoji="🌙"
-                            title="Moon Dashboard (M)"
-                            activeClass="bg-yellow-900/40 text-yellow-300 ring-2 ring-yellow-500/40"
-                        />
-                        {/* Screenshot */}
-                        <FAB onClick={handleScreenshot} emoji="📸" title="Screenshot" />
-                        {/* Night Vision */}
-                        <FAB
-                            active={nightVision}
-                            onClick={toggleNightVision}
-                            emoji="👁️"
-                            title="Night Vision (N)"
-                            activeClass="bg-red-900/80 text-red-300 ring-2 ring-red-500/50"
-                        />
-                        {/* Auto-Rotate */}
-                        <FAB
-                            active={autoRotate}
-                            onClick={toggleAutoRotate}
-                            emoji="🔄"
-                            title="Auto-Rotate (R)"
-                            activeClass="bg-cosmos-accent/20 text-cosmos-accent ring-2 ring-cosmos-accent/50"
-                            spin={autoRotate}
-                        />
-                        {/* Tutorial Guide */}
-                        <FAB
-                            active={tutorialOpen}
-                            onClick={() => setTutorialOpen((o) => !o)}
-                            emoji="❓"
-                            title="App Guide"
-                            activeClass="bg-indigo-900/40 text-indigo-300 ring-2 ring-indigo-500/40"
-                        />
-                        {/* Quick Start */}
-                        <FAB
-                            active={quickStartOpen}
-                            onClick={() => setQuickStartOpen((o) => !o)}
-                            emoji="🚀"
-                            title="Try This!"
-                            activeClass="bg-amber-900/40 text-amber-300 ring-2 ring-amber-500/40"
-                        />
-                    </div>
-                </div>
+            {/* ═══ Feature Tooltip ═══ */}
+            {pendingTooltip && (
+                <FeatureTooltip
+                    featureId={pendingTooltip}
+                    onDismiss={handleTooltipDismiss}
+                />
             )}
 
-            {/* Keyboard Shortcuts — accessible via ? key */}
-            {!loading && showShortcuts && (
-                <div
-                    className="fixed bottom-6 right-20 z-40 glass-panel p-4 w-56 animate-slideUp"
-                    onClick={() => setShowShortcuts(false)}
-                >
-                    <h4 className="text-xs font-bold text-cosmos-accent mb-2">⌨️ Shortcuts</h4>
-                    <div className="space-y-1 text-xs text-cosmos-text">
-                        {[
-                            ['N', 'Night Vision'],
-                            ['R', 'Auto-Rotate'],
-                            ['Space', 'Play / Pause'],
-                            ['M', 'Moon Dashboard'],
-                            ['E', 'Sky Events'],
-                            ['Esc', 'Close Panels'],
-                        ].map(([key, label]) => (
-                            <div key={key} className="flex justify-between">
-                                <span className="text-cosmos-muted">{label}</span>
-                                <kbd className="px-1.5 py-0.5 rounded bg-cosmos-border/30 font-mono text-[10px]">{key}</kbd>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            )}
-
-            {!loading && <ControlPanel />}
+            {/* ═══ Feature Panels ═══ */}
             {!loading && <StarInfoCard />}
             {!loading && <CelestialInfoPanel />}
             {!loading && <DSOInfoCard />}
@@ -405,10 +286,24 @@ export default function App() {
             {!loading && <SkyEventsPanel open={eventsOpen} onClose={() => setEventsOpen(false)} />}
             {!loading && <NasaApodPanel open={apodOpen} onClose={() => setApodOpen(false)} />}
             {!loading && <TonightsBestPanel open={tonightOpen} onClose={() => setTonightOpen(false)} />}
+            {!loading && <AstroPhotoPlanner open={photoplannerOpen} onClose={() => setPhotoplannerOpen(false)} />}
             {!loading && <SolarSystemOrrery open={orreryOpen} onClose={() => setOrreryOpen(false)} />}
             {!loading && <AstroQuiz open={quizOpen} onClose={() => setQuizOpen(false)} />}
             {!loading && <AppTutorial open={tutorialOpen} onClose={() => setTutorialOpen(false)} />}
             {!loading && <OrbitalTracker open={orbitalTrackerOpen} onClose={() => setOrbitalTrackerOpen(false)} />}
+            {!loading && <EarthGlobe open={earthGlobeOpen} onClose={() => setEarthGlobeOpen(false)} />}
+            {!loading && <ShareThisSky open={shareOpen} onClose={() => setShareOpen(false)} />}
+            {!loading && <EventNotifications open={eventNotifOpen} onClose={() => setEventNotifOpen(false)} />}
+            {!loading && <TelescopeMode open={telescopeOpen} onClose={() => setTelescopeOpen(false)} />}
+            {!loading && <AstroWeather open={astroWeatherOpen} onClose={() => setAstroWeatherOpen(false)} />}
+            {!loading && <AccessibilityPanel open={accessibilityOpen} onClose={() => setAccessibilityOpen(false)} />}
+            {!loading && narratorConstellation && (
+                <ConstellationNarrator
+                    constellation={narratorConstellation}
+                    open={narratorOpen}
+                    onClose={() => { setNarratorOpen(false); setNarratorConstellation(null); }}
+                />
+            )}
             {!loading && (
                 <QuickStartGuide
                     open={quickStartOpen}
@@ -417,29 +312,16 @@ export default function App() {
                         setQuickStartOpen(false);
                         switch (action) {
                             case 'timeTravel':
-                                setTimeOffset(6 * 3600 * 1000); // Jump +6h (sunset)
+                                setTimeOffset(6 * 3600 * 1000);
                                 break;
-                            case 'tonight':
-                                setTonightOpen(true);
-                                break;
-                            case 'orrery':
-                                setOrreryOpen(true);
-                                break;
-                            case 'moon':
-                                setMoonDashboardOpen(true);
-                                break;
-                            case 'quiz':
-                                setQuizOpen(true);
-                                break;
-                            case 'startrails':
-                                toggleStarTrails();
-                                break;
-                            case 'liveCams':
-                                setLiveCamsOpen(true);
-                                break;
-                            case 'orbitalTracker':
-                                setOrbitalTrackerOpen(true);
-                                break;
+                            case 'tonight': setTonightOpen(true); break;
+                            case 'orrery': setOrreryOpen(true); break;
+                            case 'moon': setMoonDashboardOpen(true); break;
+                            case 'quiz': setQuizOpen(true); break;
+                            case 'startrails': toggleStarTrails(); break;
+                            case 'liveCams': setLiveCamsOpen(true); break;
+                            case 'orbitalTracker': setOrbitalTrackerOpen(true); break;
+                            default: break;
                         }
                     }}
                 />
@@ -458,30 +340,6 @@ export default function App() {
                     onClose={clearSelectedConstellation}
                 />
             )}
-        </div>
-    );
-}
-
-/**
- * Reusable Floating Action Button
- */
-function FAB({ active, onClick, emoji, title, activeClass = '', spin = false }) {
-    return (
-        <div className="relative group">
-            <button
-                onClick={onClick}
-                className={`w-11 h-11 rounded-full flex items-center justify-center transition-all shadow-lg ${active ? activeClass : 'glass-panel text-cosmos-muted hover:text-cosmos-accent'
-                    }`}
-                title={title}
-                aria-label={title}
-            >
-                <span className={`text-base ${spin ? 'animate-spin-slow' : ''}`}>{emoji}</span>
-            </button>
-            {/* Visible tooltip on hover */}
-            <div className="absolute right-full mr-2 top-1/2 -translate-y-1/2 px-2.5 py-1 rounded-md whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50"
-                style={{ background: 'rgba(0,0,0,0.85)', border: '1px solid rgba(255,255,255,0.1)', backdropFilter: 'blur(8px)' }}>
-                <span className="text-[11px] text-white/90 font-medium">{title}</span>
-            </div>
         </div>
     );
 }

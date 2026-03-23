@@ -1,6 +1,6 @@
 {
     "app": {
-        "title": "CosmosView",
+        "title": "Orbital Dome",
         "subtitle": "Persönliches Echtzeit-Planetarium",
         "loading": "Kosmos wird geladen...",
         "loadingStars": "Sternkatalog wird geladen...",
@@ -81,7 +81,7 @@
         "credits": "Mitwirkende"
     },
     "about": {
-        "description": "CosmosView ist ein persönliches Echtzeit-Planetarium, das vollständig in Ihrem Browser läuft. Keine Installation erforderlich.",
+        "description": "Orbital Dome ist ein persönliches Echtzeit-Planetarium, das vollständig in Ihrem Browser läuft. Keine Installation erforderlich.",
         "starData": "Sterndaten aus der HYG-Datenbank v3 (CC BY-SA 4.0)",
         "astroEngine": "Astronomische Berechnungen von astronomy-engine (MIT)",
         "constellationData": "Sternbilddaten der IAU",

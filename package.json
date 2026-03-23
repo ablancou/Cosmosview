@@ -1,9 +1,9 @@
 {
-  "name": "cosmosview",
+  "name": "orbital-dome",
   "private": true,
-  "version": "1.0.0",
+  "version": "2.0.0",
   "type": "module",
-  "description": "CosmosView — Real-Time Personal Planetarium",
+  "description": "Orbital Dome — Real-Time Personal Planetarium",
   "scripts": {
     "dev": "vite",
     "build": "vite build",

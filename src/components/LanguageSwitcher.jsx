@@ -27,7 +27,7 @@ export default function LanguageSwitcher() {
     const handleSelect = (lang) => {
         i18n.changeLanguage(lang.code);
         setLanguage(lang.code);
-        localStorage.setItem('cosmosview-lang', lang.code);
+        localStorage.setItem('od-lang', lang.code);
         setIsOpen(false);
     };
 

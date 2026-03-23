@@ -114,8 +114,8 @@ export default function ConstellationInfoPanel({ constellationId, onClose }) {
     if (!info) {
         // Fallback for constellations without mythology data
         return (
-            <div className="fixed bottom-4 left-[340px] z-30 w-[320px] glass-panel p-4 animate-slideUp">
-                <div className="flex items-center justify-between mb-2">
+            <div className="fixed bottom-4 inset-x-4 sm:inset-x-auto sm:left-[340px] z-30 w-[calc(100%-2rem)] sm:w-[320px] glass-panel p-4 animate-slideUp">
+                <div className="flex items-center gap-3 justify-between mb-2">
                     <h3 className="text-sm font-bold text-cosmos-accent">
                         {t(`constellations.${constellationId}`, constellationId)}
                     </h3>
@@ -127,8 +127,8 @@ export default function ConstellationInfoPanel({ constellationId, onClose }) {
     }
 
     return (
-        <div className="fixed bottom-4 left-[340px] z-30 w-[380px] glass-panel overflow-hidden animate-slideUp">
-            {/* Header with emoji */}
+        <div className="fixed bottom-4 inset-x-4 sm:inset-x-auto sm:left-[340px] z-30 w-[calc(100%-2rem)] sm:w-[380px] max-h-[80vh] overflow-y-auto custom-scrollbar glass-panel animate-slideUp">
+            {/* Header Image or Gradient */}
             <div className="px-5 py-3 border-b border-cosmos-border/20 flex items-center justify-between"
                 style={{ background: 'linear-gradient(135deg, rgba(126,184,247,0.05), transparent)' }}
             >

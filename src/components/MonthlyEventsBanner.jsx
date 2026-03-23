@@ -36,7 +36,7 @@ export default function MonthlyEventsBanner() {
     // Show after loading with a slight delay for drama
     useEffect(() => {
         if (!loading && !dismissed) {
-            const key = `cosmosview-banner-${date.getFullYear()}-${date.getMonth()}`;
+            const key = `od-banner-${date.getFullYear()}-${date.getMonth()}`;
             const alreadySeen = sessionStorage.getItem(key);
             if (!alreadySeen) {
                 const timer = setTimeout(() => setVisible(true), 1500);
@@ -182,7 +182,7 @@ export default function MonthlyEventsBanner() {
     const handleDismiss = () => {
         setVisible(false);
         setDismissed(true);
-        const key = `cosmosview-banner-${date.getFullYear()}-${date.getMonth()}`;
+        const key = `od-banner-${date.getFullYear()}-${date.getMonth()}`;
         sessionStorage.setItem(key, 'true');
     };
 

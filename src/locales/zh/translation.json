@@ -1,6 +1,6 @@
 {
     "app": {
-        "title": "CosmosView",
+        "title": "Orbital Dome",
         "subtitle": "实时个人天象馆",
         "loading": "正在加载宇宙...",
         "loadingStars": "正在加载星表...",
@@ -81,7 +81,7 @@
         "credits": "致谢"
     },
     "about": {
-        "description": "CosmosView 是一个完全在浏览器中运行的实时个人天象馆。无需安装。",
+        "description": "Orbital Dome 是一个完全在浏览器中运行的实时个人天象馆。无需安装。",
         "starData": "恒星数据来源：HYG Database v3（CC BY-SA 4.0）",
         "astroEngine": "天文计算引擎：astronomy-engine（MIT）",
         "constellationData": "星座数据来源：国际天文学联合会（IAU）",

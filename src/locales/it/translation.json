@@ -1,6 +1,6 @@
 {
     "app": {
-        "title": "CosmosView",
+        "title": "Orbital Dome",
         "subtitle": "Planetario Personale in Tempo Reale",
         "loading": "Caricamento del cosmo...",
         "loadingStars": "Caricamento catalogo stellare...",
@@ -81,7 +81,7 @@
         "credits": "Crediti"
     },
     "about": {
-        "description": "CosmosView è un planetario personale in tempo reale che funziona interamente nel tuo browser. Nessuna installazione richiesta.",
+        "description": "Orbital Dome è un planetario personale in tempo reale che funziona interamente nel tuo browser. Nessuna installazione richiesta.",
         "starData": "Dati stellari dall'HYG Database v3 (CC BY-SA 4.0)",
         "astroEngine": "Calcoli astronomici di astronomy-engine (MIT)",
         "constellationData": "Dati delle costellazioni dall'UAI",

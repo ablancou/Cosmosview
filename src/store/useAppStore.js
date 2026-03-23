@@ -125,7 +125,7 @@ const useAppStore = create((set, get) => ({
     // Dark Mode
     darkMode: (() => {
         if (typeof window !== 'undefined') {
-            const stored = localStorage.getItem('cosmosview-dark-mode');
+            const stored = localStorage.getItem('od-dark-mode');
             if (stored !== null) return stored === 'true';
             return window.matchMedia('(prefers-color-scheme: dark)').matches;
         }
@@ -134,7 +134,7 @@ const useAppStore = create((set, get) => ({
     toggleDarkMode: () =>
         set((state) => {
             const newMode = !state.darkMode;
-            localStorage.setItem('cosmosview-dark-mode', String(newMode));
+            localStorage.setItem('od-dark-mode', String(newMode));
             return { darkMode: newMode };
         }),
 

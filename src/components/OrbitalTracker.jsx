@@ -459,19 +459,32 @@ export default function OrbitalTracker({ open, onClose }) {
                 }} />
 
                 {/* ══ TOP BAR ══ */}
-                <div className="absolute top-0 left-0 right-0 flex items-center justify-between px-4 py-2 pointer-events-none"
-                    style={{ borderBottom: '1px solid rgba(0,200,200,0.15)', background: 'rgba(0,0,0,0.5)' }}>
+                <div className="absolute top-0 left-0 right-0 z-50 flex items-center justify-between px-3 md:px-4 pt-12 md:pt-4 pb-3 md:py-3 pointer-events-none gap-2"
+                    style={{ borderBottom: '1px solid rgba(0,200,200,0.15)', background: 'linear-gradient(to bottom, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.4) 100%)' }}>
+                    
                     <div className="flex items-center gap-3">
-                        <span style={{ ...mono, color: '#00cccc', fontSize: '11px', fontWeight: 'bold', letterSpacing: '3px' }}>
-                            ORBITAL TRACKING SYSTEM
-                        </span>
-                        <span style={{ ...mono, color: '#00cccc55', fontSize: '9px' }}>v2.1</span>
-                        <span className="ml-2 w-2 h-2 rounded-full animate-pulse" style={{ background: '#00ff88' }} />
-                        <span style={{ ...mono, color: '#00ff8888', fontSize: '9px' }}>ONLINE</span>
+                        {/* Close button - Top Left */}
+                        <button
+                            onClick={onClose}
+                            className="w-11 h-11 flex items-center justify-center rounded border border-cosmos-border/30 pointer-events-auto transition-all bg-black/40 hover:bg-white/10 active:bg-white/20 touch-manipulation backdrop-blur-sm"
+                            aria-label="Close"
+                        >
+                            <svg className="w-5 h-5 text-cosmos-accent opacity-80" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+
+                        <div className="flex items-center gap-2 md:gap-3 min-w-0">
+                            <span style={{ ...mono, color: '#00cccc', fontSize: '12px', fontWeight: 'bold', letterSpacing: '2px' }} className="md:text-[13px] md:tracking-[3px] truncate">
+                                ORBITAL TRACKER
+                            </span>
+                            <span className="w-1.5 h-1.5 md:w-2 md:h-2 rounded-full animate-pulse shrink-0" style={{ background: '#00ff88' }} />
+                            <span style={{ ...mono, color: '#00ff8888', fontSize: '9px' }} className="shrink-0 hidden sm:inline">ONLINE</span>
+                        </div>
                     </div>
-                    <div className="flex items-center gap-4">
-                        <span style={{ ...mono, color: '#00cccc88', fontSize: '10px' }}>{utcNow} UTC</span>
-                        <span style={{ ...mono, color: '#00cccc55', fontSize: '10px' }}>TRACKING: {satPositions.length + (moonData ? 1 : 0)}</span>
+
+                    <div className="flex items-center pointer-events-auto shrink-0 z-50">
+                        <span style={{ ...mono, color: '#00cccc88', fontSize: '10px' }} className="hidden md:inline-block">{utcNow} UTC</span>
                     </div>
                 </div>
 

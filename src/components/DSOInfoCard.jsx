@@ -100,7 +100,7 @@ export default function DSOInfoCard() {
     const emoji = TYPE_EMOJIS[type] || '🔭';
 
     return (
-        <div className="fixed bottom-4 left-4 z-30 w-[340px] glass-panel overflow-hidden animate-slideUp"
+        <div className="fixed bottom-4 inset-x-4 sm:inset-x-auto sm:left-4 z-30 w-[calc(100%-2rem)] sm:w-[340px] glass-panel overflow-hidden animate-slideUp"
             style={{ maxHeight: 'calc(100vh - 100px)' }}>
             {/* Header image */}
             {image ? (

@@ -64,7 +64,7 @@ const TUTORIAL_SECTIONS = [
         icon: '📱',
         title: 'Install',
         items: [
-            { icon: '📲', text: 'CosmosView is a PWA. Install it on your phone for offline access!' },
+            { icon: '📲', text: 'Orbital Dome is a PWA. Install it on your phone for offline access!' },
             { icon: '🍎', text: 'iOS: Tap Share → "Add to Home Screen".' },
             { icon: '🤖', text: 'Android: Tap the install banner or Menu → "Install App".' },
             { icon: '💻', text: 'Desktop: Click the install icon in your browser\'s address bar.' },
@@ -102,7 +102,7 @@ export default function AppTutorial({ open, onClose }) {
                         <div>
                             <h2 className="text-xl sm:text-2xl font-bold text-white flex items-center gap-2">
                                 <span className="text-2xl sm:text-3xl">🔭</span>
-                                CosmosView Guide
+                                Orbital Dome Guide
                             </h2>
                             <p className="text-xs text-gray-400 mt-0.5">
                                 Everything you need to explore the cosmos

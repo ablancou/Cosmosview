@@ -49,7 +49,7 @@ export default function useKeyboardShortcuts({ onToggleMoon, onToggleEvents }) {
                     break;
                 case '?':
                     console.log(
-                        '%c🔭 CosmosView Keyboard Shortcuts',
+                        '%c🔭 Orbital Dome Keyboard Shortcuts',
                         'font-size: 16px; font-weight: bold; color: #7eb8f7',
                         '\n\nN — Night Vision',
                         '\nR — Auto-Rotate',

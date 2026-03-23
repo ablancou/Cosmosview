@@ -114,7 +114,7 @@ export default function CelestialInfoPanel() {
     const desc = DESCRIPTIONS[name] || {};
 
     return (
-        <div className="fixed bottom-4 right-4 z-30 w-[340px] glass-panel overflow-hidden animate-slideUp">
+        <div className="fixed bottom-4 inset-x-4 sm:inset-x-auto sm:right-4 z-30 w-[calc(100%-2rem)] sm:w-[340px] glass-panel overflow-hidden animate-slideUp">
             {/* NASA Image */}
             {NASA_IMAGES[name] && (
                 <div className="w-full h-40 overflow-hidden relative">
