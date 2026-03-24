@@ -103,15 +103,12 @@
 - **Repository**: `https://github.com/ablancou/Cosmosview.git` (branch: `main`)
 - **Deploy pipeline**: Git push → GitHub → Vercel auto-deploy
 - **CRITICAL: Claude CANNOT `git push`** — the sandbox has no network access to github.com (returns HTTP 403). All commits are local only.
-- When telling the user to push, **always give the full correct path**. The project folder on the user's Mac is called `Cosmosview`. Instruct the user to first find it:
+- The project folder on the user's Mac is at: **`~/Documents/Antigravity Projects/Cosmosview`**
+- The ONLY correct push command is:
   ```bash
-  find ~ -maxdepth 3 -name "Cosmosview" -type d 2>/dev/null
+  cd ~/Documents/Antigravity\ Projects/Cosmosview && git push
   ```
-  Then push:
-  ```bash
-  cd [path found above] && git push
-  ```
-- **NEVER assume** the folder is at `~/Cosmosview` or `~/Desktop/Cosmosview` without confirming.
+- **NEVER use any other path.** This has been confirmed multiple times by the user.
 - After push + Vercel deploy, remind user to **hard refresh** (Cmd+Shift+R on Mac, Ctrl+Shift+R on PC) to bypass browser cache.
 - `node_modules` are compiled for macOS ARM64 — **never run `npm install` or `npm run build`** inside the Linux sandbox.
 
