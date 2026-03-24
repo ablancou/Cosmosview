@@ -397,6 +397,7 @@ export default function MoonGlobe({ open, onClose }) {
     const [selectedSite, setSelectedSite] = useState(null);
     const [hoveredSite, setHoveredSite] = useState(null);
     const [tooltipPos, setTooltipPos] = useState(null);
+    const [sidebarOpen, setSidebarOpen] = useState(false);
     const [moonData, setMoonData] = useState({
         phaseDeg: 0,
         phaseName: 'New Moon',
@@ -804,23 +805,56 @@ export default function MoonGlobe({ open, onClose }) {
         moonData.phaseDeg < 270 ? '🌖' :
         moonData.phaseDeg < 315 ? '🌗' : '🌘';
 
+    const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+
     return (
         <div className="fixed inset-0 z-50 flex" style={{ background: '#060610' }}>
 
-            {/* ═══ Left Panel ═══ */}
+            {/* ═══ Mobile: Toggle button for sidebar (when closed) ═══ */}
+            {isMobile && !sidebarOpen && (
+                <button
+                    onClick={() => setSidebarOpen(true)}
+                    className="absolute top-4 left-4 z-30 w-11 h-11 rounded-full flex items-center justify-center transition-all active:scale-95"
+                    style={{
+                        background: 'rgba(0,0,0,0.5)',
+                        backdropFilter: 'blur(10px)',
+                        border: '1px solid rgba(255,255,255,0.1)',
+                    }}
+                    aria-label="Show moon info"
+                >
+                    <span className="text-base">{phaseEmoji}</span>
+                </button>
+            )}
+
+            {/* ═══ Left Panel — always on desktop, toggle on mobile ═══ */}
             <div
-                className="relative z-10 w-72 shrink-0 flex flex-col overflow-y-auto custom-scrollbar"
+                className={`relative z-20 w-72 shrink-0 flex flex-col overflow-y-auto custom-scrollbar transition-transform duration-300 ${
+                    isMobile && !sidebarOpen ? '-translate-x-full absolute inset-y-0 left-0' : ''
+                } ${isMobile && sidebarOpen ? 'absolute inset-y-0 left-0' : ''}`}
                 style={{
                     background: 'linear-gradient(135deg, rgba(10,12,30,0.98), rgba(6,8,20,0.98))',
                     borderRight: '1px solid rgba(126,184,247,0.08)',
                 }}
             >
                 {/* Title */}
-                <div className="p-5 pb-2">
-                    <h2 className="text-xl font-bold text-white tracking-wider leading-tight">
-                        {phaseEmoji} LUNAR<br />OBSERVATORY
-                    </h2>
-                    <p className="text-[10px] text-white/40 mt-1">Interactive 3D Moon &bull; Real-time Phase</p>
+                <div className="p-5 pb-2 flex items-start justify-between">
+                    <div>
+                        <h2 className="text-xl font-bold text-white tracking-wider leading-tight">
+                            {phaseEmoji} LUNAR<br />OBSERVATORY
+                        </h2>
+                        <p className="text-[10px] text-white/40 mt-1">Interactive 3D Moon &bull; Real-time Phase</p>
+                    </div>
+                    {isMobile && (
+                        <button
+                            onClick={() => setSidebarOpen(false)}
+                            className="w-8 h-8 rounded-full flex items-center justify-center hover:bg-white/10 transition-colors mt-1"
+                            aria-label="Close panel"
+                        >
+                            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="rgba(255,255,255,0.5)" strokeWidth="1.5" strokeLinecap="round">
+                                <path d="M2 2l8 8M10 2l-8 8" />
+                            </svg>
+                        </button>
+                    )}
                 </div>
 
                 {/* Phase card */}
@@ -945,6 +979,14 @@ export default function MoonGlobe({ open, onClose }) {
                     Click a site to learn more &bull; Drag to rotate &bull; Scroll to zoom
                 </div>
             </div>
+
+            {/* Mobile backdrop when sidebar is open */}
+            {isMobile && sidebarOpen && (
+                <div
+                    className="absolute inset-0 z-15 bg-black/40"
+                    onClick={() => setSidebarOpen(false)}
+                />
+            )}
 
             {/* ═══ 3D Canvas ═══ */}
             <div

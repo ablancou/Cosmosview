@@ -205,7 +205,9 @@ export default function EarthGlobe({ open, onClose }) {
     const [orbitVisibility, setOrbitVisibility] = useState(
         ORBITS.reduce((acc, orbit) => ({ ...acc, [orbit.name]: true }), {})
     );
+    const [panelOpen, setPanelOpen] = useState(false);
     const darkMode = useAppStore((s) => s.darkMode);
+    const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
 
     /* ─── Three.js Setup ─── */
     useEffect(() => {
@@ -760,27 +762,55 @@ export default function EarthGlobe({ open, onClose }) {
                 </div>
             </div>
 
-            {/* Satellite Panel */}
-            {texturesLoaded && (
-                <div
-                    className="absolute bottom-20 left-4 z-10 p-3 rounded-xl"
+            {/* Satellite Panel Toggle Button (visible when panel is closed) */}
+            {texturesLoaded && !panelOpen && (
+                <button
+                    onClick={() => setPanelOpen(true)}
+                    className="absolute bottom-20 left-4 z-10 w-11 h-11 rounded-full flex items-center justify-center transition-all active:scale-95"
                     style={{
                         background: 'rgba(0,0,0,0.5)',
                         backdropFilter: 'blur(10px)',
-                        border: '1px solid rgba(255,255,255,0.06)',
+                        border: '1px solid rgba(255,255,255,0.1)',
+                    }}
+                    aria-label="Show satellite panel"
+                >
+                    <span className="text-base">📡</span>
+                </button>
+            )}
+
+            {/* Satellite Panel (toggle on all sizes) */}
+            {texturesLoaded && panelOpen && (
+                <div
+                    className="absolute bottom-20 left-4 z-10 p-3 rounded-xl animate-fadeIn"
+                    style={{
+                        background: 'rgba(0,0,0,0.6)',
+                        backdropFilter: 'blur(12px)',
+                        border: '1px solid rgba(255,255,255,0.08)',
+                        maxHeight: 'calc(100vh - 120px)',
+                        overflowY: 'auto',
                     }}
                 >
-                    {/* Mode indicator */}
+                    {/* Header with close */}
                     <div className="flex items-center justify-between mb-2">
                         <div className="text-[9px] text-white/40 uppercase tracking-wider">
                             {satMode === 'all' ? 'All Satellites' : 'Representative'}
                         </div>
-                        {satMode === 'all' && (
-                            <span className="text-[10px] font-mono text-cosmos-accent">
-                                {realSatCount.toLocaleString()}
-                            </span>
-                        )}
+                        <button
+                            onClick={() => setPanelOpen(false)}
+                            className="w-6 h-6 rounded-full flex items-center justify-center hover:bg-white/10 transition-colors -mr-1"
+                            aria-label="Close panel"
+                        >
+                            <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="rgba(255,255,255,0.5)" strokeWidth="1.5" strokeLinecap="round">
+                                <path d="M2 2l6 6M8 2l-6 6" />
+                            </svg>
+                        </button>
                     </div>
+
+                    {satMode === 'all' && (
+                        <div className="text-[10px] font-mono text-cosmos-accent mb-2">
+                            {realSatCount.toLocaleString()} tracked
+                        </div>
+                    )}
 
                     {/* Legend */}
                     {satMode === 'representative' ? (
@@ -794,12 +824,9 @@ export default function EarthGlobe({ open, onClose }) {
                                         className="w-full flex items-center gap-2 px-2 py-1 rounded transition-all hover:bg-white/5 active:scale-95 group cursor-pointer"
                                         title={isVisible ? `Hide ${orbit.name}` : `Show ${orbit.name}`}
                                     >
-                                        {/* Eye icon */}
                                         <span className="text-[8px] text-white/40 group-hover:text-white/70 transition-colors flex-shrink-0">
                                             {isVisible ? '👁️' : '🚫'}
                                         </span>
-
-                                        {/* Color dot */}
                                         <span
                                             className={`w-2 h-2 rounded-full transition-all flex-shrink-0 ${!isVisible ? 'opacity-40' : ''}`}
                                             style={{
@@ -807,13 +834,9 @@ export default function EarthGlobe({ open, onClose }) {
                                                 boxShadow: isVisible ? `0 0 6px #${orbit.color.toString(16).padStart(6, '0')}` : 'none',
                                             }}
                                         />
-
-                                        {/* Label */}
                                         <span
                                             className={`text-[10px] transition-all ${
-                                                isVisible
-                                                    ? 'text-white/60'
-                                                    : 'text-white/30 line-through'
+                                                isVisible ? 'text-white/60' : 'text-white/30 line-through'
                                             }`}
                                         >
                                             {orbit.name} {orbit.count > 1 ? `(${orbit.count})` : ''}
@@ -858,19 +881,19 @@ export default function EarthGlobe({ open, onClose }) {
                             </span>
                         ) : satMode === 'representative' ? (
                             <span className="flex items-center justify-center gap-1.5">
-                                📡 Show ALL satellites (~8,000+)
+                                📡 Show ALL (~8,000+)
                             </span>
                         ) : (
                             <span className="flex items-center justify-center gap-1.5">
-                                ← Back to representative view
+                                ← Representative view
                             </span>
                         )}
                     </button>
 
                     {satMode === 'representative' && (
                         <p className="text-[8px] text-white/30 mt-1.5 text-center">
-                            Currently showing ~50 representative satellites.
-                            <br />Tap to load all active satellites in real-time.
+                            Showing ~50 representative satellites.
+                            <br />Tap to load all active in real-time.
                         </p>
                     )}
                 </div>
