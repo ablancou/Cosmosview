@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import useAppStore from '../store/useAppStore';
 import SearchBar from './SearchBar';
 import TimeControls from './TimeControls';
@@ -57,27 +57,6 @@ const SUB_ITEMS = {
 };
 
 /* ══════════════════════════════════════════
-   Radial Position Calculator
-   Arc from upper-right to lower-left of the
-   bottom-right anchor button
-   ══════════════════════════════════════════ */
-
-function getRadialPositions(count, radius = 80) {
-    const start = -20; // degrees: 0 = directly above, CW positive
-    const end = 110;
-    return Array.from({ length: count }, (_, i) => {
-        const deg = count === 1 ? 45 : start + (end - start) * i / (count - 1);
-        const rad = (deg * Math.PI) / 180;
-        return {
-            x: -radius * Math.sin(rad),
-            y: -radius * Math.cos(rad),
-        };
-    });
-}
-
-const RADIAL_POSITIONS = getRadialPositions(CATEGORIES.length);
-
-/* ══════════════════════════════════════════
    ImmersiveNav Component
    ══════════════════════════════════════════ */
 
@@ -87,7 +66,7 @@ export default function ImmersiveNav({ onAction, activeStates = {} }) {
     const [settingsOpen, setSettingsOpen] = useState(false);
     const [searchOpen, setSearchOpen] = useState(false);
     const [btnVisible, setBtnVisible] = useState(true);
-    const [radialReady, setRadialReady] = useState(false);
+    const [dialReady, setDialReady] = useState(false);
     const hideTimer = useRef(null);
 
     // Store state
@@ -143,11 +122,11 @@ export default function ImmersiveNav({ onAction, activeStates = {} }) {
         }
     }, [isAnythingOpen]);
 
-    /* ─── Radial animation ─── */
+    /* ─── Speed-dial animation ─── */
     useEffect(() => {
         if (menuOpen) {
-            setRadialReady(false);
-            requestAnimationFrame(() => requestAnimationFrame(() => setRadialReady(true)));
+            setDialReady(false);
+            requestAnimationFrame(() => requestAnimationFrame(() => setDialReady(true)));
         }
     }, [menuOpen]);
 
@@ -157,7 +136,7 @@ export default function ImmersiveNav({ onAction, activeStates = {} }) {
         setActiveCategory(null);
         setSettingsOpen(false);
         setSearchOpen(false);
-        setRadialReady(false);
+        setDialReady(false);
     }, []);
 
     const handleMainBtn = () => {
@@ -207,6 +186,9 @@ export default function ImmersiveNav({ onAction, activeStates = {} }) {
         borderRadius: '16px',
         boxShadow: '0 8px 60px rgba(0,0,0,0.5)',
     };
+
+    /* Speed-dial items displayed bottom-to-top (reversed so closest to FAB renders last in DOM) */
+    const dialItems = useMemo(() => [...CATEGORIES].reverse(), []);
 
     return (
         <>
@@ -426,45 +408,76 @@ export default function ImmersiveNav({ onAction, activeStates = {} }) {
                 />
             )}
 
-            {/* ═══ Radial Menu Items ═══ */}
-            <div className="fixed z-[46]" style={{ bottom: '24px', right: '24px', width: 0, height: 0 }}>
-                {menuOpen && RADIAL_POSITIONS.map((pos, i) => {
-                    const cat = CATEGORIES[i];
-                    return (
-                        <button
-                            key={cat.id}
-                            onClick={() => handleCategory(cat.id)}
-                            className="absolute rounded-full flex flex-col items-center justify-center active:scale-90"
-                            style={{
-                                width: '52px',
-                                height: '52px',
-                                left: `${pos.x - 26}px`,
-                                top: `${pos.y - 26}px`,
-                                background: darkMode ? 'rgba(12,14,28,0.92)' : 'rgba(245,240,232,0.95)',
-                                backdropFilter: 'blur(16px)',
-                                WebkitBackdropFilter: 'blur(16px)',
-                                border: `1px solid ${panelBorder}`,
-                                boxShadow: '0 4px 20px rgba(0,0,0,0.3)',
-                                opacity: radialReady ? 1 : 0,
-                                transform: radialReady
-                                    ? `translate(0, 0) scale(1)`
-                                    : `translate(${-pos.x}px, ${-pos.y}px) scale(0.3)`,
-                                transition: `all 0.35s cubic-bezier(0.16, 1, 0.3, 1) ${i * 40}ms`,
-                            }}
-                        >
-                            <span className="text-base leading-none">{cat.emoji}</span>
-                            <span
-                                className="text-[7px] mt-0.5 leading-none font-medium"
-                                style={{ color: darkMode ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.55)' }}
-                            >
-                                {cat.label}
-                            </span>
-                        </button>
-                    );
-                })}
-            </div>
+            {/* ═══ Speed Dial Menu ═══
+                Professional FAB speed-dial pattern:
+                Items stack vertically above the main button.
+                Each item = icon circle + floating label pill.
+                Staggered spring animation, viewport-safe.
+            ═══════════════════════════════════════ */}
+            {menuOpen && (
+                <div
+                    className="fixed z-[46] flex flex-col-reverse items-end gap-2"
+                    style={{
+                        bottom: '80px',
+                        right: '24px',
+                    }}
+                >
+                    {dialItems.map((cat, reverseIdx) => {
+                        const i = CATEGORIES.length - 1 - reverseIdx; // original index (0 = top)
+                        const delayMs = reverseIdx * 45; // bottom items animate first (closest to FAB)
 
-            {/* ═══ Main Floating Button ═══ */}
+                        return (
+                            <div
+                                key={cat.id}
+                                className="flex items-center gap-2.5"
+                                style={{
+                                    opacity: dialReady ? 1 : 0,
+                                    transform: dialReady
+                                        ? 'translateY(0) scale(1)'
+                                        : 'translateY(16px) scale(0.7)',
+                                    transition: `all 0.35s cubic-bezier(0.16, 1, 0.3, 1) ${delayMs}ms`,
+                                }}
+                            >
+                                {/* Label pill — slides in from right */}
+                                <span
+                                    className="px-3 py-1.5 rounded-full text-[11px] font-medium whitespace-nowrap select-none pointer-events-none"
+                                    style={{
+                                        background: panelBg,
+                                        backdropFilter: 'blur(16px)',
+                                        WebkitBackdropFilter: 'blur(16px)',
+                                        border: `1px solid ${panelBorder}`,
+                                        color: darkMode ? 'rgba(255,255,255,0.85)' : 'rgba(0,0,0,0.75)',
+                                        boxShadow: '0 2px 16px rgba(0,0,0,0.25)',
+                                        opacity: dialReady ? 1 : 0,
+                                        transform: dialReady ? 'translateX(0)' : 'translateX(12px)',
+                                        transition: `all 0.3s cubic-bezier(0.16, 1, 0.3, 1) ${delayMs + 80}ms`,
+                                    }}
+                                >
+                                    {cat.label}
+                                </span>
+
+                                {/* Icon circle */}
+                                <button
+                                    onClick={() => handleCategory(cat.id)}
+                                    className="w-12 h-12 rounded-full flex items-center justify-center shrink-0 active:scale-90 transition-transform"
+                                    style={{
+                                        background: darkMode ? 'rgba(12,14,28,0.92)' : 'rgba(245,240,232,0.95)',
+                                        backdropFilter: 'blur(16px)',
+                                        WebkitBackdropFilter: 'blur(16px)',
+                                        border: `1px solid ${panelBorder}`,
+                                        boxShadow: '0 4px 20px rgba(0,0,0,0.3)',
+                                    }}
+                                    aria-label={cat.label}
+                                >
+                                    <span className="text-lg leading-none">{cat.emoji}</span>
+                                </button>
+                            </div>
+                        );
+                    })}
+                </div>
+            )}
+
+            {/* ═══ Main Floating Action Button ═══ */}
             <button
                 onClick={handleMainBtn}
                 className="fixed z-[46] rounded-full flex items-center justify-center"
