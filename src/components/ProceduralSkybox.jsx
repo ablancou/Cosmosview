@@ -15,8 +15,11 @@ export default function ProceduralSkybox({ scene }) {
     useEffect(() => {
         if (!scene) return;
 
-        const WIDTH = 8192;
-        const HEIGHT = 4096;
+        // Detect max texture size — iOS limits to 4096, some older devices to 2048
+        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+        const maxSize = isMobile ? 2048 : 4096;
+        const WIDTH = maxSize * 2;
+        const HEIGHT = maxSize;
 
         const canvas = document.createElement('canvas');
         canvas.width = WIDTH;

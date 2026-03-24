@@ -12,9 +12,9 @@ import cityList from '../utils/cityList';
    ══════════════════════════════════════════ */
 
 const CATEGORIES = [
-    { id: 'search', emoji: '🔍', label: 'Search' },
+    { id: 'celestial', emoji: '🪐', label: 'Celestial', highlight: true },
     { id: 'explore', emoji: '⭐', label: 'Explore' },
-    { id: 'celestial', emoji: '🪐', label: 'Celestial' },
+    { id: 'search', emoji: '🔍', label: 'Search' },
     { id: 'tools', emoji: '🛠', label: 'Tools' },
     { id: 'learn', emoji: '🎓', label: 'Learn' },
     { id: 'settings', emoji: '⚙️', label: 'Settings' },
@@ -30,11 +30,11 @@ const SUB_ITEMS = {
         { id: 'liveCams', emoji: '🌐', label: 'Live Cameras' },
     ],
     celestial: [
-        { id: 'earthGlobe', emoji: '🌍', label: 'Earth Globe' },
-        { id: 'moonGlobe', emoji: '🌕', label: 'Moon Globe' },
+        { id: 'earthGlobe', emoji: '🌍', label: 'Earth Observatory', flagship: true },
+        { id: 'moonGlobe', emoji: '🌕', label: 'Lunar Observatory', flagship: true },
+        { id: 'orrery', emoji: '☀️', label: 'Solar System', flagship: true },
+        { id: 'orbitalTracker', emoji: '📡', label: 'Orbital Tracking' },
         { id: 'moon', emoji: '🌙', label: 'Moon Data' },
-        { id: 'orrery', emoji: '☀️', label: 'Solar System' },
-        { id: 'orbitalTracker', emoji: '📡', label: 'Satellites' },
         { id: 'telescope', emoji: '🔭', label: 'Telescope' },
     ],
     tools: [
@@ -370,18 +370,22 @@ export default function ImmersiveNav({ onAction, activeStates = {} }) {
                                     <button
                                         key={item.id}
                                         onClick={() => handleSubItem(item)}
-                                        className="flex flex-col items-center justify-center p-2.5 rounded-xl transition-all active:scale-95"
+                                        className={`flex flex-col items-center justify-center p-2.5 rounded-xl transition-all active:scale-95 ${item.flagship ? 'ring-1 ring-amber-400/30' : ''}`}
                                         style={{
                                             background: isActive
                                                 ? (darkMode ? 'rgba(126,184,247,0.15)' : 'rgba(74,144,217,0.15)')
-                                                : (darkMode ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.03)'),
+                                                : item.flagship
+                                                    ? (darkMode ? 'rgba(255,200,60,0.06)' : 'rgba(200,150,0,0.06)')
+                                                    : (darkMode ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.03)'),
                                             border: `1px solid ${isActive
                                                 ? (darkMode ? 'rgba(126,184,247,0.3)' : 'rgba(74,144,217,0.3)')
-                                                : (darkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.06)')
+                                                : item.flagship
+                                                    ? (darkMode ? 'rgba(255,200,60,0.15)' : 'rgba(200,150,0,0.15)')
+                                                    : (darkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.06)')
                                             }`,
                                         }}
                                     >
-                                        <span className="text-xl leading-none">{item.emoji}</span>
+                                        <span className={`leading-none ${item.flagship ? 'text-2xl' : 'text-xl'}`}>{item.emoji}</span>
                                         <span
                                             className="text-[9px] mt-1.5 leading-tight text-center"
                                             style={{
@@ -460,17 +464,21 @@ export default function ImmersiveNav({ onAction, activeStates = {} }) {
                                 {/* Icon circle */}
                                 <button
                                     onClick={() => handleCategory(cat.id)}
-                                    className="w-12 h-12 rounded-full flex items-center justify-center shrink-0 active:scale-90 transition-transform"
+                                    className={`w-12 h-12 rounded-full flex items-center justify-center shrink-0 active:scale-90 transition-transform ${cat.highlight ? 'ring-2 ring-amber-400/40' : ''}`}
                                     style={{
-                                        background: darkMode ? 'rgba(12,14,28,0.92)' : 'rgba(245,240,232,0.95)',
+                                        background: cat.highlight
+                                            ? (darkMode ? 'rgba(40,30,10,0.95)' : 'rgba(255,245,220,0.95)')
+                                            : (darkMode ? 'rgba(12,14,28,0.92)' : 'rgba(245,240,232,0.95)'),
                                         backdropFilter: 'blur(16px)',
                                         WebkitBackdropFilter: 'blur(16px)',
-                                        border: `1px solid ${panelBorder}`,
-                                        boxShadow: '0 4px 20px rgba(0,0,0,0.3)',
+                                        border: `1px solid ${cat.highlight ? 'rgba(255,200,60,0.25)' : panelBorder}`,
+                                        boxShadow: cat.highlight
+                                            ? '0 4px 20px rgba(255,200,60,0.15)'
+                                            : '0 4px 20px rgba(0,0,0,0.3)',
                                     }}
                                     aria-label={cat.label}
                                 >
-                                    <span className="text-lg leading-none">{cat.emoji}</span>
+                                    <span className={`leading-none ${cat.highlight ? 'text-xl' : 'text-lg'}`}>{cat.emoji}</span>
                                 </button>
                             </div>
                         );

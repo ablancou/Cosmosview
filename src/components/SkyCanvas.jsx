@@ -82,12 +82,20 @@ export default function SkyCanvas() {
         scene.add(celestialSphere);
         celestialSphereRef.current = celestialSphere;
 
-        const renderer = new THREE.WebGLRenderer({
-            antialias: true,
-            alpha: false,
-            powerPreference: 'high-performance',
-            preserveDrawingBuffer: true,
-        });
+        let renderer;
+        try {
+            renderer = new THREE.WebGLRenderer({
+                antialias: !(/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)),
+                alpha: false,
+                powerPreference: 'high-performance',
+                preserveDrawingBuffer: true,
+                failIfMajorPerformanceCaveat: false,
+            });
+        } catch (e) {
+            console.error('WebGL initialization failed:', e);
+            container.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:white;text-align:center;padding:2rem;font-family:sans-serif"><div><h2>WebGL Not Available</h2><p style="opacity:0.6;margin-top:0.5rem">Your browser does not support WebGL, which is required for the 3D sky view. Try updating your browser or using Chrome/Safari.</p></div></div>';
+            return;
+        }
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
         renderer.setSize(width, height);
         renderer.sortObjects = true;
@@ -96,16 +104,19 @@ export default function SkyCanvas() {
         container.appendChild(renderer.domElement);
         rendererRef.current = renderer;
 
-        // Bloom post-processing
+        // Bloom post-processing (skip on mobile — too GPU-intensive)
+        const _isMobileDevice = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
         const composer = new EffectComposer(renderer);
         composer.addPass(new RenderPass(scene, camera));
-        const bloomPass = new UnrealBloomPass(
-            new THREE.Vector2(width, height),
-            0.4,   // strength — subtle but visible glow
-            0.6,   // radius — how far bloom spreads
-            0.85   // threshold — only bright objects bloom
-        );
-        composer.addPass(bloomPass);
+        if (!_isMobileDevice) {
+            const bloomPass = new UnrealBloomPass(
+                new THREE.Vector2(width, height),
+                0.4,   // strength — subtle but visible glow
+                0.6,   // radius — how far bloom spreads
+                0.85   // threshold — only bright objects bloom
+            );
+            composer.addPass(bloomPass);
+        }
         composerRef.current = composer;
 
         scene.add(new THREE.AmbientLight(0xffffff, 0.03));

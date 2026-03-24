@@ -128,7 +128,15 @@ const TYPE_HEX = {
     change: '#4499ff',
 };
 
-/* ═══ High-Detail Procedural Moon Texture ═══ */
+/* ═══ NASA Moon Textures (LROC / LRO public domain) ═══ */
+const MOON_TEXTURES = {
+    color: 'https://unpkg.com/three-globe@2.31.1/example/img/lunar-surface.jpg',
+    // Fallback to Solar System Scope (CC BY 4.0, free for any use)
+    colorFallback: 'https://www.solarsystemscope.com/textures/download/2k_moon.jpg',
+    bump: 'https://www.solarsystemscope.com/textures/download/2k_moon.jpg',
+};
+
+/* ═══ Procedural Moon Texture (fallback if NASA textures fail to load) ═══ */
 function createMoonTexture(size = 2048) {
     const canvas = document.createElement('canvas');
     canvas.width = size;
@@ -405,6 +413,7 @@ export default function MoonGlobe({ open, onClose }) {
         distanceKm: 384400,
         libLat: 0,
         libLon: 0,
+        diam: 0.52,
     });
 
     const time = useAppStore((s) => s.time);
@@ -416,6 +425,24 @@ export default function MoonGlobe({ open, onClose }) {
             const now = time.current;
             const phaseDeg = Astronomy.MoonPhase(now);
 
+            // Use real Libration() API from astronomy-engine
+            let libLat = 0, libLon = 0, distanceKm = 384400, diam = 0.52;
+            try {
+                const lib = Astronomy.Libration(now);
+                libLat = lib.elat;       // ecliptic latitude libration (degrees)
+                libLon = lib.elon;       // ecliptic longitude libration (degrees)
+                distanceKm = Math.round(lib.dist_km);
+                diam = lib.diam_deg;
+            } catch {
+                // Fallback if Libration() not available in this version
+                const eqPos = Astronomy.GeoMoon(now);
+                const distAU = Math.sqrt(eqPos.x ** 2 + eqPos.y ** 2 + eqPos.z ** 2);
+                distanceKm = Math.round(distAU * 149597870.7);
+                const dayOfYear = Math.floor((now - new Date(now.getFullYear(), 0, 0)) / 86400000);
+                libLat = 6.7 * Math.sin((dayOfYear / 27.3) * 2 * Math.PI);
+                libLon = 7.9 * Math.sin((dayOfYear / 27.3 - 0.25) * 2 * Math.PI);
+            }
+
             let illumination;
             try {
                 const illum = Astronomy.Illumination('Moon', now);
@@ -426,14 +453,6 @@ export default function MoonGlobe({ open, onClose }) {
                 illumination = (1 - Math.cos(phaseDeg * Math.PI / 180)) / 2 * 100;
             }
 
-            const eqPos = Astronomy.GeoMoon(now);
-            const distAU = Math.sqrt(eqPos.x ** 2 + eqPos.y ** 2 + eqPos.z ** 2);
-            const distanceKm = Math.round(distAU * 149597870.7);
-
-            const dayOfYear = Math.floor((now - new Date(now.getFullYear(), 0, 0)) / 86400000);
-            const libLat = 6.7 * Math.sin((dayOfYear / 27.3) * 2 * Math.PI);
-            const libLon = 7.9 * Math.sin((dayOfYear / 27.3 - 0.25) * 2 * Math.PI);
-
             setMoonData({
                 phaseDeg,
                 phaseName: getPhaseName(phaseDeg),
@@ -441,6 +460,7 @@ export default function MoonGlobe({ open, onClose }) {
                 distanceKm: distanceKm > 300000 && distanceKm < 500000 ? distanceKm : 384400,
                 libLat,
                 libLon,
+                diam,
             });
             return phaseDeg;
         } catch (e) {
@@ -498,22 +518,51 @@ export default function MoonGlobe({ open, onClose }) {
             color: 0xffffff, size: 0.08, sizeAttenuation: true, transparent: true, opacity: 0.6,
         })));
 
-        // Moon textures — high detail
-        const moonTexture = createMoonTexture(2048);
-        const normalMap = createNormalMap(1024);
+        // Moon textures — try NASA real textures, fallback to procedural
+        const loader = new THREE.TextureLoader();
+        const proceduralTex = createMoonTexture(2048);
+        const proceduralNormal = createNormalMap(1024);
 
-        // Moon sphere
+        // Moon sphere (start with procedural, upgrade to NASA if available)
         const moonGeom = new THREE.SphereGeometry(2, 128, 128);
         const moonMat = new THREE.MeshStandardMaterial({
-            map: moonTexture,
-            normalMap: normalMap,
+            map: proceduralTex,
+            normalMap: proceduralNormal,
             normalScale: new THREE.Vector2(0.6, 0.6),
             roughness: 0.92,
             metalness: 0.0,
-            bumpMap: moonTexture,
+            bumpMap: proceduralTex,
             bumpScale: 0.025,
         });
         const moon = new THREE.Mesh(moonGeom, moonMat);
+
+        // Attempt to load real NASA texture (non-blocking upgrade)
+        const tryLoadTexture = (url) => new Promise((resolve, reject) => {
+            loader.load(url, resolve, undefined, reject);
+        });
+
+        (async () => {
+            try {
+                const realTex = await tryLoadTexture(MOON_TEXTURES.color);
+                realTex.colorSpace = THREE.SRGBColorSpace;
+                moonMat.map = realTex;
+                moonMat.bumpMap = realTex;
+                moonMat.needsUpdate = true;
+                proceduralTex.dispose();
+            } catch {
+                try {
+                    const fallbackTex = await tryLoadTexture(MOON_TEXTURES.colorFallback);
+                    fallbackTex.colorSpace = THREE.SRGBColorSpace;
+                    moonMat.map = fallbackTex;
+                    moonMat.bumpMap = fallbackTex;
+                    moonMat.needsUpdate = true;
+                    proceduralTex.dispose();
+                } catch {
+                    // Keep procedural texture — already applied
+                    console.log('Using procedural moon texture (NASA textures unavailable)');
+                }
+            }
+        })();
         moon.rotation.x = THREE.MathUtils.degToRad(1.54);
         scene.add(moon);
 
@@ -887,6 +936,10 @@ export default function MoonGlobe({ open, onClose }) {
                     <div className="p-3 rounded-lg bg-white/[0.03] border border-white/[0.06]">
                         <div className="text-[9px] text-white/35 uppercase tracking-wider">Phase Angle</div>
                         <div className="text-sm text-white font-mono mt-0.5">{moonData.phaseDeg.toFixed(1)}°</div>
+                    </div>
+                    <div className="p-3 rounded-lg bg-white/[0.03] border border-white/[0.06]">
+                        <div className="text-[9px] text-white/35 uppercase tracking-wider">Angular Diameter</div>
+                        <div className="text-sm text-white font-mono mt-0.5">{(moonData.diam || 0.52).toFixed(4)}°</div>
                     </div>
                     <div className="p-3 rounded-lg bg-white/[0.03] border border-white/[0.06]">
                         <div className="text-[9px] text-white/35 uppercase tracking-wider">Libration (Lat / Lon)</div>

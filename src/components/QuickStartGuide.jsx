@@ -8,20 +8,39 @@ import React, { useState } from 'react';
 
 const SUGGESTIONS = [
     {
+        emoji: '🌍',
+        title: 'Earth Observatory',
+        desc: 'A photorealistic 3D Earth with real-time satellite tracking — see the ISS, Hubble, Starlink, and 8,000+ satellites using real NORAD orbital data. Day/night cycle, cloud layer, atmosphere glow.',
+        action: 'earthGlobe',
+        actionLabel: '🌍 Launch Earth Observatory',
+        color: '#4a90d9',
+        flagship: true,
+    },
+    {
+        emoji: '🌕',
+        title: 'Lunar Observatory',
+        desc: 'A 3D Moon with NASA surface imagery, real-time phase lighting calculated from astronomical algorithms, landing site markers for Apollo, Luna, and Chang\'e missions with interactive mission info.',
+        action: 'moonGlobe',
+        actionLabel: '🌕 Explore the Moon',
+        color: '#c8c8e0',
+        flagship: true,
+    },
+    {
+        emoji: '☀️',
+        title: 'Solar System Orrery',
+        desc: 'An interactive 3D model showing all planets orbiting the Sun in their real-time positions, calculated from NASA ephemeris data.',
+        action: 'orrery',
+        actionLabel: '🪐 Open Orrery',
+        color: '#44aaff',
+        flagship: true,
+    },
+    {
         emoji: '📡',
-        title: 'Orbital Tracking System',
-        desc: 'Launch a full-screen 3D view of Earth with 30+ satellites orbiting in real-time — ISS, Hubble, Starlink, GPS, and the Moon! Sci-fi HUD with live telemetry.',
+        title: 'Orbital Tracking',
+        desc: 'Full-screen 3D satellite tracker with real orbital data from CelesTrak/NORAD. Toggle between representative view and all 8,000+ active satellites.',
         action: 'orbitalTracker',
         actionLabel: '🛸 Launch Tracker',
         color: '#00cccc',
-    },
-    {
-        emoji: '🌅',
-        title: 'Watch a Sunset',
-        desc: 'Move the time slider to see the Sun set with realistic Rayleigh atmospheric scattering — the sky turns orange, pink, and deep blue.',
-        action: 'timeTravel',
-        actionLabel: '⏩ Try it Now',
-        color: '#ff8844',
     },
     {
         emoji: '⭐',
@@ -32,20 +51,12 @@ const SUGGESTIONS = [
         color: '#ffcc44',
     },
     {
-        emoji: '☀️',
-        title: 'Explore the Solar System',
-        desc: 'Launch an interactive 3D orrery showing all planets orbiting the Sun with real-time positions.',
-        action: 'orrery',
-        actionLabel: '🪐 Open Orrery',
-        color: '#44aaff',
-    },
-    {
-        emoji: '🌙',
-        title: 'Moon Dashboard',
-        desc: "Check the Moon's current phase, tonight's moonrise/moonset, and upcoming lunar eclipses.",
-        action: 'moon',
-        actionLabel: '🌙 See the Moon',
-        color: '#8888cc',
+        emoji: '🌅',
+        title: 'Watch a Sunset',
+        desc: 'Travel in time to see the Sun set with realistic Rayleigh atmospheric scattering — the sky turns orange, pink, and deep blue.',
+        action: 'timeTravel',
+        actionLabel: '⏩ Try it Now',
+        color: '#ff8844',
     },
     {
         emoji: '🎓',
@@ -101,7 +112,7 @@ export default function QuickStartGuide({ open, onClose, onAction }) {
                                 Try This!
                             </h2>
                             <p className="text-[11px] text-gray-400 mt-0.5">
-                                6 impressive things you can do right now
+                                8 interactive experiences — all powered by real scientific data
                             </p>
                         </div>
                         <button
@@ -184,10 +195,18 @@ export default function QuickStartGuide({ open, onClose, onAction }) {
                         return (
                             <div
                                 key={s.action}
-                                className="rounded-xl p-3.5 transition-all"
+                                className={`rounded-xl p-3.5 transition-all ${s.flagship ? 'ring-1 ring-amber-400/20' : ''}`}
                                 style={{
-                                    background: isDone ? 'rgba(80,200,120,0.06)' : 'rgba(255,255,255,0.025)',
-                                    border: `1px solid ${isDone ? 'rgba(80,200,120,0.15)' : 'rgba(100,140,255,0.08)'}`,
+                                    background: isDone
+                                        ? 'rgba(80,200,120,0.06)'
+                                        : s.flagship
+                                            ? 'rgba(255,200,60,0.04)'
+                                            : 'rgba(255,255,255,0.025)',
+                                    border: `1px solid ${isDone
+                                        ? 'rgba(80,200,120,0.15)'
+                                        : s.flagship
+                                            ? 'rgba(255,200,60,0.12)'
+                                            : 'rgba(100,140,255,0.08)'}`,
                                 }}
                             >
                                 <div className="flex items-start gap-3">
@@ -223,7 +242,7 @@ export default function QuickStartGuide({ open, onClose, onAction }) {
                         }}
                     >
                         <p className="text-[11px] text-gray-400">
-                            💡 Also try: <strong className="text-gray-300">drag</strong> to rotate the sky, <strong className="text-gray-300">scroll/pinch</strong> to zoom, and use the <strong className="text-gray-300">search bar</strong> to find any star or constellation!
+                            💡 Also try: <strong className="text-gray-300">drag</strong> to rotate the sky, <strong className="text-gray-300">scroll/pinch</strong> to zoom, and <strong className="text-gray-300">search</strong> for any star, planet, galaxy, or constellation in your language!
                         </p>
                     </div>
 

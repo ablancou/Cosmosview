@@ -17,7 +17,9 @@ import starFragShader from '../shaders/star.frag.glsl?raw';
  * when zooming in, creating a Stellarium-quality starfield.
  */
 
-const FAINT_STAR_COUNT = 95000;
+// Reduce star count on mobile to prevent GPU memory exhaustion
+const _isMobile = typeof navigator !== 'undefined' && /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+const FAINT_STAR_COUNT = _isMobile ? 30000 : 95000;
 
 // Seeded PRNG for deterministic star field
 function createPRNG(seed) {
