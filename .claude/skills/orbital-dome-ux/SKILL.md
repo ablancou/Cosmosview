@@ -98,9 +98,28 @@
 - On **desktop**: legend can be a compact sidebar or bottom strip, not a large overlay on the globe.
 - "Show ALL satellites (~8,000+)" button loads additional TLE data on demand.
 
-## 12. General Principles
+## 12. Git & Deployment Workflow
+
+- **Repository**: `https://github.com/ablancou/Cosmosview.git` (branch: `main`)
+- **Deploy pipeline**: Git push → GitHub → Vercel auto-deploy
+- **CRITICAL: Claude CANNOT `git push`** — the sandbox has no network access to github.com (returns HTTP 403). All commits are local only.
+- When telling the user to push, **always give the full correct path**. The project folder on the user's Mac is called `Cosmosview`. Instruct the user to first find it:
+  ```bash
+  find ~ -maxdepth 3 -name "Cosmosview" -type d 2>/dev/null
+  ```
+  Then push:
+  ```bash
+  cd [path found above] && git push
+  ```
+- **NEVER assume** the folder is at `~/Cosmosview` or `~/Desktop/Cosmosview` without confirming.
+- After push + Vercel deploy, remind user to **hard refresh** (Cmd+Shift+R on Mac, Ctrl+Shift+R on PC) to bypass browser cache.
+- `node_modules` are compiled for macOS ARM64 — **never run `npm install` or `npm run build`** inside the Linux sandbox.
+
+## 13. General Principles
 
 - The 3D visualization is always the star — never obscure it with UI.
 - Educational content (mission info, tooltips) should enhance, not clutter.
 - Interactions should feel smooth and responsive — no jank, no layout shifts.
 - Always test mental model: "If I were a user on a phone, can I see the globe clearly when I open this feature?"
+- Always recommend the **best, most innovative, and technologically advanced** approach — but it must be **100% free**.
+- All data must be **scientifically accurate** — use real astronomical algorithms, real NASA data, real orbital mechanics. No fake or placeholder data.
