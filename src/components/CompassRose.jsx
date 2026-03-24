@@ -109,46 +109,93 @@ export default function CompassRose({ scene }) {
             group.add(new THREE.Line(tickGeom, tickMat));
         }
 
-        // ── Zenith marker (directly overhead) ──
+        // ── Zenith marker (directly overhead) — elegant minimal design ──
         const zenithCanvas = document.createElement('canvas');
-        zenithCanvas.width = 128;
-        zenithCanvas.height = 48;
+        zenithCanvas.width = 256;
+        zenithCanvas.height = 96;
         const zCtx = zenithCanvas.getContext('2d');
-        zCtx.clearRect(0, 0, 128, 48);
-        // Crosshair bracket
-        zCtx.strokeStyle = 'rgba(255, 200, 100, 0.4)';
-        zCtx.lineWidth = 1.5;
+        zCtx.clearRect(0, 0, 256, 96);
+
+        // Subtle crosshair — thin precision lines
+        const cx = 128, cy = 28;
+        zCtx.strokeStyle = 'rgba(255, 210, 120, 0.3)';
+        zCtx.lineWidth = 1;
+        // Horizontal dashes
         zCtx.beginPath();
-        zCtx.moveTo(48, 4); zCtx.lineTo(48, 12);
-        zCtx.moveTo(80, 4); zCtx.lineTo(80, 12);
-        zCtx.moveTo(48, 4); zCtx.lineTo(80, 4);
+        zCtx.moveTo(cx - 28, cy); zCtx.lineTo(cx - 8, cy);
+        zCtx.moveTo(cx + 8, cy);  zCtx.lineTo(cx + 28, cy);
         zCtx.stroke();
-        // Label
-        zCtx.font = 'bold 18px Inter, sans-serif';
-        zCtx.fillStyle = 'rgba(255, 200, 100, 0.7)';
+        // Vertical dashes
+        zCtx.beginPath();
+        zCtx.moveTo(cx, cy - 28); zCtx.lineTo(cx, cy - 8);
+        zCtx.moveTo(cx, cy + 8);  zCtx.lineTo(cx, cy + 8 + 4);
+        zCtx.stroke();
+        // Center dot
+        zCtx.beginPath();
+        zCtx.arc(cx, cy, 2, 0, Math.PI * 2);
+        zCtx.fillStyle = 'rgba(255, 210, 120, 0.5)';
+        zCtx.fill();
+        // Corner brackets
+        const bLen = 8, bOff = 18;
+        zCtx.strokeStyle = 'rgba(255, 210, 120, 0.25)';
+        zCtx.lineWidth = 1.2;
+        zCtx.beginPath();
+        // Top-left
+        zCtx.moveTo(cx - bOff, cy - bOff + bLen); zCtx.lineTo(cx - bOff, cy - bOff); zCtx.lineTo(cx - bOff + bLen, cy - bOff);
+        // Top-right
+        zCtx.moveTo(cx + bOff - bLen, cy - bOff); zCtx.lineTo(cx + bOff, cy - bOff); zCtx.lineTo(cx + bOff, cy - bOff + bLen);
+        // Bottom-left
+        zCtx.moveTo(cx - bOff, cy + bOff - bLen); zCtx.lineTo(cx - bOff, cy + bOff); zCtx.lineTo(cx - bOff + bLen, cy + bOff);
+        // Bottom-right
+        zCtx.moveTo(cx + bOff - bLen, cy + bOff); zCtx.lineTo(cx + bOff, cy + bOff); zCtx.lineTo(cx + bOff, cy + bOff - bLen);
+        zCtx.stroke();
+
+        // Label — wide letter-spacing, light weight
+        zCtx.font = '300 16px Inter, sans-serif';
+        zCtx.fillStyle = 'rgba(255, 210, 120, 0.55)';
         zCtx.textAlign = 'center';
         zCtx.textBaseline = 'middle';
-        zCtx.fillText('ZENITH', 64, 30);
+        // Manual letter spacing
+        const letters = 'Z E N I T H'.split('');
+        const totalW = letters.length * 11;
+        letters.forEach((ch, li) => {
+            zCtx.fillText(ch.trim(), cx - totalW / 2 + li * 11 + 5, 72);
+        });
+
+        // Altitude indicator
+        zCtx.font = '10px Inter, sans-serif';
+        zCtx.fillStyle = 'rgba(255, 210, 120, 0.25)';
+        zCtx.fillText('90°', cx, 88);
 
         const zenithTexture = new THREE.CanvasTexture(zenithCanvas);
         const zenithSprite = new THREE.Sprite(new THREE.SpriteMaterial({
             map: zenithTexture, transparent: true, depthTest: false,
         }));
         zenithSprite.position.set(0, 800, 0);
-        zenithSprite.scale.set(35, 13, 1);
+        zenithSprite.scale.set(50, 18, 1);
         zenithSprite.renderOrder = 22;
         group.add(zenithSprite);
 
-        // Zenith dot (small glowing ring)
-        const zenithRing = new THREE.RingGeometry(3, 4, 32);
-        const zenithRingMat = new THREE.MeshBasicMaterial({
-            color: 0xffc864, transparent: true, opacity: 0.35, side: THREE.DoubleSide,
+        // Zenith ring — subtle concentric rings for depth
+        const zenithRing1 = new THREE.RingGeometry(4, 4.5, 64);
+        const zenithRingMat1 = new THREE.MeshBasicMaterial({
+            color: 0xffd278, transparent: true, opacity: 0.2, side: THREE.DoubleSide,
         });
-        const zenithMesh = new THREE.Mesh(zenithRing, zenithRingMat);
-        zenithMesh.position.set(0, 790, 0);
-        zenithMesh.rotation.x = Math.PI / 2;
-        zenithMesh.renderOrder = 21;
-        group.add(zenithMesh);
+        const zenithMesh1 = new THREE.Mesh(zenithRing1, zenithRingMat1);
+        zenithMesh1.position.set(0, 792, 0);
+        zenithMesh1.rotation.x = Math.PI / 2;
+        zenithMesh1.renderOrder = 21;
+        group.add(zenithMesh1);
+
+        const zenithRing2 = new THREE.RingGeometry(8, 8.3, 64);
+        const zenithRingMat2 = new THREE.MeshBasicMaterial({
+            color: 0xffd278, transparent: true, opacity: 0.08, side: THREE.DoubleSide,
+        });
+        const zenithMesh2 = new THREE.Mesh(zenithRing2, zenithRingMat2);
+        zenithMesh2.position.set(0, 792, 0);
+        zenithMesh2.rotation.x = Math.PI / 2;
+        zenithMesh2.renderOrder = 21;
+        group.add(zenithMesh2);
 
         scene.add(group);
 

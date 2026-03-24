@@ -136,5 +136,14 @@
         "PsA": "Poisson Austral",
         "Tri": "Triangle",
         "Cet": "Baleine"
+    },
+    "terms": {
+        "welcome": "Bienvenue sur Orbital Dome.",
+        "subtitle": "Pour continuer à explorer l'univers et utiliser nos outils astronomiques, veuillez consulter et accepter nos conditions.",
+        "privacyTitle": "Politique de confidentialité",
+        "privacyText": "Nous respectons votre vie privée. Cette application utilise vos données de géolocalisation uniquement sur votre appareil pour calculer les positions astronomiques locales en temps réel. Vos données personnelles ne sont jamais stockées, traitées ou partagées avec des serveurs externes.",
+        "termsTitle": "Conditions d'utilisation",
+        "termsText": "Orbital Dome est un outil éducatif, de vulgarisation astronomique et de divertissement. Malgré l'utilisation d'algorithmes de mécanique céleste éprouvés, les données affichées peuvent contenir des écarts ou des marges d'erreur. Les informations obtenues ici ne doivent pas être utilisées à des fins de navigation réelle, de missions critiques ou de recherche scientifique officielle.",
+        "accept": "Accepter et entrer"
     }
 }

@@ -247,8 +247,11 @@ export default function SolarSystemOrrery({ open, onClose }) {
                 className="absolute inset-0 bg-black/70 backdrop-blur-sm"
                 onClick={onClose}
             />
-            <div className="relative z-10 w-[740px] max-w-[95vw] h-[520px] rounded-2xl overflow-hidden shadow-2xl"
+            <div className="relative z-10 rounded-2xl overflow-hidden shadow-2xl"
                 style={{
+                    width: 'calc(100vw - 32px)',
+                    height: 'calc(100vh - 32px)',
+                    maxWidth: '1600px',
                     background: 'linear-gradient(135deg, rgba(8,8,25,0.98), rgba(15,12,35,0.98))',
                     border: '1px solid rgba(126,184,247,0.15)',
                 }}

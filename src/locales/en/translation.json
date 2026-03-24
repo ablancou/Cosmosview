@@ -136,5 +136,14 @@
         "PsA": "Piscis Austrinus",
         "Tri": "Triangulum",
         "Cet": "Cetus"
+    },
+    "terms": {
+        "welcome": "Welcome to Orbital Dome.",
+        "subtitle": "To continue exploring the universe and using our astronomical tools, please review and accept our terms.",
+        "privacyTitle": "Privacy Notice",
+        "privacyText": "We respect your privacy. This application uses your geolocation data solely on your device to calculate local astronomical positions in real time. Your personal data is never stored, processed, or shared with external servers.",
+        "termsTitle": "Terms and Conditions",
+        "termsText": "Orbital Dome is an educational, astronomical outreach, and entertainment tool. Despite using proven celestial mechanics algorithms, displayed data (such as positions of satellites, celestial bodies, and events) may contain deviations or margins of error due to external factors or the nature of simplified browser-based models. Information obtained here should not be used for real navigation, critical missions, or official scientific purposes.",
+        "accept": "Accept and Enter"
     }
 }

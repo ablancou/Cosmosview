@@ -202,6 +202,9 @@ export default function EarthGlobe({ open, onClose }) {
     const [realSatCount, setRealSatCount] = useState(0);
     const [loadingSats, setLoadingSats] = useState(false);
     const [satMode, setSatMode] = useState('representative'); // 'representative' | 'all'
+    const [orbitVisibility, setOrbitVisibility] = useState(
+        ORBITS.reduce((acc, orbit) => ({ ...acc, [orbit.name]: true }), {})
+    );
     const darkMode = useAppStore((s) => s.darkMode);
 
     /* ─── Three.js Setup ─── */
@@ -360,6 +363,7 @@ export default function EarthGlobe({ open, onClose }) {
             /* ─── Satellite Orbits ─── */
             const satGroup = new THREE.Group();
             const orbitData = [];
+            const orbitRings = {}; // Track orbit rings by name for visibility toggling
 
             ORBITS.forEach((orbit) => {
                 const incRad = (orbit.inclination * Math.PI) / 180;
@@ -383,7 +387,9 @@ export default function EarthGlobe({ open, onClose }) {
                     opacity: 0.15,
                     linewidth: 1,
                 });
-                satGroup.add(new THREE.Line(ringGeom, ringMat));
+                const ringLine = new THREE.Line(ringGeom, ringMat);
+                satGroup.add(ringLine);
+                orbitRings[orbit.name] = ringLine; // Store reference
 
                 // Satellite dots
                 for (let s = 0; s < orbit.count; s++) {
@@ -415,6 +421,7 @@ export default function EarthGlobe({ open, onClose }) {
                         speed: orbit.speed,
                         phase,
                         raan: s * 0.5 + Math.random() * 0.5, // Random ascending node
+                        orbitName: orbit.name, // Track which orbit this satellite belongs to
                     });
                 }
             });
@@ -422,6 +429,7 @@ export default function EarthGlobe({ open, onClose }) {
             scene.add(satGroup);
             sceneRef.current.satGroup = satGroup;
             sceneRef.current.orbitData = orbitData;
+            sceneRef.current.orbitRings = orbitRings;
             sceneRef.current.scene = scene;
 
             /* ─── Ambient light for clouds ─── */
@@ -590,6 +598,21 @@ export default function EarthGlobe({ open, onClose }) {
             setLoadPct(0);
         };
     }, [open]);
+
+    /* ─── Handle Orbit Visibility Changes ─── */
+    useEffect(() => {
+        if (!sceneRef.current.orbitData || !sceneRef.current.orbitRings) return;
+
+        // Update satellite mesh visibility
+        sceneRef.current.orbitData.forEach((s) => {
+            s.mesh.visible = orbitVisibility[s.orbitName] ?? true;
+        });
+
+        // Update orbit ring visibility
+        Object.entries(sceneRef.current.orbitRings).forEach(([orbitName, ring]) => {
+            ring.visible = orbitVisibility[orbitName] ?? true;
+        });
+    }, [orbitVisibility]);
 
     /* ─── Load Real Satellites from CelesTrak ─── */
     const loadRealSatellites = useCallback(async () => {
@@ -762,26 +785,42 @@ export default function EarthGlobe({ open, onClose }) {
                     {/* Legend */}
                     {satMode === 'representative' ? (
                         <div className="space-y-1.5 mb-3">
-                            {ORBITS.filter(o => o.count <= 4).map((orbit) => (
-                                <div key={orbit.name} className="flex items-center gap-2">
-                                    <span
-                                        className="w-2 h-2 rounded-full"
-                                        style={{
-                                            background: `#${orbit.color.toString(16).padStart(6, '0')}`,
-                                            boxShadow: `0 0 6px #${orbit.color.toString(16).padStart(6, '0')}`,
-                                        }}
-                                    />
-                                    <span className="text-[10px] text-white/60">{orbit.name}</span>
-                                </div>
-                            ))}
-                            <div className="flex items-center gap-2">
-                                <span className="w-2 h-2 rounded-full" style={{ background: '#6688ff', boxShadow: '0 0 6px #6688ff' }} />
-                                <span className="text-[10px] text-white/60">Starlink (20)</span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                                <span className="w-2 h-2 rounded-full" style={{ background: '#88ff44', boxShadow: '0 0 6px #88ff44' }} />
-                                <span className="text-[10px] text-white/60">GPS (8)</span>
-                            </div>
+                            {ORBITS.map((orbit) => {
+                                const isVisible = orbitVisibility[orbit.name] ?? true;
+                                return (
+                                    <button
+                                        key={orbit.name}
+                                        onClick={() => setOrbitVisibility(prev => ({ ...prev, [orbit.name]: !prev[orbit.name] }))}
+                                        className="w-full flex items-center gap-2 px-2 py-1 rounded transition-all hover:bg-white/5 active:scale-95 group cursor-pointer"
+                                        title={isVisible ? `Hide ${orbit.name}` : `Show ${orbit.name}`}
+                                    >
+                                        {/* Eye icon */}
+                                        <span className="text-[8px] text-white/40 group-hover:text-white/70 transition-colors flex-shrink-0">
+                                            {isVisible ? '👁️' : '🚫'}
+                                        </span>
+
+                                        {/* Color dot */}
+                                        <span
+                                            className={`w-2 h-2 rounded-full transition-all flex-shrink-0 ${!isVisible ? 'opacity-40' : ''}`}
+                                            style={{
+                                                background: `#${orbit.color.toString(16).padStart(6, '0')}`,
+                                                boxShadow: isVisible ? `0 0 6px #${orbit.color.toString(16).padStart(6, '0')}` : 'none',
+                                            }}
+                                        />
+
+                                        {/* Label */}
+                                        <span
+                                            className={`text-[10px] transition-all ${
+                                                isVisible
+                                                    ? 'text-white/60'
+                                                    : 'text-white/30 line-through'
+                                            }`}
+                                        >
+                                            {orbit.name} {orbit.count > 1 ? `(${orbit.count})` : ''}
+                                        </span>
+                                    </button>
+                                );
+                            })}
                         </div>
                     ) : (
                         <div className="space-y-1.5 mb-3">

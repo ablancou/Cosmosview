@@ -1,7 +1,7 @@
 {
-    "name": "CosmosView — Real-Time Personal Planetarium",
-    "short_name": "CosmosView",
-    "description": "A stunning 3D planetarium that renders the real night sky using your location. Features 5,000+ stars, planets, constellations, meteor showers, NASA data, and more.",
+    "name": "Orbital Dome — Real-Time Personal Planetarium",
+    "short_name": "Orbital Dome",
+    "description": "The most immersive personal planetarium ever built. Photorealistic 3D Earth, 8,000+ live satellites, GLSL shaders, 100,000+ stars, constellations, AR sky overlay, and NASA data — all in your browser.",
     "start_url": "/",
     "display": "standalone",
     "orientation": "any",

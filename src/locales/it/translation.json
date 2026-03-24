@@ -136,5 +136,14 @@
         "PsA": "Pesce Australe",
         "Tri": "Triangolo",
         "Cet": "Balena"
+    },
+    "terms": {
+        "welcome": "Benvenuto su Orbital Dome.",
+        "subtitle": "Per continuare a esplorare l'universo e utilizzare i nostri strumenti astronomici, ti preghiamo di leggere e accettare i nostri termini.",
+        "privacyTitle": "Informativa sulla privacy",
+        "privacyText": "Rispettiamo la tua privacy. Questa applicazione utilizza i dati della tua posizione geografica esclusivamente sul tuo dispositivo per calcolare le posizioni astronomiche locali in tempo reale. I tuoi dati personali non vengono mai archiviati, elaborati o condivisi con server esterni.",
+        "termsTitle": "Termini e condizioni",
+        "termsText": "Orbital Dome è uno strumento sviluppato a scopo educativo, di divulgazione astronomica e intrattenimento. Nonostante l'utilizzo di algoritmi di meccanica celeste comprovati, i dati visualizzati possono contenere deviazioni o margini di errore. Le informazioni ottenute qui non devono essere utilizzate per la navigazione reale, missioni critiche o scopi scientifici ufficiali.",
+        "accept": "Accetta e entra"
     }
 }

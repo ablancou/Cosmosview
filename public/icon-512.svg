@@ -1,114 +1,176 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
   <defs>
-    <radialGradient id="bg" cx="50%" cy="50%" r="70%">
-      <stop offset="0%" stop-color="#0d1127"/>
-      <stop offset="100%" stop-color="#040408"/>
+    <!-- Background gradient -->
+    <radialGradient id="bgGrad" cx="50%" cy="48%" r="72%">
+      <stop offset="0%" stop-color="#0f1528"/>
+      <stop offset="100%" stop-color="#030308"/>
     </radialGradient>
-    <radialGradient id="glow" cx="50%" cy="40%" r="35%">
-      <stop offset="0%" stop-color="#7eb8f7" stop-opacity="0.2"/>
-      <stop offset="100%" stop-color="#7eb8f7" stop-opacity="0"/>
+
+    <!-- Earth surface gradient -->
+    <radialGradient id="earthSurf" cx="38%" cy="35%" r="55%">
+      <stop offset="0%" stop-color="#3a8fd4"/>
+      <stop offset="35%" stop-color="#2568a8"/>
+      <stop offset="70%" stop-color="#1a4a7d"/>
+      <stop offset="100%" stop-color="#0f2d52"/>
     </radialGradient>
-    <linearGradient id="domeGrad" x1="50%" y1="0%" x2="50%" y2="100%">
-      <stop offset="0%" stop-color="#a8d4ff" stop-opacity="0.35"/>
-      <stop offset="60%" stop-color="#5b8fd9" stop-opacity="0.15"/>
-      <stop offset="100%" stop-color="#3a5f9e" stop-opacity="0"/>
+
+    <!-- Dome glass gradient - crystal refraction -->
+    <radialGradient id="domeGlass" cx="35%" cy="30%" r="65%">
+      <stop offset="0%" stop-color="#c8e4ff" stop-opacity="0.18"/>
+      <stop offset="40%" stop-color="#7eb8f7" stop-opacity="0.08"/>
+      <stop offset="80%" stop-color="#4a80c8" stop-opacity="0.04"/>
+      <stop offset="100%" stop-color="#2a5090" stop-opacity="0.02"/>
+    </radialGradient>
+
+    <!-- Dome edge highlight -->
+    <linearGradient id="domeEdge" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#c8e4ff" stop-opacity="0.5"/>
+      <stop offset="50%" stop-color="#7eb8f7" stop-opacity="0.2"/>
+      <stop offset="100%" stop-color="#c8e4ff" stop-opacity="0.4"/>
     </linearGradient>
-    <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-      <stop offset="0%" stop-color="#7eb8f7" stop-opacity="0"/>
-      <stop offset="30%" stop-color="#7eb8f7" stop-opacity="0.8"/>
-      <stop offset="70%" stop-color="#a8d4ff" stop-opacity="0.9"/>
-      <stop offset="100%" stop-color="#7eb8f7" stop-opacity="0"/>
-    </linearGradient>
-    <radialGradient id="earthGrad" cx="40%" cy="35%" r="50%">
-      <stop offset="0%" stop-color="#4a90d9"/>
-      <stop offset="40%" stop-color="#2d6db5"/>
-      <stop offset="100%" stop-color="#1a3a6b"/>
+
+    <!-- Atmosphere glow -->
+    <radialGradient id="atmosGlow" cx="50%" cy="55%" r="45%">
+      <stop offset="70%" stop-color="#7eb8f7" stop-opacity="0"/>
+      <stop offset="85%" stop-color="#5b9ee0" stop-opacity="0.12"/>
+      <stop offset="100%" stop-color="#7eb8f7" stop-opacity="0.25"/>
     </radialGradient>
-    <clipPath id="earthClip">
-      <circle cx="256" cy="200" r="82"/>
-    </clipPath>
+
+    <!-- Star glow filter -->
     <filter id="starGlow">
-      <feGaussianBlur stdDeviation="1.5" result="blur"/>
+      <feGaussianBlur stdDeviation="1.2" result="blur"/>
       <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
     </filter>
-    <filter id="orbGlow">
-      <feGaussianBlur stdDeviation="3"/>
+
+    <!-- Soft outer glow for dome -->
+    <filter id="domeGlow">
+      <feGaussianBlur stdDeviation="6" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
     </filter>
+
+    <!-- Earth clip -->
+    <clipPath id="earthClip">
+      <circle cx="256" cy="230" r="95"/>
+    </clipPath>
+
+    <!-- Dome clip (hemisphere above Earth) -->
+    <clipPath id="domeClip">
+      <path d="M 130 230 A 126 126 0 0 1 382 230 L 382 80 L 130 80 Z"/>
+    </clipPath>
   </defs>
 
-  <!-- Background -->
-  <rect width="512" height="512" rx="102" fill="url(#bg)"/>
+  <!-- ═══ BACKGROUND ═══ -->
+  <rect width="512" height="512" rx="108" fill="url(#bgGrad)"/>
 
-  <!-- Subtle ambient glow -->
-  <circle cx="256" cy="200" r="200" fill="url(#glow)"/>
-
-  <!-- Stars -->
+  <!-- ═══ STARS ═══ -->
   <g fill="#fff" filter="url(#starGlow)">
-    <circle cx="75" cy="65" r="2.2" opacity="0.9"/>
-    <circle cx="430" cy="85" r="2.5" opacity="1"/>
-    <circle cx="145" cy="340" r="1.8" opacity="0.7"/>
-    <circle cx="380" cy="135" r="2" opacity="0.85"/>
-    <circle cx="455" cy="290" r="1.5" opacity="0.6"/>
-    <circle cx="55" cy="240" r="1.3" opacity="0.55"/>
-    <circle cx="350" cy="370" r="1.8" opacity="0.7"/>
-    <circle cx="125" cy="115" r="1.6" opacity="0.75"/>
-    <circle cx="465" cy="410" r="1.2" opacity="0.45"/>
-    <circle cx="285" cy="55" r="1.8" opacity="0.85"/>
-    <circle cx="95" cy="165" r="1" opacity="0.45"/>
-    <circle cx="195" cy="75" r="0.9" opacity="0.4"/>
-    <circle cx="390" cy="45" r="1.1" opacity="0.5"/>
-    <circle cx="445" cy="195" r="1" opacity="0.45"/>
-    <circle cx="65" cy="390" r="0.9" opacity="0.35"/>
-    <circle cx="480" cy="145" r="0.7" opacity="0.3"/>
-    <circle cx="45" cy="320" r="0.9" opacity="0.4"/>
-    <circle cx="410" cy="430" r="1" opacity="0.35"/>
-    <circle cx="170" cy="430" r="0.8" opacity="0.3"/>
-    <circle cx="310" cy="45" r="0.6" opacity="0.25"/>
+    <!-- Bright stars -->
+    <circle cx="72" cy="58" r="2.2" opacity="0.95"/>
+    <circle cx="438" cy="78" r="2.8" opacity="1"/>
+    <circle cx="140" cy="350" r="1.8" opacity="0.7"/>
+    <circle cx="392" cy="128" r="2" opacity="0.9"/>
+    <circle cx="460" cy="285" r="1.6" opacity="0.65"/>
+    <circle cx="50" cy="235" r="1.4" opacity="0.55"/>
+    <circle cx="355" cy="375" r="1.8" opacity="0.7"/>
+    <circle cx="118" cy="108" r="1.7" opacity="0.8"/>
+    <circle cx="468" cy="415" r="1.2" opacity="0.45"/>
+    <circle cx="290" cy="48" r="2" opacity="0.9"/>
+    <circle cx="195" cy="68" r="1.3" opacity="0.6"/>
+    <!-- Medium stars -->
+    <circle cx="88" cy="168" r="1" opacity="0.45"/>
+    <circle cx="385" cy="42" r="1.1" opacity="0.5"/>
+    <circle cx="325" cy="290" r="0.9" opacity="0.4"/>
+    <circle cx="448" cy="190" r="1" opacity="0.45"/>
+    <circle cx="62" cy="395" r="0.9" opacity="0.38"/>
+    <circle cx="485" cy="140" r="0.7" opacity="0.3"/>
+    <circle cx="38" cy="325" r="0.9" opacity="0.4"/>
+    <circle cx="405" cy="438" r="1" opacity="0.35"/>
+    <circle cx="168" cy="438" r="0.8" opacity="0.3"/>
+    <!-- Small stars -->
+    <circle cx="248" cy="40" r="0.6" opacity="0.25"/>
+    <circle cx="155" cy="262" r="0.5" opacity="0.2"/>
+    <circle cx="420" cy="335" r="0.6" opacity="0.25"/>
+    <circle cx="225" cy="405" r="0.5" opacity="0.2"/>
+    <circle cx="480" cy="330" r="0.5" opacity="0.18"/>
+    <circle cx="32" cy="145" r="0.6" opacity="0.22"/>
   </g>
 
-  <!-- Dome shell (hemisphere) -->
-  <path d="M 130 260 A 126 126 0 0 1 382 260" fill="url(#domeGrad)" stroke="#7eb8f7" stroke-width="1.5" opacity="0.4"/>
+  <!-- ═══ EARTH ═══ -->
+  <!-- Earth shadow (gives depth) -->
+  <circle cx="256" cy="230" r="98" fill="#0a1525" opacity="0.5"/>
 
-  <!-- Earth globe -->
-  <circle cx="256" cy="200" r="82" fill="url(#earthGrad)"/>
+  <!-- Earth sphere -->
+  <circle cx="256" cy="230" r="95" fill="url(#earthSurf)"/>
 
-  <!-- Continents (simplified) -->
-  <g clip-path="url(#earthClip)" opacity="0.35">
+  <!-- Continents -->
+  <g clip-path="url(#earthClip)" opacity="0.4">
     <!-- Americas -->
-    <path d="M 225 145 Q 220 160 215 175 Q 210 190 220 205 Q 225 215 218 235 Q 215 245 220 260" fill="none" stroke="#3ddc84" stroke-width="8" stroke-linecap="round" opacity="0.7"/>
+    <path d="M 218 160 Q 215 170 210 182 Q 205 195 212 210 Q 218 222 212 242 Q 208 258 214 275 Q 218 285 210 300" fill="none" stroke="#2ecc71" stroke-width="10" stroke-linecap="round" opacity="0.6"/>
+    <path d="M 222 168 Q 228 175 225 185" fill="none" stroke="#2ecc71" stroke-width="7" stroke-linecap="round" opacity="0.5"/>
     <!-- Europe/Africa -->
-    <path d="M 265 140 Q 270 155 268 170 Q 265 185 270 200 Q 275 215 270 240 Q 268 255 275 270" fill="none" stroke="#3ddc84" stroke-width="7" stroke-linecap="round" opacity="0.6"/>
-    <!-- Asia hint -->
-    <path d="M 290 150 Q 305 160 310 175 Q 315 185 305 195" fill="none" stroke="#3ddc84" stroke-width="6" stroke-linecap="round" opacity="0.5"/>
+    <path d="M 268 148 Q 272 162 270 178 Q 266 195 272 212 Q 278 228 272 252 Q 268 272 276 295" fill="none" stroke="#2ecc71" stroke-width="9" stroke-linecap="round" opacity="0.55"/>
+    <path d="M 275 155 Q 282 158 286 165" fill="none" stroke="#2ecc71" stroke-width="6" stroke-linecap="round" opacity="0.4"/>
+    <!-- Asia -->
+    <path d="M 295 150 Q 312 162 318 178 Q 322 192 312 205 Q 305 212 310 225" fill="none" stroke="#2ecc71" stroke-width="8" stroke-linecap="round" opacity="0.45"/>
+    <!-- Australia hint -->
+    <path d="M 308 262 Q 318 268 315 278" fill="none" stroke="#2ecc71" stroke-width="5" stroke-linecap="round" opacity="0.3"/>
   </g>
 
-  <!-- Atmosphere rim -->
-  <circle cx="256" cy="200" r="84" fill="none" stroke="#7eb8f7" stroke-width="3" opacity="0.2"/>
-  <circle cx="256" cy="200" r="88" fill="none" stroke="#7eb8f7" stroke-width="1.5" opacity="0.08"/>
+  <!-- Ocean specular highlight -->
+  <circle cx="235" cy="195" r="25" fill="#fff" opacity="0.04"/>
 
-  <!-- Orbital ring 1 (main) -->
-  <ellipse cx="256" cy="200" rx="155" ry="45" fill="none" stroke="url(#ringGrad)" stroke-width="2" transform="rotate(-20, 256, 200)"/>
+  <!-- Earth atmosphere rim -->
+  <circle cx="256" cy="230" r="97" fill="none" stroke="#5bb8f7" stroke-width="2.5" opacity="0.2"/>
+  <circle cx="256" cy="230" r="100" fill="none" stroke="#5bb8f7" stroke-width="1.2" opacity="0.08"/>
 
-  <!-- Orbital ring glow -->
-  <ellipse cx="256" cy="200" rx="155" ry="45" fill="none" stroke="#7eb8f7" stroke-width="6" opacity="0.06" filter="url(#orbGlow)" transform="rotate(-20, 256, 200)"/>
+  <!-- ═══ CRYSTAL DOME ═══ -->
+  <!-- Dome hemisphere (glass shell) -->
+  <path d="M 138 230 A 118 118 0 0 1 374 230" fill="url(#domeGlass)" stroke="url(#domeEdge)" stroke-width="1.8"/>
 
-  <!-- Satellite dot on main orbit -->
-  <circle cx="380" cy="155" r="4.5" fill="#7eb8f7" opacity="0.95"/>
-  <circle cx="380" cy="155" r="9" fill="#7eb8f7" opacity="0.15"/>
-  <circle cx="380" cy="155" r="14" fill="#7eb8f7" opacity="0.05"/>
+  <!-- Dome outer glow -->
+  <path d="M 138 230 A 118 118 0 0 1 374 230" fill="none" stroke="#7eb8f7" stroke-width="4" opacity="0.08" filter="url(#domeGlow)"/>
 
-  <!-- Second orbital ring (subtle) -->
-  <ellipse cx="256" cy="200" rx="130" ry="65" fill="none" stroke="#7eb8f7" stroke-width="0.8" opacity="0.12" transform="rotate(35, 256, 200)"/>
+  <!-- Crystal dome grid lines (geodesic pattern) -->
+  <g stroke="#7eb8f7" fill="none" opacity="0.12" stroke-width="0.7">
+    <!-- Meridians -->
+    <path d="M 256 112 Q 256 170 256 230"/>
+    <path d="M 195 122 Q 200 175 196 230"/>
+    <path d="M 317 122 Q 312 175 316 230"/>
+    <path d="M 160 150 Q 168 190 155 230"/>
+    <path d="M 352 150 Q 344 190 357 230"/>
+    <!-- Parallels -->
+    <path d="M 165 165 Q 256 140 347 165"/>
+    <path d="M 148 195 Q 256 168 364 195"/>
+  </g>
 
-  <!-- Second satellite -->
-  <circle cx="155" cy="175" r="2.5" fill="#a8d4ff" opacity="0.7"/>
+  <!-- Crystal dome specular highlights -->
+  <path d="M 195 145 Q 230 125 270 138" fill="none" stroke="#fff" stroke-width="1.5" opacity="0.2" stroke-linecap="round"/>
+  <path d="M 300 150 Q 325 160 340 178" fill="none" stroke="#fff" stroke-width="1" opacity="0.1" stroke-linecap="round"/>
 
-  <!-- Text: ORBITAL -->
-  <text x="256" y="380" text-anchor="middle" font-family="'Inter', 'SF Pro Display', -apple-system, sans-serif" font-weight="300" font-size="52" letter-spacing="12" fill="#e0e8f5" opacity="0.95">ORBITAL</text>
+  <!-- Dome base ring (where dome meets Earth) -->
+  <ellipse cx="256" cy="230" rx="119" ry="12" fill="none" stroke="#7eb8f7" stroke-width="1.5" opacity="0.3"/>
+  <ellipse cx="256" cy="230" rx="119" ry="12" fill="none" stroke="#7eb8f7" stroke-width="5" opacity="0.04"/>
 
-  <!-- Text: DOME -->
-  <text x="256" y="435" text-anchor="middle" font-family="'Inter', 'SF Pro Display', -apple-system, sans-serif" font-weight="700" font-size="58" letter-spacing="18" fill="#7eb8f7">DOME</text>
+  <!-- ═══ ORBITAL RINGS ═══ -->
+  <!-- Main orbit -->
+  <ellipse cx="256" cy="210" rx="170" ry="50" fill="none" stroke="#7eb8f7" stroke-width="1.5" opacity="0.25" transform="rotate(-18, 256, 210)"/>
 
-  <!-- Subtle bottom accent line -->
-  <line x1="175" y1="452" x2="337" y2="452" stroke="#7eb8f7" stroke-width="1" opacity="0.25"/>
+  <!-- Satellite on orbit -->
+  <circle cx="398" cy="162" r="4" fill="#7eb8f7" opacity="0.95"/>
+  <circle cx="398" cy="162" r="8" fill="#7eb8f7" opacity="0.15"/>
+  <circle cx="398" cy="162" r="13" fill="#7eb8f7" opacity="0.04"/>
+
+  <!-- Secondary orbit (subtle) -->
+  <ellipse cx="256" cy="215" rx="145" ry="62" fill="none" stroke="#a8d4ff" stroke-width="0.7" opacity="0.1" transform="rotate(40, 256, 215)"/>
+  <circle cx="140" cy="185" r="2.5" fill="#a8d4ff" opacity="0.6"/>
+
+  <!-- ═══ ATMOSPHERE GLOW ═══ -->
+  <circle cx="256" cy="230" r="120" fill="url(#atmosGlow)"/>
+
+  <!-- ═══ TEXT ═══ -->
+  <text x="256" y="385" text-anchor="middle" font-family="'Inter', 'SF Pro Display', -apple-system, 'Helvetica Neue', sans-serif" font-weight="300" font-size="48" letter-spacing="11" fill="#e0e8f5" opacity="0.95">ORBITAL</text>
+  <text x="256" y="438" text-anchor="middle" font-family="'Inter', 'SF Pro Display', -apple-system, 'Helvetica Neue', sans-serif" font-weight="700" font-size="54" letter-spacing="17" fill="#7eb8f7">DOME</text>
+
+  <!-- Subtle accent line -->
+  <line x1="178" y1="453" x2="334" y2="453" stroke="#7eb8f7" stroke-width="0.8" opacity="0.2"/>
 </svg>

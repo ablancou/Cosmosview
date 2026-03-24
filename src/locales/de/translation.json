@@ -136,5 +136,14 @@
         "PsA": "Südlicher Fisch",
         "Tri": "Dreieck",
         "Cet": "Walfisch"
+    },
+    "terms": {
+        "welcome": "Willkommen bei Orbital Dome.",
+        "subtitle": "Um das Universum weiter zu erkunden und unsere astronomischen Werkzeuge zu nutzen, überprüfe und akzeptiere bitte unsere Bedingungen.",
+        "privacyTitle": "Datenschutzhinweis",
+        "privacyText": "Wir respektieren deine Privatsphäre. Diese Anwendung verwendet deine Standortdaten ausschließlich auf deinem Gerät, um lokale astronomische Positionen in Echtzeit zu berechnen. Deine persönlichen Daten werden niemals auf externen Servern gespeichert, verarbeitet oder weitergegeben.",
+        "termsTitle": "Nutzungsbedingungen",
+        "termsText": "Orbital Dome ist ein Werkzeug für Bildung, astronomische Vermittlung und Unterhaltung. Trotz der Verwendung bewährter Algorithmen der Himmelsmechanik können die angezeigten Daten Abweichungen oder Fehlertoleranzen enthalten. Die hier erhaltenen Informationen sollten nicht für reale Navigation, kritische Missionen oder offizielle wissenschaftliche Zwecke verwendet werden.",
+        "accept": "Akzeptieren und eintreten"
     }
 }

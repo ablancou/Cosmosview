@@ -136,5 +136,14 @@
         "PsA": "Peixe Austral",
         "Tri": "Triângulo",
         "Cet": "Baleia"
+    },
+    "terms": {
+        "welcome": "Bem-vindo ao Orbital Dome.",
+        "subtitle": "Para continuar explorando o universo e utilizando nossas ferramentas astronômicas, por favor revise e aceite nossos termos.",
+        "privacyTitle": "Aviso de Privacidade",
+        "privacyText": "Respeitamos sua privacidade. Esta aplicação utiliza os dados da sua localização geográfica unicamente no seu dispositivo para calcular posições astronômicas locais em tempo real. Seus dados pessoais nunca são armazenados, processados ou compartilhados com servidores externos.",
+        "termsTitle": "Termos e Condições",
+        "termsText": "Orbital Dome é uma ferramenta desenvolvida com fins educacionais, de divulgação astronômica e entretenimento. Apesar de utilizar algoritmos de mecânica celeste comprovados, os dados exibidos podem conter desvios ou margens de erro. As informações obtidas aqui não devem ser utilizadas para navegação real, missões críticas ou propósitos científicos oficiais.",
+        "accept": "Aceitar e Entrar"
     }
 }

@@ -30,6 +30,7 @@ import TelescopeMode from './components/TelescopeMode';
 import AstroWeather from './components/AstroWeather';
 import ConstellationNarrator from './components/ConstellationNarrator';
 import AccessibilityPanel from './components/AccessibilityPanel';
+import MoonGlobe from './components/MoonGlobe';
 import LoadingScreen from './components/LoadingScreen';
 import TermsPopup from './components/TermsPopup';
 import useGeolocation from './hooks/useGeolocation';
@@ -71,6 +72,7 @@ export default function App() {
     const [narratorOpen, setNarratorOpen] = useState(false);
     const [narratorConstellation, setNarratorConstellation] = useState(null);
     const [accessibilityOpen, setAccessibilityOpen] = useState(false);
+    const [moonGlobeOpen, setMoonGlobeOpen] = useState(false);
     const [quickStartOpen, setQuickStartOpen] = useState(() => {
         if (!localStorage.getItem('od_quickstart_seen')) {
             localStorage.setItem('od_quickstart_seen', '1');
@@ -201,6 +203,7 @@ export default function App() {
             case 'telescope': setTelescopeOpen(true); break;
             case 'astroWeather': setAstroWeatherOpen(true); break;
             case 'accessibility': setAccessibilityOpen(true); break;
+            case 'moonGlobe': setMoonGlobeOpen(true); break;
             case 'screenshot': handleScreenshot(); break;
             case 'toggleSound': setSoundEnabled((s) => !s); break;
             default: break;
@@ -297,6 +300,7 @@ export default function App() {
             {!loading && <TelescopeMode open={telescopeOpen} onClose={() => setTelescopeOpen(false)} />}
             {!loading && <AstroWeather open={astroWeatherOpen} onClose={() => setAstroWeatherOpen(false)} />}
             {!loading && <AccessibilityPanel open={accessibilityOpen} onClose={() => setAccessibilityOpen(false)} />}
+            {!loading && <MoonGlobe open={moonGlobeOpen} onClose={() => setMoonGlobeOpen(false)} />}
             {!loading && narratorConstellation && (
                 <ConstellationNarrator
                     constellation={narratorConstellation}
