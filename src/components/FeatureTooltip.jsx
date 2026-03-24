@@ -182,7 +182,7 @@ export default function FeatureTooltip({ featureId, onDismiss }) {
                     {tooltip.desc}
                 </p>
 
-                {/* Got it button */}
+                {/* Action button */}
                 <button
                     onClick={onDismiss}
                     className="w-full py-2.5 rounded-xl text-sm font-semibold transition-colors"
@@ -192,7 +192,7 @@ export default function FeatureTooltip({ featureId, onDismiss }) {
                         border: `1px solid ${darkMode ? 'rgba(126,184,247,0.25)' : 'rgba(74,144,217,0.25)'}`,
                     }}
                 >
-                    Got it!
+                    Let's Go!
                 </button>
             </div>
         </div>

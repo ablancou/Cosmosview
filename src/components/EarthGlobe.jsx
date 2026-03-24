@@ -206,6 +206,7 @@ export default function EarthGlobe({ open, onClose }) {
         ORBITS.reduce((acc, orbit) => ({ ...acc, [orbit.name]: true }), {})
     );
     const [panelOpen, setPanelOpen] = useState(false);
+    const zoomRef = useRef({ targetDist: 14 });
     const darkMode = useAppStore((s) => s.darkMode);
     const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
 
@@ -450,7 +451,7 @@ export default function EarthGlobe({ open, onClose }) {
         let targetRotY = 0;
         let targetRotX = 0.3;
         let camDist = 14;
-        let targetDist = 14;
+        let targetDist = zoomRef.current.targetDist;
         let autoRotSpeed = 0.001;
 
         const onPointerDown = (e) => {
@@ -478,6 +479,7 @@ export default function EarthGlobe({ open, onClose }) {
             e.preventDefault();
             targetDist += e.deltaY * 0.01;
             targetDist = Math.max(7.5, Math.min(25, targetDist));
+            zoomRef.current.targetDist = targetDist;
         };
 
         renderer.domElement.addEventListener('mousedown', onPointerDown);
@@ -505,6 +507,7 @@ export default function EarthGlobe({ open, onClose }) {
             // Smooth camera
             rotY += (targetRotY - rotY) * 0.08;
             rotX += (targetRotX - rotX) * 0.08;
+            targetDist = zoomRef.current.targetDist;
             camDist += (targetDist - camDist) * 0.08;
 
             camera.position.x = camDist * Math.sin(rotY) * Math.cos(rotX);
@@ -896,6 +899,28 @@ export default function EarthGlobe({ open, onClose }) {
                             <br />Tap to load all active in real-time.
                         </p>
                     )}
+                </div>
+            )}
+
+            {/* Zoom +/- buttons (essential on mobile where there's no scroll wheel) */}
+            {texturesLoaded && (
+                <div className="absolute bottom-20 right-4 z-10 flex flex-col gap-2">
+                    <button
+                        onClick={() => {
+                            zoomRef.current.targetDist = Math.max(7.5, zoomRef.current.targetDist - 1.5);
+                        }}
+                        className="w-10 h-10 rounded-full flex items-center justify-center text-white/70 text-lg font-bold active:scale-90 transition-transform"
+                        style={{ background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,0.1)' }}
+                        aria-label="Zoom in"
+                    >+</button>
+                    <button
+                        onClick={() => {
+                            zoomRef.current.targetDist = Math.min(25, zoomRef.current.targetDist + 1.5);
+                        }}
+                        className="w-10 h-10 rounded-full flex items-center justify-center text-white/70 text-lg font-bold active:scale-90 transition-transform"
+                        style={{ background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,0.1)' }}
+                        aria-label="Zoom out"
+                    >−</button>
                 </div>
             )}
 

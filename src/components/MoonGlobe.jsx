@@ -128,12 +128,12 @@ const TYPE_HEX = {
     change: '#4499ff',
 };
 
-/* ═══ NASA Moon Textures (LROC / LRO public domain) ═══ */
+/* ═══ NASA Moon Textures (public domain / CC BY) ═══ */
 const MOON_TEXTURES = {
-    color: 'https://unpkg.com/three-globe@2.31.1/example/img/lunar-surface.jpg',
-    // Fallback to Solar System Scope (CC BY 4.0, free for any use)
-    colorFallback: 'https://www.solarsystemscope.com/textures/download/2k_moon.jpg',
-    bump: 'https://www.solarsystemscope.com/textures/download/2k_moon.jpg',
+    // Solar System Scope 2K moon (CC BY 4.0, based on NASA LRO data)
+    color: 'https://www.solarsystemscope.com/textures/download/2k_moon.jpg',
+    // Fallback: three-globe bundled lunar surface
+    colorFallback: 'https://unpkg.com/three-globe@2.31.1/example/img/lunar-surface.jpg',
 };
 
 /* ═══ Procedural Moon Texture (fallback if NASA textures fail to load) ═══ */
@@ -499,8 +499,8 @@ export default function MoonGlobe({ open, onClose }) {
         camera.position.set(0, 0.5, 5.5);
         camera.lookAt(0, 0, 0);
 
-        // Stars
-        const starCount = 4000;
+        // Stars (fewer on mobile)
+        const starCount = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) ? 1500 : 4000;
         const starPos = new Float32Array(starCount * 3);
         const starSizes = new Float32Array(starCount);
         for (let i = 0; i < starCount; i++) {
@@ -520,11 +520,13 @@ export default function MoonGlobe({ open, onClose }) {
 
         // Moon textures — try NASA real textures, fallback to procedural
         const loader = new THREE.TextureLoader();
-        const proceduralTex = createMoonTexture(2048);
-        const proceduralNormal = createNormalMap(1024);
+        const texSize = _isMobile ? 1024 : 2048;
+        const proceduralTex = createMoonTexture(texSize);
+        const proceduralNormal = createNormalMap(_isMobile ? 512 : 1024);
 
-        // Moon sphere (start with procedural, upgrade to NASA if available)
-        const moonGeom = new THREE.SphereGeometry(2, 128, 128);
+        // Moon sphere (lower segments on mobile for performance)
+        const _isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+        const moonGeom = new THREE.SphereGeometry(2, _isMobile ? 64 : 128, _isMobile ? 64 : 128);
         const moonMat = new THREE.MeshStandardMaterial({
             map: proceduralTex,
             normalMap: proceduralNormal,
@@ -807,17 +809,32 @@ export default function MoonGlobe({ open, onClose }) {
             el.removeEventListener('touchmove', onMove);
             el.removeEventListener('touchend', onUp);
             el.removeEventListener('wheel', onWheel);
+
+            // Dispose ALL scene objects to prevent memory leaks and freezes
+            scene.traverse((obj) => {
+                if (obj.geometry) obj.geometry.dispose();
+                if (obj.material) {
+                    if (Array.isArray(obj.material)) obj.material.forEach(m => {
+                        if (m.map) m.map.dispose();
+                        if (m.normalMap) m.normalMap.dispose();
+                        if (m.bumpMap) m.bumpMap.dispose();
+                        m.dispose();
+                    });
+                    else {
+                        if (obj.material.map) obj.material.map.dispose();
+                        if (obj.material.normalMap) obj.material.normalMap.dispose();
+                        if (obj.material.bumpMap) obj.material.bumpMap.dispose();
+                        obj.material.dispose();
+                    }
+                }
+            });
+
             if (container.contains(renderer.domElement)) {
                 container.removeChild(renderer.domElement);
             }
-            moonGeom.dispose();
-            moonMat.dispose();
-            moonTexture.dispose();
-            normalMap.dispose();
-            glowGeom.dispose();
-            glowMat.dispose();
-            starGeom.dispose();
             renderer.dispose();
+            renderer.forceContextLoss();
+            threeRef.current = null;
         };
     }, [open]);
 
