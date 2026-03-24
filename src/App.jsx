@@ -31,6 +31,10 @@ import AstroWeather from './components/AstroWeather';
 import ConstellationNarrator from './components/ConstellationNarrator';
 import AccessibilityPanel from './components/AccessibilityPanel';
 import MoonGlobe from './components/MoonGlobe';
+import LightPollutionSimulator from './components/LightPollutionSimulator';
+import AsteroidTracker from './components/AsteroidTracker';
+import ExoplanetExplorer from './components/ExoplanetExplorer';
+import DSNLivePanel from './components/DSNLivePanel';
 import LoadingScreen from './components/LoadingScreen';
 import TermsPopup from './components/TermsPopup';
 import useGeolocation from './hooks/useGeolocation';
@@ -73,6 +77,10 @@ export default function App() {
     const [narratorConstellation, setNarratorConstellation] = useState(null);
     const [accessibilityOpen, setAccessibilityOpen] = useState(false);
     const [moonGlobeOpen, setMoonGlobeOpen] = useState(false);
+    const [lightPollutionOpen, setLightPollutionOpen] = useState(false);
+    const [asteroidTrackerOpen, setAsteroidTrackerOpen] = useState(false);
+    const [exoplanetsOpen, setExoplanetsOpen] = useState(false);
+    const [dsnLiveOpen, setDsnLiveOpen] = useState(false);
     const [quickStartOpen, setQuickStartOpen] = useState(() => {
         if (!localStorage.getItem('od_quickstart_seen')) {
             localStorage.setItem('od_quickstart_seen', '1');
@@ -204,6 +212,10 @@ export default function App() {
             case 'astroWeather': setAstroWeatherOpen(true); break;
             case 'accessibility': setAccessibilityOpen(true); break;
             case 'moonGlobe': setMoonGlobeOpen(true); break;
+            case 'lightPollution': setLightPollutionOpen(true); break;
+            case 'asteroidTracker': setAsteroidTrackerOpen(true); break;
+            case 'exoplanets': setExoplanetsOpen(true); break;
+            case 'dsnLive': setDsnLiveOpen(true); break;
             case 'screenshot': handleScreenshot(); break;
             case 'toggleSound': setSoundEnabled((s) => !s); break;
             default: break;
@@ -301,6 +313,10 @@ export default function App() {
             {!loading && <AstroWeather open={astroWeatherOpen} onClose={() => setAstroWeatherOpen(false)} />}
             {!loading && <AccessibilityPanel open={accessibilityOpen} onClose={() => setAccessibilityOpen(false)} />}
             {!loading && <MoonGlobe open={moonGlobeOpen} onClose={() => setMoonGlobeOpen(false)} />}
+            {!loading && <LightPollutionSimulator open={lightPollutionOpen} onClose={() => setLightPollutionOpen(false)} />}
+            {!loading && <AsteroidTracker open={asteroidTrackerOpen} onClose={() => setAsteroidTrackerOpen(false)} />}
+            {!loading && <ExoplanetExplorer open={exoplanetsOpen} onClose={() => setExoplanetsOpen(false)} />}
+            {!loading && <DSNLivePanel open={dsnLiveOpen} onClose={() => setDsnLiveOpen(false)} />}
             {!loading && narratorConstellation && (
                 <ConstellationNarrator
                     constellation={narratorConstellation}

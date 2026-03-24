@@ -74,6 +74,32 @@ const SUGGESTIONS = [
         actionLabel: '📸 Capture',
         color: '#cc66ff',
     },
+    {
+        emoji: '☄️',
+        title: 'Asteroid Tracker',
+        desc: 'Track near-Earth asteroids in 3D — see Apophis, Bennu, and other potentially hazardous objects with real orbital data from NASA.',
+        action: 'asteroidTracker',
+        actionLabel: '☄️ Track Asteroids',
+        color: '#ef4444',
+        flagship: true,
+    },
+    {
+        emoji: '🪐',
+        title: 'Exoplanet Explorer',
+        desc: 'Visit alien solar systems! Explore TRAPPIST-1\'s 7 planets, Proxima Centauri b, and other confirmed exoworlds with real NASA data.',
+        action: 'exoplanets',
+        actionLabel: '🪐 Explore Exoplanets',
+        color: '#22dd77',
+        flagship: true,
+    },
+    {
+        emoji: '📡',
+        title: 'Deep Space Network Live',
+        desc: 'Watch NASA communicate with Voyager, JWST, Mars rovers, and more spacecraft in real time across the solar system.',
+        action: 'dsnLive',
+        actionLabel: '📡 View DSN',
+        color: '#22dd77',
+    },
 ];
 
 export default function QuickStartGuide({ open, onClose, onAction }) {

@@ -102,6 +102,26 @@ const TOOLTIPS = {
         title: 'Accessibility Settings',
         desc: 'High contrast mode, screen reader support, reduced motion, font scaling, and color-blind modes. Astronomy for everyone.',
     },
+    lightPollution: {
+        emoji: '🌃',
+        title: 'Light Pollution Simulator',
+        desc: 'See how light pollution affects YOUR sky. Slide from Bortle 1 (pristine dark sky) to Bortle 9 (inner city) and watch stars disappear in real time. Discover what you\'re missing.',
+    },
+    asteroidTracker: {
+        emoji: '☄️',
+        title: 'Near-Earth Asteroid Tracker',
+        desc: '3D visualization of potentially hazardous asteroids orbiting near Earth. Track Apophis, Bennu, and more with real orbital data from NASA.',
+    },
+    exoplanets: {
+        emoji: '🪐',
+        title: 'Exoplanet Explorer',
+        desc: 'Visit confirmed alien worlds! Explore TRAPPIST-1, Proxima Centauri, and more star systems with real NASA data. See habitable zone planets that could harbor life.',
+    },
+    dsnLive: {
+        emoji: '📡',
+        title: 'Deep Space Network Live',
+        desc: 'Watch NASA\'s Deep Space Network communicate with spacecraft across the solar system — Voyager, JWST, Mars rovers, and more. Real mission data in real time.',
+    },
 };
 
 /**
