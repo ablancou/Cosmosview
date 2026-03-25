@@ -83,6 +83,9 @@ export default function App() {
     const [asteroidTrackerOpen, setAsteroidTrackerOpen] = useState(false);
     const [exoplanetsOpen, setExoplanetsOpen] = useState(false);
     const [dsnLiveOpen, setDsnLiveOpen] = useState(false);
+    const [termsAccepted, setTermsAccepted] = useState(
+        () => !!localStorage.getItem('orbitaldome_terms_accepted')
+    );
     const [quickStartOpen, setQuickStartOpen] = useState(() => {
         if (!localStorage.getItem('od_quickstart_seen')) {
             localStorage.setItem('od_quickstart_seen', '1');
@@ -253,6 +256,15 @@ export default function App() {
         setPendingAction(null);
     }, [pendingTooltip, pendingAction, executeAction]);
 
+    // If terms not accepted, show ONLY the TermsPopup — nothing else renders
+    if (!termsAccepted) {
+        return (
+            <div className={`w-full h-full relative ${darkMode ? '' : 'light'}`}>
+                <TermsPopup onAccept={() => setTermsAccepted(true)} />
+            </div>
+        );
+    }
+
     return (
         <div className={`w-full h-full relative ${darkMode ? '' : 'light'}`}>
             {showLoading && (
@@ -267,9 +279,6 @@ export default function App() {
 
             {/* Monthly Events Banner */}
             <MonthlyEventsBanner />
-
-            {/* Terms and Privacy Popup */}
-            <TermsPopup />
 
             {/* Night Vision Overlay */}
             {!loading && nightVision && (

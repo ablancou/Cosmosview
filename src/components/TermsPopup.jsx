@@ -1,27 +1,24 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
-export default function TermsPopup() {
-    const [open, setOpen] = useState(false);
+export default function TermsPopup({ onAccept }) {
+    const [open, setOpen] = useState(() => {
+        // Show immediately if not yet accepted — no delay
+        return !localStorage.getItem('orbitaldome_terms_accepted');
+    });
     const { t } = useTranslation();
-
-    useEffect(() => {
-        if (!localStorage.getItem('orbitaldome_terms_accepted')) {
-            const timer = setTimeout(() => setOpen(true), 500);
-            return () => clearTimeout(timer);
-        }
-    }, []);
 
     const handleAccept = () => {
         localStorage.setItem('orbitaldome_terms_accepted', '1');
         setOpen(false);
+        if (onAccept) onAccept();
     };
 
     if (!open) return null;
 
     return (
-        <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-fadeIn">
-            <div className="glass-panel max-w-md w-full p-6 relative flex flex-col gap-5 animate-slideUp shadow-2xl border border-cosmos-border/50 rounded-xl overflow-hidden">
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4" style={{ background: '#08080f' }}>
+            <div className="max-w-md w-full p-6 relative flex flex-col gap-5 shadow-2xl rounded-xl overflow-hidden" style={{ background: 'rgba(15,15,30,0.98)', border: '1px solid rgba(255,255,255,0.08)' }}>
                 {/* Decorative top border */}
                 <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-cosmos-accent via-purple-500 to-cosmos-accent opacity-70"></div>
 
