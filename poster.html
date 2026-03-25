@@ -20,9 +20,10 @@
     width: 1080px;
     min-height: 1920px;
     margin: 0 auto;
-    background: linear-gradient(180deg, #020108 0%, #060818 15%, #0a0c24 40%, #08061e 70%, #030210 100%);
+    background: linear-gradient(180deg, #020108 0%, #060818 12%, #0a0c24 35%, #08061e 65%, #030210 100%);
     position: relative;
     overflow: hidden;
+    padding-bottom: 60px;
   }
 
   /* ── Starfield background ── */
@@ -78,381 +79,405 @@
 
   /* ── Nebula glow accents ── */
   .nebula-1 {
-    position: absolute;
-    top: 200px;
-    right: -100px;
-    width: 500px;
-    height: 500px;
+    position: absolute; top: 200px; right: -100px;
+    width: 500px; height: 500px;
     background: radial-gradient(ellipse, rgba(100,60,200,0.12) 0%, transparent 70%);
-    filter: blur(60px);
-    pointer-events: none;
+    filter: blur(60px); pointer-events: none;
   }
   .nebula-2 {
-    position: absolute;
-    top: 800px;
-    left: -150px;
-    width: 600px;
-    height: 400px;
+    position: absolute; top: 1200px; left: -150px;
+    width: 600px; height: 400px;
     background: radial-gradient(ellipse, rgba(40,100,220,0.10) 0%, transparent 70%);
-    filter: blur(80px);
-    pointer-events: none;
+    filter: blur(80px); pointer-events: none;
   }
   .nebula-3 {
-    position: absolute;
-    bottom: 200px;
-    right: -80px;
-    width: 500px;
-    height: 500px;
+    position: absolute; bottom: 400px; right: -80px;
+    width: 500px; height: 500px;
     background: radial-gradient(ellipse, rgba(80,40,180,0.08) 0%, transparent 70%);
-    filter: blur(70px);
-    pointer-events: none;
+    filter: blur(70px); pointer-events: none;
+  }
+  .nebula-4 {
+    position: absolute; top: 2400px; left: 200px;
+    width: 500px; height: 400px;
+    background: radial-gradient(ellipse, rgba(200,60,60,0.06) 0%, transparent 70%);
+    filter: blur(70px); pointer-events: none;
   }
 
   /* ── Header ── */
   .header {
     text-align: center;
-    padding: 80px 60px 40px;
+    padding: 60px 60px 30px;
     position: relative;
     z-index: 2;
   }
   .logo-ring {
-    width: 100px;
-    height: 100px;
-    margin: 0 auto 28px;
+    width: 90px; height: 90px;
+    margin: 0 auto 22px;
     border-radius: 50%;
     background: conic-gradient(from 0deg, #7eb8f7, #a78bfa, #f59e0b, #22dd77, #7eb8f7);
     padding: 3px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    display: flex; align-items: center; justify-content: center;
   }
   .logo-inner {
-    width: 100%;
-    height: 100%;
+    width: 100%; height: 100%;
     border-radius: 50%;
     background: #0a0c24;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 44px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 40px;
   }
   .app-name {
-    font-size: 52px;
-    font-weight: 900;
-    letter-spacing: -1px;
+    font-size: 48px; font-weight: 900; letter-spacing: -1px;
     background: linear-gradient(135deg, #ffffff 0%, #7eb8f7 50%, #a78bfa 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    margin-bottom: 12px;
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text; margin-bottom: 8px;
   }
   .tagline {
-    font-size: 20px;
-    font-weight: 400;
-    color: rgba(255,255,255,0.55);
-    letter-spacing: 3px;
-    text-transform: uppercase;
+    font-size: 16px; font-weight: 400;
+    color: rgba(255,255,255,0.50);
+    letter-spacing: 4px; text-transform: uppercase;
+  }
+  .stats-row {
+    display: flex; justify-content: center; gap: 32px;
+    margin-top: 20px;
+  }
+  .stat { text-align: center; }
+  .stat-num {
+    font-size: 22px; font-weight: 800;
+    background: linear-gradient(135deg, #7eb8f7, #a78bfa);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .stat-label {
+    font-size: 9px; font-weight: 600; letter-spacing: 1.5px;
+    text-transform: uppercase; color: rgba(255,255,255,0.35);
   }
 
-  /* ── Feature Cards ── */
+  /* ── Feature Cards (compact) ── */
   .features {
-    padding: 30px 48px;
-    position: relative;
-    z-index: 2;
-    display: flex;
-    flex-direction: column;
-    gap: 28px;
+    padding: 20px 44px;
+    position: relative; z-index: 2;
+    display: flex; flex-direction: column; gap: 16px;
   }
-
   .feature-card {
-    border-radius: 24px;
-    overflow: hidden;
-    position: relative;
+    border-radius: 20px; overflow: hidden;
     border: 1px solid rgba(255,255,255,0.06);
+    display: flex; flex-direction: row; height: 140px;
   }
-
   .feature-visual {
-    height: 260px;
+    width: 140px; min-width: 140px;
     position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    display: flex; align-items: center; justify-content: center;
     overflow: hidden;
   }
-
   .feature-visual .icon-huge {
-    font-size: 120px;
-    filter: drop-shadow(0 0 40px rgba(126,184,247,0.3));
-    position: relative;
-    z-index: 2;
+    font-size: 64px;
+    filter: drop-shadow(0 0 24px rgba(126,184,247,0.3));
+    position: relative; z-index: 2;
   }
-
   .feature-info {
-    padding: 24px 28px 28px;
-    background: rgba(255,255,255,0.03);
+    padding: 16px 20px;
+    background: rgba(255,255,255,0.02);
+    display: flex; flex-direction: column; justify-content: center;
+    flex: 1;
   }
   .feature-badge {
-    display: inline-block;
-    padding: 4px 12px;
-    border-radius: 20px;
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    margin-bottom: 10px;
+    display: inline-block; width: fit-content;
+    padding: 2px 10px; border-radius: 20px;
+    font-size: 8px; font-weight: 700;
+    letter-spacing: 2px; text-transform: uppercase;
+    margin-bottom: 6px;
   }
   .feature-title {
-    font-size: 26px;
-    font-weight: 800;
-    margin-bottom: 8px;
-    letter-spacing: -0.5px;
+    font-size: 20px; font-weight: 800;
+    margin-bottom: 4px; letter-spacing: -0.3px;
   }
   .feature-desc {
-    font-size: 15px;
-    line-height: 1.6;
-    color: rgba(255,255,255,0.55);
+    font-size: 12px; line-height: 1.5;
+    color: rgba(255,255,255,0.50);
   }
 
   /* ── Card theme variations ── */
-  .card-earth .feature-visual {
-    background: linear-gradient(135deg, #0a1628 0%, #0d2847 50%, #061a30 100%);
-  }
+  .card-earth .feature-visual { background: linear-gradient(135deg, #0a1628, #0d2847, #061a30); }
   .card-earth .feature-badge { background: rgba(34,130,255,0.15); color: #4a9dff; }
   .card-earth .feature-title { color: #7ec8f7; }
-  .card-earth .feature-visual::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(circle at 55% 50%, rgba(34,130,255,0.15) 0%, transparent 60%);
-  }
 
-  .card-moon .feature-visual {
-    background: linear-gradient(135deg, #12101c 0%, #1a1630 50%, #0e0c18 100%);
-  }
+  .card-moon .feature-visual { background: linear-gradient(135deg, #12101c, #1a1630, #0e0c18); }
   .card-moon .feature-badge { background: rgba(180,170,220,0.15); color: #b4aadc; }
   .card-moon .feature-title { color: #d4ccf0; }
-  .card-moon .feature-visual::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(circle at 50% 50%, rgba(180,170,220,0.12) 0%, transparent 60%);
-  }
 
-  .card-orrery .feature-visual {
-    background: linear-gradient(135deg, #1a0e08 0%, #2a1608 50%, #1a0c04 100%);
-  }
+  .card-orrery .feature-visual { background: linear-gradient(135deg, #1a0e08, #2a1608, #1a0c04); }
   .card-orrery .feature-badge { background: rgba(255,170,50,0.15); color: #ffaa33; }
   .card-orrery .feature-title { color: #ffc266; }
-  .card-orrery .feature-visual::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(circle at 45% 50%, rgba(255,170,50,0.12) 0%, transparent 60%);
-  }
 
-  .card-orbital .feature-visual {
-    background: linear-gradient(135deg, #081410 0%, #0a2820 50%, #061810 100%);
-  }
+  .card-orbital .feature-visual { background: linear-gradient(135deg, #081410, #0a2820, #061810); }
   .card-orbital .feature-badge { background: rgba(34,221,119,0.15); color: #22dd77; }
   .card-orbital .feature-title { color: #66eea0; }
-  .card-orbital .feature-visual::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(circle at 50% 50%, rgba(34,221,119,0.10) 0%, transparent 60%);
-  }
 
-  /* ── Orbit rings in feature visuals ── */
+  .card-asteroid .feature-visual { background: linear-gradient(135deg, #1a0808, #2a1010, #1a0404); }
+  .card-asteroid .feature-badge { background: rgba(239,68,68,0.15); color: #ef4444; }
+  .card-asteroid .feature-title { color: #f87171; }
+
+  .card-exo .feature-visual { background: linear-gradient(135deg, #0a1418, #0d2830, #061820); }
+  .card-exo .feature-badge { background: rgba(34,221,119,0.12); color: #22dd77; }
+  .card-exo .feature-title { color: #86efac; }
+
+  .card-dsn .feature-visual { background: linear-gradient(135deg, #0c0818, #160e28, #0a0614); }
+  .card-dsn .feature-badge { background: rgba(167,139,250,0.15); color: #a78bfa; }
+  .card-dsn .feature-title { color: #c4b5fd; }
+
+  .card-light .feature-visual { background: linear-gradient(135deg, #181208, #281e08, #180e04); }
+  .card-light .feature-badge { background: rgba(251,191,36,0.15); color: #fbbf24; }
+  .card-light .feature-title { color: #fcd34d; }
+
+  /* ── Orbit rings ── */
   .orbit-ring {
-    position: absolute;
-    border-radius: 50%;
+    position: absolute; border-radius: 50%;
     border: 1px solid rgba(255,255,255,0.06);
   }
 
-  /* ── Bottom section ── */
-  .bottom {
-    padding: 40px 48px 60px;
-    text-align: center;
-    position: relative;
-    z-index: 2;
-  }
-  .features-list {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 10px 16px;
-    margin-bottom: 32px;
-  }
-  .feature-pill {
-    padding: 8px 16px;
-    border-radius: 20px;
-    font-size: 12px;
-    font-weight: 500;
-    background: rgba(255,255,255,0.04);
-    border: 1px solid rgba(255,255,255,0.06);
-    color: rgba(255,255,255,0.55);
-  }
-  .cta-button {
-    display: inline-block;
-    padding: 18px 56px;
-    border-radius: 50px;
-    font-size: 18px;
-    font-weight: 700;
-    letter-spacing: 0.5px;
-    background: linear-gradient(135deg, #4a90d9 0%, #7eb8f7 50%, #a78bfa 100%);
-    color: #fff;
-    text-decoration: none;
-    box-shadow: 0 8px 40px rgba(126,184,247,0.25), 0 0 80px rgba(126,184,247,0.08);
-    margin-bottom: 20px;
-  }
-  .url-text {
-    font-size: 16px;
-    font-weight: 600;
-    color: rgba(255,255,255,0.4);
-    letter-spacing: 2px;
-  }
-  .free-badge {
-    display: inline-block;
-    margin-top: 12px;
-    padding: 6px 20px;
-    border-radius: 20px;
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    background: rgba(34,221,119,0.1);
-    color: #22dd77;
-    border: 1px solid rgba(34,221,119,0.2);
-  }
-
-  /* ── Divider line ── */
+  /* ── Divider ── */
   .divider {
-    height: 1px;
-    margin: 10px 80px 30px;
+    height: 1px; margin: 16px 80px;
     background: linear-gradient(90deg, transparent, rgba(126,184,247,0.15), transparent);
   }
 
-  /* ── Satellite dots floating decoration ── */
+  /* ── Section headers ── */
+  .section-header {
+    text-align: center; padding: 10px 48px 6px;
+    position: relative; z-index: 2;
+  }
+  .section-header h2 {
+    font-size: 11px; font-weight: 700;
+    letter-spacing: 4px; text-transform: uppercase;
+    color: rgba(255,255,255,0.30);
+  }
+
+  /* ── More Features pills ── */
+  .bottom {
+    padding: 20px 48px 40px;
+    text-align: center; position: relative; z-index: 2;
+  }
+  .features-list {
+    display: flex; flex-wrap: wrap; justify-content: center;
+    gap: 8px 12px; margin-bottom: 28px;
+  }
+  .feature-pill {
+    padding: 7px 14px; border-radius: 20px;
+    font-size: 11px; font-weight: 500;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.06);
+    color: rgba(255,255,255,0.50);
+  }
+  .cta-button {
+    display: inline-block;
+    padding: 16px 52px; border-radius: 50px;
+    font-size: 17px; font-weight: 700; letter-spacing: 0.5px;
+    background: linear-gradient(135deg, #4a90d9 0%, #7eb8f7 50%, #a78bfa 100%);
+    color: #fff; text-decoration: none;
+    box-shadow: 0 8px 40px rgba(126,184,247,0.25), 0 0 80px rgba(126,184,247,0.08);
+    margin-bottom: 16px;
+  }
+  .url-text {
+    font-size: 15px; font-weight: 600;
+    color: rgba(255,255,255,0.35); letter-spacing: 2px;
+  }
+  .free-badge {
+    display: inline-block; margin-top: 10px;
+    padding: 5px 18px; border-radius: 20px;
+    font-size: 10px; font-weight: 700; letter-spacing: 3px;
+    text-transform: uppercase;
+    background: rgba(34,221,119,0.1); color: #22dd77;
+    border: 1px solid rgba(34,221,119,0.2);
+  }
+  .tech-row {
+    display: flex; justify-content: center; gap: 20px;
+    margin-top: 14px; flex-wrap: wrap;
+  }
+  .tech-tag {
+    font-size: 10px; font-weight: 600;
+    color: rgba(255,255,255,0.25); letter-spacing: 1px;
+  }
   .sat-dot {
     position: absolute;
-    width: 4px;
-    height: 4px;
-    border-radius: 50%;
+    width: 4px; height: 4px; border-radius: 50%;
     background: #22dd77;
     box-shadow: 0 0 8px rgba(34,221,119,0.5);
-    pointer-events: none;
-    z-index: 1;
+    pointer-events: none; z-index: 1;
   }
 </style>
 </head>
 <body>
 
 <div class="poster">
-  <!-- Background layers -->
   <div class="stars"></div>
   <div class="nebula-1"></div>
   <div class="nebula-2"></div>
   <div class="nebula-3"></div>
+  <div class="nebula-4"></div>
 
-  <!-- Floating satellite dots -->
   <div class="sat-dot" style="top:340px; left:80px; opacity:0.7;"></div>
-  <div class="sat-dot" style="top:620px; right:60px; opacity:0.5;"></div>
-  <div class="sat-dot" style="top:1100px; left:120px; opacity:0.6;"></div>
-  <div class="sat-dot" style="top:1450px; right:90px; opacity:0.4;"></div>
+  <div class="sat-dot" style="top:820px; right:60px; opacity:0.5;"></div>
+  <div class="sat-dot" style="top:1400px; left:120px; opacity:0.6;"></div>
+  <div class="sat-dot" style="top:1900px; right:90px; opacity:0.4;"></div>
+  <div class="sat-dot" style="top:2500px; left:200px; opacity:0.5;"></div>
 
   <!-- ═══ HEADER ═══ -->
   <div class="header">
-    <div class="logo-ring">
-      <div class="logo-inner">🔭</div>
-    </div>
+    <div class="logo-ring"><div class="logo-inner">🔭</div></div>
     <h1 class="app-name">Orbital Dome</h1>
     <p class="tagline">Your Window to the Universe</p>
+    <div class="stats-row">
+      <div class="stat"><div class="stat-num">100K+</div><div class="stat-label">Real Stars</div></div>
+      <div class="stat"><div class="stat-num">62</div><div class="stat-label">Components</div></div>
+      <div class="stat"><div class="stat-num">8</div><div class="stat-label">Languages</div></div>
+      <div class="stat"><div class="stat-num">25+</div><div class="stat-label">Features</div></div>
+    </div>
   </div>
 
   <div class="divider"></div>
+  <div class="section-header"><h2>Flagship 3D Experiences</h2></div>
 
   <!-- ═══ FEATURE CARDS ═══ -->
   <div class="features">
 
-    <!-- Earth Observatory -->
     <div class="feature-card card-earth">
       <div class="feature-visual">
-        <div class="orbit-ring" style="width:300px; height:300px; top:50%; left:50%; transform:translate(-50%,-50%); border-color:rgba(34,130,255,0.08);"></div>
-        <div class="orbit-ring" style="width:200px; height:200px; top:50%; left:50%; transform:translate(-50%,-50%); border-color:rgba(34,130,255,0.12);"></div>
+        <div class="orbit-ring" style="width:120px; height:120px; top:50%; left:50%; transform:translate(-50%,-50%); border-color:rgba(34,130,255,0.10);"></div>
         <span class="icon-huge">🌍</span>
       </div>
       <div class="feature-info">
         <span class="feature-badge">FLAGSHIP</span>
         <h2 class="feature-title">Earth Observatory</h2>
-        <p class="feature-desc">Photorealistic 3D globe with day/night terminator, atmospheric glow, cloud layer, and 30+ real-time satellite orbits — ISS, Hubble, Starlink, GPS and more.</p>
+        <p class="feature-desc">Photorealistic 3D globe with day/night terminator, atmosphere, clouds, and 30+ satellite orbits — ISS, Hubble, Starlink, GPS.</p>
       </div>
     </div>
 
-    <!-- Lunar Observatory -->
     <div class="feature-card card-moon">
       <div class="feature-visual">
-        <div class="orbit-ring" style="width:280px; height:280px; top:50%; left:50%; transform:translate(-50%,-50%); border-color:rgba(180,170,220,0.08);"></div>
         <span class="icon-huge">🌙</span>
       </div>
       <div class="feature-info">
         <span class="feature-badge">FLAGSHIP</span>
         <h2 class="feature-title">Lunar Observatory</h2>
-        <p class="feature-desc">NASA-textured 3D Moon with real libration data, 6 Apollo landing sites with mission details, live phase, illumination, and distance — all from real astronomical algorithms.</p>
+        <p class="feature-desc">NASA-textured Moon with real libration, 6 Apollo landing sites, live phase and illumination from astronomical algorithms.</p>
       </div>
     </div>
 
-    <!-- Solar System Orrery -->
     <div class="feature-card card-orrery">
       <div class="feature-visual">
-        <div class="orbit-ring" style="width:340px; height:340px; top:50%; left:50%; transform:translate(-50%,-50%); border-color:rgba(255,170,50,0.06);"></div>
-        <div class="orbit-ring" style="width:240px; height:240px; top:50%; left:50%; transform:translate(-50%,-50%); border-color:rgba(255,170,50,0.08);"></div>
-        <div class="orbit-ring" style="width:150px; height:150px; top:50%; left:50%; transform:translate(-50%,-50%); border-color:rgba(255,170,50,0.10);"></div>
+        <div class="orbit-ring" style="width:110px; height:110px; top:50%; left:50%; transform:translate(-50%,-50%); border-color:rgba(255,170,50,0.10);"></div>
+        <div class="orbit-ring" style="width:70px; height:70px; top:50%; left:50%; transform:translate(-50%,-50%); border-color:rgba(255,170,50,0.14);"></div>
         <span class="icon-huge">☀️</span>
       </div>
       <div class="feature-info">
         <span class="feature-badge">INTERACTIVE 3D</span>
         <h2 class="feature-title">Solar System Orrery</h2>
-        <p class="feature-desc">All 8 planets orbiting the Sun in real-time positions. Accurate orbital paths, planetary data, and smooth camera controls to explore our cosmic neighborhood.</p>
+        <p class="feature-desc">All 8 planets in real-time JPL positions with accurate orbital paths, planetary data, and smooth camera controls.</p>
       </div>
     </div>
 
-    <!-- Orbital Tracker -->
     <div class="feature-card card-orbital">
       <div class="feature-visual">
-        <div class="orbit-ring" style="width:320px; height:200px; top:50%; left:50%; transform:translate(-50%,-50%) rotateX(60deg); border-color:rgba(34,221,119,0.10);"></div>
-        <div class="orbit-ring" style="width:260px; height:160px; top:50%; left:50%; transform:translate(-50%,-50%) rotateX(60deg) rotateZ(30deg); border-color:rgba(34,221,119,0.08);"></div>
+        <div class="orbit-ring" style="width:120px; height:70px; top:50%; left:50%; transform:translate(-50%,-50%) rotateX(60deg); border-color:rgba(34,221,119,0.12);"></div>
         <span class="icon-huge">📡</span>
       </div>
       <div class="feature-info">
-        <span class="feature-badge">PREMIUM</span>
+        <span class="feature-badge">REAL-TIME</span>
         <h2 class="feature-title">Orbital Tracker</h2>
-        <p class="feature-desc">Real-time 3D visualization of satellites in orbit with live telemetry data. Track the ISS, Hubble, Starlink constellation, and more as they circle the Earth.</p>
+        <p class="feature-desc">30+ satellites with SGP4 orbital propagation from NORAD TLEs. Cyberpunk HUD with live telemetry and orbit classification.</p>
       </div>
     </div>
 
   </div>
 
-  <div class="divider" style="margin-top: 20px;"></div>
+  <div class="divider"></div>
+  <div class="section-header"><h2>New — Exclusive Features</h2></div>
 
-  <!-- ═══ MORE FEATURES ═══ -->
+  <div class="features">
+
+    <div class="feature-card card-asteroid">
+      <div class="feature-visual">
+        <span class="icon-huge">☄️</span>
+      </div>
+      <div class="feature-info">
+        <span class="feature-badge">NEW</span>
+        <h2 class="feature-title">Asteroid Tracker</h2>
+        <p class="feature-desc">10 real Near-Earth Objects — Apophis, Bennu, Didymos — with Kepler orbital mechanics, hazard status, and NASA mission data.</p>
+      </div>
+    </div>
+
+    <div class="feature-card card-exo">
+      <div class="feature-visual">
+        <div class="orbit-ring" style="width:100px; height:100px; top:50%; left:50%; transform:translate(-50%,-50%); border-color:rgba(34,221,119,0.08);"></div>
+        <span class="icon-huge">🪐</span>
+      </div>
+      <div class="feature-info">
+        <span class="feature-badge">NEW</span>
+        <h2 class="feature-title">Exoplanet Explorer</h2>
+        <p class="feature-desc">21 confirmed exoplanets across 9 star systems — TRAPPIST-1, Proxima Centauri, Tau Ceti — with habitable zone visualization.</p>
+      </div>
+    </div>
+
+    <div class="feature-card card-dsn">
+      <div class="feature-visual">
+        <span class="icon-huge">📡</span>
+      </div>
+      <div class="feature-info">
+        <span class="feature-badge">NEW · UNIQUE</span>
+        <h2 class="feature-title">Deep Space Network</h2>
+        <p class="feature-desc">NASA's 3 DSN complexes communicating with Voyager, JWST, Mars rovers and 12 spacecraft. Animated signals in real time.</p>
+      </div>
+    </div>
+
+    <div class="feature-card card-light">
+      <div class="feature-visual">
+        <span class="icon-huge">🌃</span>
+      </div>
+      <div class="feature-info">
+        <span class="feature-badge">NEW · UNIQUE</span>
+        <h2 class="feature-title">Light Pollution Sim</h2>
+        <p class="feature-desc">Bortle 1→9 slider showing real-time impact on your sky. From 7,500 visible stars to just 100. See what light pollution steals.</p>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="divider"></div>
+  <div class="section-header"><h2>25+ Additional Features</h2></div>
+
   <div class="bottom">
     <div class="features-list">
-      <span class="feature-pill">🌟 Tonight's Sky</span>
-      <span class="feature-pill">🔭 Sky Events</span>
+      <span class="feature-pill">🌟 Tonight's Best</span>
+      <span class="feature-pill">🔭 Telescope Mode (70+ DSOs)</span>
       <span class="feature-pill">📹 AR Camera</span>
-      <span class="feature-pill">🧠 AstroQuiz</span>
+      <span class="feature-pill">🧠 AstroQuiz (50+ questions)</span>
       <span class="feature-pill">🌤️ Astro Weather</span>
       <span class="feature-pill">🛸 NASA APOD</span>
-      <span class="feature-pill">🌐 Live Cams</span>
+      <span class="feature-pill">🌐 20+ Live Cams</span>
       <span class="feature-pill">🗓 Photo Planner</span>
-      <span class="feature-pill">🔔 ISS Alerts</span>
-      <span class="feature-pill">🌗 Compare Skies</span>
+      <span class="feature-pill">🔔 ISS Pass Alerts</span>
+      <span class="feature-pill">🌗 Compare Locations</span>
+      <span class="feature-pill">🔗 Share This Sky</span>
+      <span class="feature-pill">♿ Accessibility (4 CB modes)</span>
+      <span class="feature-pill">📷 Star Trail Photography</span>
+      <span class="feature-pill">🎵 Ambient Soundscape</span>
+      <span class="feature-pill">🌌 110+ Messier Objects</span>
+      <span class="feature-pill">🌈 Aurora Borealis</span>
     </div>
 
     <a href="https://orbitaldome.com" class="cta-button">Explore Now</a>
     <br>
     <p class="url-text">orbitaldome.com</p>
     <div class="free-badge">100% Free · No Ads · No Account Required</div>
+    <div class="tech-row">
+      <span class="tech-tag">React 18</span>
+      <span class="tech-tag">Three.js</span>
+      <span class="tech-tag">WebGL</span>
+      <span class="tech-tag">GLSL Shaders</span>
+      <span class="tech-tag">astronomy-engine</span>
+      <span class="tech-tag">satellite.js</span>
+      <span class="tech-tag">PWA</span>
+    </div>
   </div>
 
 </div>
