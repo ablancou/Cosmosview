@@ -135,6 +135,9 @@ export default function App() {
             gl.finish();
             setLowPerf(performance.now() - start > 50);
             gl.deleteBuffer(buffer);
+            // CRITICAL: Release WebGL context for Safari (limited to ~8-16 contexts)
+            const loseCtx = gl.getExtension('WEBGL_lose_context');
+            if (loseCtx) loseCtx.loseContext();
             canvas.width = 0; canvas.height = 0;
         } catch (e) { setLowPerf(true); }
     }, [setLowPerf]);

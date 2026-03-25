@@ -504,8 +504,8 @@ export default function MoonGlobe({ open, onClose }) {
 
         // Scene & camera
         const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(40, W / H, 0.1, 500);
-        camera.position.set(0, 0.5, 5.5);
+        const camera = new THREE.PerspectiveCamera(45, W / H, 0.1, 500);
+        camera.position.set(0, 0.3, 6.5);
         camera.lookAt(0, 0, 0);
 
         // Stars (fewer on mobile)
@@ -775,7 +775,29 @@ export default function MoonGlobe({ open, onClose }) {
             e.preventDefault();
             const zoom = e.deltaY > 0 ? 1.08 : 0.92;
             const newZ = camera.position.z * zoom;
-            camera.position.z = Math.max(3, Math.min(12, newZ));
+            camera.position.z = Math.max(3.5, Math.min(15, newZ));
+        };
+
+        // Pinch-to-zoom for mobile
+        let lastPinchDist = 0;
+        const onTouchStartPinch = (e) => {
+            if (e.touches.length === 2) {
+                const dx = e.touches[0].clientX - e.touches[1].clientX;
+                const dy = e.touches[0].clientY - e.touches[1].clientY;
+                lastPinchDist = Math.sqrt(dx * dx + dy * dy);
+            }
+        };
+        const onTouchMovePinch = (e) => {
+            if (e.touches.length === 2) {
+                e.preventDefault();
+                const dx = e.touches[0].clientX - e.touches[1].clientX;
+                const dy = e.touches[0].clientY - e.touches[1].clientY;
+                const pinchDist = Math.sqrt(dx * dx + dy * dy);
+                const delta = lastPinchDist - pinchDist;
+                const newZ = camera.position.z + delta * 0.02;
+                camera.position.z = Math.max(3.5, Math.min(15, newZ));
+                lastPinchDist = pinchDist;
+            }
         };
 
         const el = renderer.domElement;
@@ -784,7 +806,9 @@ export default function MoonGlobe({ open, onClose }) {
         el.addEventListener('mouseup', onUp);
         el.addEventListener('mouseleave', () => { isDragging = false; setHoveredSite(null); setTooltipPos(null); hoveredIdx = -1; });
         el.addEventListener('touchstart', onDown, { passive: true });
+        el.addEventListener('touchstart', onTouchStartPinch, { passive: true });
         el.addEventListener('touchmove', onMove, { passive: true });
+        el.addEventListener('touchmove', onTouchMovePinch, { passive: false });
         el.addEventListener('touchend', onUp);
         el.addEventListener('wheel', onWheel, { passive: false });
 
@@ -836,7 +860,9 @@ export default function MoonGlobe({ open, onClose }) {
             el.removeEventListener('mouseup', onUp);
             el.removeEventListener('mouseleave', onUp);
             el.removeEventListener('touchstart', onDown);
+            el.removeEventListener('touchstart', onTouchStartPinch);
             el.removeEventListener('touchmove', onMove);
+            el.removeEventListener('touchmove', onTouchMovePinch);
             el.removeEventListener('touchend', onUp);
             el.removeEventListener('wheel', onWheel);
 

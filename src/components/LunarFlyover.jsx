@@ -78,13 +78,13 @@ const LunarFlyover = ({ open, onClose }) => {
     });
     renderer.setSize(width, height);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    renderer.shadowMap.enabled = true;
-    renderer.shadowMap.type = THREE.PCFShadowShadowMap;
+    renderer.shadowMap.enabled = !_isMobile;
+    renderer.shadowMap.type = THREE.PCFShadowMap;
     containerRef.current.appendChild(renderer.domElement);
     rendererRef.current = renderer;
 
     // Moon sphere
-    const segments = _isMobile ? 128 : 256;
+    const segments = _isMobile ? 64 : 256;
     const moonGeometry = new THREE.SphereGeometry(100, segments, segments);
     const moonMaterial = new THREE.MeshStandardMaterial({
       color: 0xaaaaaa,
@@ -101,9 +101,9 @@ const LunarFlyover = ({ open, onClose }) => {
     // Lighting
     const sunLight = new THREE.DirectionalLight(0xffd699, 2.5);
     sunLight.position.set(150, 100, 150);
-    sunLight.castShadow = true;
-    sunLight.shadow.mapSize.width = _isMobile ? 1024 : 2048;
-    sunLight.shadow.mapSize.height = _isMobile ? 1024 : 2048;
+    sunLight.castShadow = !_isMobile;
+    sunLight.shadow.mapSize.width = 2048;
+    sunLight.shadow.mapSize.height = 2048;
     sunLight.shadow.camera.far = 500;
     sunLight.shadow.camera.left = -200;
     sunLight.shadow.camera.right = 200;
