@@ -311,8 +311,6 @@ const createHabitableZone = (innerAU, outerAU) => {
 };
 
 const ExoplanetExplorer = ({ open, onClose }) => {
-  if (!open) return null;
-
   const containerRef = useRef(null);
   const sceneRef = useRef(null);
   const rendererRef = useRef(null);
@@ -325,11 +323,11 @@ const ExoplanetExplorer = ({ open, onClose }) => {
 
   const [selectedPlanet, setSelectedPlanet] = useState(null);
   const [isMobile] = useState(
-    /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
+    typeof navigator !== 'undefined' && /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
   );
 
   useEffect(() => {
-    if (!containerRef.current) return;
+    if (!open || !containerRef.current) return;
 
     // Scene setup
     const scene = new THREE.Scene();
@@ -345,9 +343,10 @@ const ExoplanetExplorer = ({ open, onClose }) => {
     cameraRef.current = camera;
 
     // Renderer
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    const _isMob = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    const renderer = new THREE.WebGLRenderer({ antialias: !_isMob, alpha: true });
     renderer.setSize(width, height);
-    renderer.setPixelRatio(window.devicePixelRatio);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     containerRef.current.appendChild(renderer.domElement);
     rendererRef.current = renderer;
 
@@ -559,7 +558,9 @@ const ExoplanetExplorer = ({ open, onClose }) => {
         containerRef.current.removeChild(renderer.domElement);
       }
     };
-  }, []);
+  }, [open]);
+
+  if (!open) return null;
 
   const currentSystem = EXOPLANET_SYSTEMS[currentSystemIndexRef.current];
 

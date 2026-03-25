@@ -55,9 +55,10 @@ function AsteroidTracker({ open, onClose }) {
     cameraRef.current = camera;
 
     // Renderer setup
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
+    const _isMob = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    const renderer = new THREE.WebGLRenderer({ antialias: !_isMob, alpha: false });
     renderer.setSize(width, height);
-    renderer.setPixelRatio(window.devicePixelRatio);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     containerRef.current.appendChild(renderer.domElement);
     rendererRef.current = renderer;
 
@@ -76,7 +77,7 @@ function AsteroidTracker({ open, onClose }) {
     scene.add(stars);
 
     // Earth
-    const earthGeometry = new THREE.IcosahedronGeometry(EARTH_RADIUS, 64);
+    const earthGeometry = new THREE.IcosahedronGeometry(EARTH_RADIUS, isMobile ? 16 : 32);
     const earthMaterial = new THREE.MeshPhongMaterial({
       color: 0x1a90ff,
       emissive: 0x003d99,
