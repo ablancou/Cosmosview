@@ -922,11 +922,13 @@ export default function MoonGlobe({ open, onClose }) {
                 </button>
             )}
 
-            {/* ═══ Left Panel — always on desktop, toggle on mobile ═══ */}
+            {/* ═══ Left Panel — always on desktop, overlay on mobile ═══ */}
             <div
-                className={`relative z-20 w-72 shrink-0 flex flex-col overflow-y-auto custom-scrollbar transition-transform duration-300 ${
-                    isMobile && !sidebarOpen ? '-translate-x-full absolute inset-y-0 left-0' : ''
-                } ${isMobile && sidebarOpen ? 'absolute inset-y-0 left-0' : ''}`}
+                className={`z-20 w-72 flex flex-col overflow-y-auto custom-scrollbar transition-transform duration-300 ${
+                    isMobile
+                        ? `absolute inset-y-0 left-0 ${!sidebarOpen ? '-translate-x-full' : ''}`
+                        : 'relative shrink-0'
+                }`}
                 style={{
                     background: 'linear-gradient(135deg, rgba(10,12,30,0.98), rgba(6,8,20,0.98))',
                     borderRight: '1px solid rgba(126,184,247,0.08)',
