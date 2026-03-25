@@ -487,7 +487,8 @@ export default function MoonGlobe({ open, onClose }) {
         if (W === 0 || H === 0) return;
 
         // Renderer
-        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
+        const _mob = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+        const renderer = new THREE.WebGLRenderer({ antialias: !_mob, alpha: false });
         renderer.setSize(W, H);
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
         renderer.setClearColor(0x060610, 1);
@@ -519,13 +520,13 @@ export default function MoonGlobe({ open, onClose }) {
         })));
 
         // Moon textures — try NASA real textures, fallback to procedural
+        const _isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
         const loader = new THREE.TextureLoader();
         const texSize = _isMobile ? 1024 : 2048;
         const proceduralTex = createMoonTexture(texSize);
         const proceduralNormal = createNormalMap(_isMobile ? 512 : 1024);
 
         // Moon sphere (lower segments on mobile for performance)
-        const _isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
         const moonGeom = new THREE.SphereGeometry(2, _isMobile ? 64 : 128, _isMobile ? 64 : 128);
         const moonMat = new THREE.MeshStandardMaterial({
             map: proceduralTex,
