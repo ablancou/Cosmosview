@@ -8,7 +8,7 @@
 
 ## Overview
 
-Orbital Dome is a browser-based planetarium and space exploration platform built as a Progressive Web App. It renders an interactive, scientifically accurate night sky with 100,000+ real stars, real-time planetary positions, 3D visualizations, satellite tracking, and 25+ features — all running client-side in the browser with zero backend. Available in 8 languages, fully accessible, and 100% free with no accounts required.
+Orbital Dome is a browser-based planetarium and space exploration platform built as a Progressive Web App. It renders an interactive, scientifically accurate night sky with 100,000+ real stars, real-time planetary positions, 3D visualizations, satellite tracking, and 30+ features — all running client-side in the browser with zero backend. Available in 8 languages, fully accessible, and 100% free with no accounts required.
 
 ---
 
@@ -25,29 +25,31 @@ Orbital Dome is a browser-based planetarium and space exploration platform built
 | Styling | Tailwind CSS 4 + inline glassmorphic design system |
 | Build | Vite 6 |
 | Deployment | Vercel (auto-deploy from GitHub) |
-| Data | NASA APIs, CelesTrak TLEs, HYG Star Catalog, Messier/NGC catalogs |
+| Data | NASA APIs, NASA SVS, CelesTrak TLEs, HYG Star Catalog, Messier/NGC catalogs |
 
 ---
 
 ## Architecture
 
-62 React components organized into rendering layers, interactive panels, tools, and educational modules. The app uses a single Zustand store for global state (location, time, layers, selections, display modes) with computed astronomical values derived in real time. Three.js renders the sky canvas with post-processing (bloom on desktop, disabled on mobile for performance). All astronomical calculations use real algorithms — no hardcoded positions.
+63 React components organized into rendering layers, interactive panels, tools, and educational modules. The app uses a single Zustand store for global state (location, time, layers, selections, display modes) with computed astronomical values derived in real time. Three.js renders the sky canvas with post-processing (bloom on desktop, disabled on mobile for performance). All astronomical calculations use real algorithms — no hardcoded positions. Fully responsive across desktop, portrait mobile, and landscape mobile viewports.
 
 ---
 
-## Core Features (25+)
+## Core Features (30+)
 
 ### 3D Visualizations (Flagship)
 
 - **Earth Observatory** — Photorealistic 3D globe with day/night terminator, atmospheric Rayleigh scattering, cloud layer, and 30+ real-time satellite orbits (ISS, Hubble, Starlink, GPS, GLONASS, GEO, polar) using SGP4 orbital propagation from NORAD TLE data.
 
-- **Lunar Observatory** — NASA-textured 3D Moon with real libration calculated via `Astronomy.Libration()`, 6 Apollo/Luna/Chang'e landing sites with interactive mission info cards, live phase illumination, distance, and apparent diameter.
+- **Lunar Observatory** — NASA SVS high-resolution textured 3D Moon (progressive 2K → 4K → 8K loading) with real libration calculated via `Astronomy.Libration()`, displacement mapping for visible terrain relief, 6 Apollo/Luna/Chang'e landing sites with interactive mission info cards, live phase illumination, distance, and apparent diameter.
+
+- **Lunar Flyover** — Cinematic low-orbit flyover of the Moon's surface with NASA LRO textures and displacement mapping. HUD overlay showing altitude in km, lat/lon coordinates, and orbital velocity. Autopilot mode with undulating altitude and gentle banking, plus manual keyboard (WASD) and mouse drag controls.
 
 - **Solar System Orrery** — All 8 planets orbiting the Sun in accurate real-time positions from JPL ephemeris algorithms. Elliptical orbit paths, planetary data overlays, smooth 3D camera controls.
 
 - **Orbital Tracker** — Full-screen 3D satellite visualization with ~30 major satellites, wireframe Earth with continent outlines, real-time SGP4 propagation, and cyberpunk HUD telemetry display. Color-coded by orbit type (LEO, L2, GEO).
 
-- **Asteroid Tracker** — 3D visualization of 10 real Near-Earth Objects (Apophis, Bennu, Didymos, Ryugu, Eros, Phaethon, etc.) with Kepler orbital mechanics, hazard classification, close-approach dates, and NASA mission context.
+- **Asteroid Tracker** — 3D visualization of 10 real Near-Earth Objects (Apophis, Bennu, Didymos, Ryugu, Itokawa, 2024 YR4, Toutatis, Florence, Eros, Phaethon) with Kepler orbital mechanics, hazard classification, close-approach dates, and NASA mission context.
 
 - **Exoplanet Explorer** — Interactive 3D star systems featuring 21 confirmed exoplanets across 9 real systems (TRAPPIST-1's 7 worlds, Proxima Centauri b, 51 Pegasi b, Tau Ceti, Kepler-442b, etc.). Habitable zone visualization, orbit animations, Earth-size comparisons.
 
@@ -111,12 +113,14 @@ Full support for 8 languages: English, Spanish, French, German, Italian, Portugu
 ## Technical Highlights
 
 - **Zero backend** — All computation runs client-side (astronomy-engine, satellite.js, Three.js).
-- **Adaptive performance** — GPU detection on load; mobile devices get reduced geometry (64 vs 128 segments), smaller textures (1024 vs 2048px), fewer stars (30K vs 95K), bloom disabled.
+- **Progressive texture loading** — Moon textures load 2K → 4K (NASA SVS) → 8K with displacement mapping for terrain relief. Old textures are disposed to prevent GPU memory leaks.
+- **Adaptive performance** — Mobile devices get reduced geometry (16 vs 256 segments), smaller textures (4K max vs 8K), fewer stars (30K vs 95K), bloom disabled, antialiasing off, pixel ratio clamped to 2.
 - **Proper WebGL lifecycle** — `renderer.forceContextLoss()` on cleanup prevents memory leaks across feature transitions.
 - **Custom GLSL shaders** — Star glow, Milky Way procedural texture, aurora vertex animation, atmospheric scattering.
 - **Real orbital mechanics** — SGP4 propagation for satellites, Kepler elements for asteroids, JPL-grade planetary ephemeris.
 - **Progressive loading** — Star catalog and constellation data loaded asynchronously with progress indicator.
 - **PWA** — Installable, offline-capable, responsive from 320px mobile to 4K desktop.
+- **Strict viewport compliance** — Every feature tested across desktop, portrait mobile, and landscape mobile. Menus never obstruct 3D visualizations.
 
 ---
 
@@ -124,7 +128,7 @@ Full support for 8 languages: English, Spanish, French, German, Italian, Portugu
 
 | Metric | Value |
 |--------|-------|
-| Components | 62 React components |
+| Components | 63 React components |
 | Star catalog | 100,000+ stars (HYG v3, mag ≤ 6.5) |
 | Deep-sky objects | 110+ Messier + NGC/IC |
 | Satellites tracked | 30+ (expandable to 8,000+) |
@@ -134,18 +138,20 @@ Full support for 8 languages: English, Spanish, French, German, Italian, Portugu
 | Languages | 8 |
 | Observatory cameras | 20+ live feeds |
 | Quiz questions | 50+ |
-| Lines of code | ~15,000+ (JSX/JS) |
+| Lines of code | ~18,000+ (JSX/JS) |
 
 ---
 
 ## What Makes It Unique
 
-1. **No other web app combines**: real-time sky rendering, 3D globe observatories, satellite tracking, asteroid tracking, exoplanet exploration, AND NASA DSN visualization — all in one platform, all free, all client-side.
+1. **No other web app combines**: real-time sky rendering, 3D globe observatories, satellite tracking, asteroid tracking, exoplanet exploration, lunar flyover cinematics, AND NASA DSN visualization — all in one platform, all free, all client-side.
 
-2. **Scientific accuracy** — Every calculation uses real astronomical algorithms, not approximations. Star positions from the HYG catalog, planet positions from JPL ephemeris, satellite orbits from NORAD TLEs, lunar libration from IAU models.
+2. **Scientific accuracy** — Every calculation uses real astronomical algorithms, not approximations. Star positions from the HYG catalog, planet positions from JPL ephemeris, satellite orbits from NORAD TLEs, lunar libration from IAU models, asteroid trajectories from Kepler orbital elements.
 
-3. **Light Pollution Simulator** — The only planetarium app with an interactive Bortle-scale overlay showing real-time visibility impact on the actual rendered sky.
+3. **NASA-grade Moon visuals** — Progressive loading of NASA SVS CGI Moon Kit textures (2K → 4K → 8K) with LRO displacement mapping, creating the most detailed Moon surface available in any web planetarium. Plus a cinematic Lunar Flyover experience with real terrain.
 
-4. **Deep Space Network Live** — No consumer app shows NASA's DSN communications with active spacecraft in real time.
+4. **Light Pollution Simulator** — The only planetarium app with an interactive Bortle-scale overlay showing real-time visibility impact on the actual rendered sky.
 
-5. **Exoplanet visualization in sky context** — Most exoplanet tools are standalone; this one integrates with the star field so users see alien worlds around the actual stars they're looking at.
+5. **Deep Space Network Live** — No consumer app shows NASA's DSN communications with active spacecraft in real time.
+
+6. **Exoplanet visualization in sky context** — Most exoplanet tools are standalone; this one integrates with the star field so users see alien worlds around the actual stars they're looking at.

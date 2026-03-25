@@ -478,8 +478,31 @@ export default function EarthGlobe({ open, onClose }) {
         const onWheel = (e) => {
             e.preventDefault();
             targetDist += e.deltaY * 0.01;
-            targetDist = Math.max(7.5, Math.min(25, targetDist));
+            targetDist = Math.max(5, Math.min(40, targetDist));
             zoomRef.current.targetDist = targetDist;
+        };
+
+        /* ─── Pinch-to-zoom for mobile ─── */
+        let lastPinchDist = 0;
+        const onTouchStartZoom = (e) => {
+            if (e.touches.length === 2) {
+                const dx = e.touches[0].clientX - e.touches[1].clientX;
+                const dy = e.touches[0].clientY - e.touches[1].clientY;
+                lastPinchDist = Math.sqrt(dx * dx + dy * dy);
+            }
+        };
+        const onTouchMoveZoom = (e) => {
+            if (e.touches.length === 2) {
+                e.preventDefault();
+                const dx = e.touches[0].clientX - e.touches[1].clientX;
+                const dy = e.touches[0].clientY - e.touches[1].clientY;
+                const pinchDist = Math.sqrt(dx * dx + dy * dy);
+                const delta = lastPinchDist - pinchDist;
+                targetDist += delta * 0.06;
+                targetDist = Math.max(5, Math.min(40, targetDist));
+                zoomRef.current.targetDist = targetDist;
+                lastPinchDist = pinchDist;
+            }
         };
 
         renderer.domElement.addEventListener('mousedown', onPointerDown);
@@ -487,7 +510,9 @@ export default function EarthGlobe({ open, onClose }) {
         renderer.domElement.addEventListener('mouseup', onPointerUp);
         renderer.domElement.addEventListener('mouseleave', onPointerUp);
         renderer.domElement.addEventListener('touchstart', onPointerDown, { passive: true });
+        renderer.domElement.addEventListener('touchstart', onTouchStartZoom, { passive: true });
         renderer.domElement.addEventListener('touchmove', onPointerMove, { passive: true });
+        renderer.domElement.addEventListener('touchmove', onTouchMoveZoom, { passive: false });
         renderer.domElement.addEventListener('touchend', onPointerUp);
         renderer.domElement.addEventListener('wheel', onWheel, { passive: false });
 
@@ -580,7 +605,9 @@ export default function EarthGlobe({ open, onClose }) {
             renderer.domElement.removeEventListener('mouseup', onPointerUp);
             renderer.domElement.removeEventListener('mouseleave', onPointerUp);
             renderer.domElement.removeEventListener('touchstart', onPointerDown);
+            renderer.domElement.removeEventListener('touchstart', onTouchStartZoom);
             renderer.domElement.removeEventListener('touchmove', onPointerMove);
+            renderer.domElement.removeEventListener('touchmove', onTouchMoveZoom);
             renderer.domElement.removeEventListener('touchend', onPointerUp);
             renderer.domElement.removeEventListener('wheel', onWheel);
             renderer.dispose();
@@ -907,7 +934,7 @@ export default function EarthGlobe({ open, onClose }) {
                 <div className="absolute bottom-20 right-4 z-10 flex flex-col gap-2">
                     <button
                         onClick={() => {
-                            zoomRef.current.targetDist = Math.max(7.5, zoomRef.current.targetDist - 1.5);
+                            zoomRef.current.targetDist = Math.max(5, zoomRef.current.targetDist - 1.5);
                         }}
                         className="w-10 h-10 rounded-full flex items-center justify-center text-white/70 text-lg font-bold active:scale-90 transition-transform"
                         style={{ background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,0.1)' }}
@@ -915,7 +942,7 @@ export default function EarthGlobe({ open, onClose }) {
                     >+</button>
                     <button
                         onClick={() => {
-                            zoomRef.current.targetDist = Math.min(25, zoomRef.current.targetDist + 1.5);
+                            zoomRef.current.targetDist = Math.min(40, zoomRef.current.targetDist + 1.5);
                         }}
                         className="w-10 h-10 rounded-full flex items-center justify-center text-white/70 text-lg font-bold active:scale-90 transition-transform"
                         style={{ background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,0.1)' }}
@@ -928,7 +955,7 @@ export default function EarthGlobe({ open, onClose }) {
             {texturesLoaded && (
                 <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-10 pointer-events-none">
                     <p className="text-[10px] text-white/30 text-center">
-                        Drag to rotate &bull; Scroll to zoom
+                        Drag to rotate &bull; Pinch or scroll to zoom
                     </p>
                 </div>
             )}
