@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Orbital Dome — Promotional Poster</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+
+  @page {
+    size: 8.5in 14in;
+    margin: 0;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body {
+    width: 8.5in;
+    font-family: 'Space Grotesk', -apple-system, sans-serif;
+    background: #000;
+    color: #fff;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    color-adjust: exact !important;
+  }
+
+  .poster {
+    width: 8.5in;
+    min-height: 14in;
+    margin: 0 auto;
+    background-color: #031a44;
+    background-image:
+      radial-gradient(ellipse at 50% 0%, rgba(20,80,200,0.25) 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 40%, rgba(30,90,220,0.10) 0%, transparent 50%),
+      radial-gradient(ellipse at 20% 70%, rgba(15,70,190,0.10) 0%, transparent 50%),
+      radial-gradient(ellipse at 50% 100%, rgba(40,100,240,0.12) 0%, transparent 50%),
+      linear-gradient(175deg, #000510 0%, #010a1f 8%, #021433 20%, #031a44 35%, #021840 50%, #011230 65%, #010c22 80%, #000510 100%);
+    position: relative;
+    overflow: hidden;
+    padding: 0.35in 0.5in 0.25in;
+  }
+
+  /* ── Stars ── */
+  .stars { position: absolute; inset: 0; pointer-events: none; }
+  .sd {
+    position: absolute; width: 2px; height: 2px;
+    border-radius: 50%; background: rgba(180,210,255,0.6);
+  }
+
+  /* ── Header ── */
+  .header { text-align: center; margin-bottom: 0.15in; position: relative; z-index: 2; }
+  .logo-ring {
+    width: 68px; height: 68px; margin: 0 auto 10px;
+    border-radius: 50%; border: 2.5px solid #3b82f6;
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(2,20,51,0.9);
+  }
+  .logo-ring span { font-size: 30px; }
+  .app-name { font-size: 40px; font-weight: 700; letter-spacing: -1.5px; color: #fff; margin-bottom: 3px; }
+  .tagline { font-size: 9.5px; color: rgba(147,197,253,0.5); letter-spacing: 5px; text-transform: uppercase; }
+
+  /* ── Stats ── */
+  .stats-strip {
+    display: flex; margin: 12px 0.2in 0;
+    border-top: 1px solid rgba(59,130,246,0.15);
+    border-bottom: 1px solid rgba(59,130,246,0.15);
+    background: rgba(59,130,246,0.05); padding: 8px 0;
+    position: relative; z-index: 2;
+  }
+  .stat { flex: 1; text-align: center; border-right: 1px solid rgba(59,130,246,0.1); }
+  .stat:last-child { border-right: none; }
+  .stat-num { font-size: 18px; font-weight: 700; color: #60a5fa; }
+  .stat-label { font-size: 6.5px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: rgba(147,197,253,0.3); }
+
+  /* ── Dividers ── */
+  .divider { height: 1px; margin: 10px 0.8in; background: rgba(59,130,246,0.12); position: relative; z-index: 2; }
+  .section-label { text-align: center; padding: 4px 0 6px; position: relative; z-index: 2; }
+  .section-label span { font-size: 8px; font-weight: 600; letter-spacing: 4px; text-transform: uppercase; color: rgba(96,165,250,0.4); }
+
+  /* ── Feature Cards ── */
+  .features { position: relative; z-index: 2; }
+  .fc {
+    display: flex; height: 0.62in; margin-bottom: 5px;
+    border-radius: 8px; border: 1px solid rgba(59,130,246,0.08);
+    background: rgba(5,15,40,0.5); overflow: hidden;
+  }
+  .fc-icon {
+    width: 0.65in; min-width: 0.65in;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 32px; background: rgba(2,10,30,0.7);
+  }
+  .fc-info { padding: 6px 10px; display: flex; flex-direction: column; justify-content: center; flex: 1; }
+  .fc-badge {
+    display: inline-block; width: fit-content;
+    padding: 1px 7px; border-radius: 8px;
+    font-size: 6px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 2px;
+  }
+  .fc-title { font-size: 13px; font-weight: 700; margin-bottom: 1px; }
+  .fc-desc { font-size: 8px; line-height: 1.4; color: rgba(147,197,253,0.45); }
+
+  /* Badge & title colors */
+  .b-blue { background: rgba(59,130,246,0.12); color: #60a5fa; }
+  .b-cyan { background: rgba(147,197,253,0.10); color: #93c5fd; }
+  .b-gold { background: rgba(251,191,36,0.12); color: #fbbf24; }
+  .b-green { background: rgba(34,211,153,0.10); color: #34d399; }
+  .b-red { background: rgba(239,68,68,0.10); color: #f87171; }
+  .b-purple { background: rgba(139,92,246,0.12); color: #a78bfa; }
+  .t-blue { color: #93c5fd; } .t-silver { color: #bfdbfe; } .t-sky { color: #a5c8f7; }
+  .t-gold { color: #fcd34d; } .t-green { color: #6ee7b7; } .t-red { color: #fca5a5; }
+  .t-mint { color: #86efac; } .t-purple { color: #c4b5fd; } .t-amber { color: #fde68a; }
+
+  /* ── Pills ── */
+  .pills {
+    display: flex; flex-wrap: wrap; justify-content: center;
+    gap: 4px 6px; padding: 0 0.1in;
+    position: relative; z-index: 2;
+  }
+  .pill {
+    padding: 3px 8px; border-radius: 5px;
+    font-size: 7.5px; font-weight: 500;
+    background: rgba(59,130,246,0.05);
+    border: 1px solid rgba(59,130,246,0.08);
+    color: rgba(147,197,253,0.5);
+  }
+
+  /* ── CTA ── */
+  .cta { text-align: center; position: relative; z-index: 2; margin-top: 12px; }
+  .cta-btn {
+    display: inline-block; padding: 9px 36px; border-radius: 25px;
+    font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
+    background: #2563eb; color: #fff; text-decoration: none; margin-bottom: 6px;
+  }
+  .url-text { font-size: 10px; font-weight: 500; color: rgba(147,197,253,0.35); letter-spacing: 2px; }
+  .free-badge {
+    display: inline-block; margin-top: 7px;
+    padding: 3px 14px; border-radius: 5px;
+    font-size: 7px; font-weight: 700; letter-spacing: 2.5px; text-transform: uppercase;
+    background: rgba(59,130,246,0.08); color: rgba(96,165,250,0.7);
+    border: 1px solid rgba(59,130,246,0.12);
+  }
+  .tech-row { display: flex; justify-content: center; gap: 12px; margin-top: 8px; flex-wrap: wrap; }
+  .tech-tag { font-size: 7.5px; font-weight: 500; color: rgba(96,165,250,0.25); letter-spacing: 1px; text-transform: uppercase; }
+
+  @media print {
+    html, body { background: #000 !important; }
+    .poster { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+  }
+</style>
+</head>
+<body>
+<div class="poster">
+  <div class="stars">
+    <div class="sd" style="top:3%;left:8%;opacity:.7"></div>
+    <div class="sd" style="top:5%;left:45%;opacity:.4;width:3px;height:3px"></div>
+    <div class="sd" style="top:7%;right:12%;opacity:.6"></div>
+    <div class="sd" style="top:12%;left:22%;opacity:.5"></div>
+    <div class="sd" style="top:15%;right:30%;opacity:.3;width:3px;height:3px"></div>
+    <div class="sd" style="top:20%;left:65%;opacity:.5"></div>
+    <div class="sd" style="top:28%;left:5%;opacity:.4"></div>
+    <div class="sd" style="top:35%;right:8%;opacity:.6"></div>
+    <div class="sd" style="top:42%;left:35%;opacity:.3"></div>
+    <div class="sd" style="top:50%;right:25%;opacity:.5"></div>
+    <div class="sd" style="top:58%;left:15%;opacity:.4"></div>
+    <div class="sd" style="top:65%;right:45%;opacity:.5;width:3px;height:3px"></div>
+    <div class="sd" style="top:72%;left:55%;opacity:.3"></div>
+    <div class="sd" style="top:78%;right:15%;opacity:.6"></div>
+    <div class="sd" style="top:85%;left:40%;opacity:.4"></div>
+    <div class="sd" style="top:90%;right:35%;opacity:.5"></div>
+  </div>
+
+  <div class="header">
+    <div class="logo-ring"><span>🔭</span></div>
+    <h1 class="app-name">Orbital Dome</h1>
+    <p class="tagline">Your Window to the Universe</p>
+  </div>
+
+  <div class="stats-strip">
+    <div class="stat"><div class="stat-num">100K+</div><div class="stat-label">Real Stars</div></div>
+    <div class="stat"><div class="stat-num">63</div><div class="stat-label">Components</div></div>
+    <div class="stat"><div class="stat-num">8</div><div class="stat-label">Languages</div></div>
+    <div class="stat"><div class="stat-num">30+</div><div class="stat-label">Features</div></div>
+  </div>
+
+  <div class="divider"></div>
+  <div class="section-label"><span>Flagship 3D Experiences</span></div>
+
+  <div class="features">
+    <div class="fc">
+      <div class="fc-icon">🌍</div>
+      <div class="fc-info">
+        <span class="fc-badge b-blue">Flagship</span>
+        <h2 class="fc-title t-blue">Earth Observatory</h2>
+        <p class="fc-desc">Photorealistic 3D globe with day/night terminator, atmosphere, clouds, and 30+ satellite orbits — ISS, Hubble, Starlink, GPS.</p>
+      </div>
+    </div>
+    <div class="fc">
+      <div class="fc-icon">🌙</div>
+      <div class="fc-info">
+        <span class="fc-badge b-cyan">Flagship · NASA HD</span>
+        <h2 class="fc-title t-silver">Lunar Observatory</h2>
+        <p class="fc-desc">NASA SVS 8K textures with displacement mapping, real libration, 6 Apollo landing sites, live phase and illumination.</p>
+      </div>
+    </div>
+    <div class="fc">
+      <div class="fc-icon">🛸</div>
+      <div class="fc-info">
+        <span class="fc-badge b-blue">Premium · Cinematic</span>
+        <h2 class="fc-title t-sky">Lunar Flyover</h2>
+        <p class="fc-desc">Low-orbit cinematic flight over the Moon. NASA LRO terrain, HUD overlay, autopilot and manual WASD controls.</p>
+      </div>
+    </div>
+    <div class="fc">
+      <div class="fc-icon">☀️</div>
+      <div class="fc-info">
+        <span class="fc-badge b-gold">Interactive 3D</span>
+        <h2 class="fc-title t-gold">Solar System Orrery</h2>
+        <p class="fc-desc">All 8 planets in real-time JPL positions with accurate orbital paths, planetary data, and smooth 3D camera controls.</p>
+      </div>
+    </div>
+    <div class="fc">
+      <div class="fc-icon">📡</div>
+      <div class="fc-info">
+        <span class="fc-badge b-green">Real-Time</span>
+        <h2 class="fc-title t-green">Orbital Tracker</h2>
+        <p class="fc-desc">30+ satellites with SGP4 propagation from NORAD TLEs. Cyberpunk HUD with live telemetry and orbit classification.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+  <div class="section-label"><span>Exclusive New Features</span></div>
+
+  <div class="features">
+    <div class="fc">
+      <div class="fc-icon">☄️</div>
+      <div class="fc-info">
+        <span class="fc-badge b-red">New</span>
+        <h2 class="fc-title t-red">Asteroid Tracker</h2>
+        <p class="fc-desc">10 real Near-Earth Objects — Apophis, Bennu, Didymos — with Kepler orbital mechanics, hazard status, and NASA mission data.</p>
+      </div>
+    </div>
+    <div class="fc">
+      <div class="fc-icon">🪐</div>
+      <div class="fc-info">
+        <span class="fc-badge b-green">New</span>
+        <h2 class="fc-title t-mint">Exoplanet Explorer</h2>
+        <p class="fc-desc">21 confirmed exoplanets across 9 star systems — TRAPPIST-1, Proxima Centauri, Tau Ceti — with habitable zone visualization.</p>
+      </div>
+    </div>
+    <div class="fc">
+      <div class="fc-icon">📡</div>
+      <div class="fc-info">
+        <span class="fc-badge b-purple">New · Unique</span>
+        <h2 class="fc-title t-purple">Deep Space Network</h2>
+        <p class="fc-desc">NASA's 3 DSN complexes communicating with Voyager, JWST, Mars rovers and 12 spacecraft. Animated signals in real time.</p>
+      </div>
+    </div>
+    <div class="fc">
+      <div class="fc-icon">🌃</div>
+      <div class="fc-info">
+        <span class="fc-badge b-gold">New · Unique</span>
+        <h2 class="fc-title t-amber">Light Pollution Sim</h2>
+        <p class="fc-desc">Bortle 1-9 slider showing real-time impact on your sky. See what light pollution steals — from 7,500 stars to just 100.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+  <div class="section-label"><span>And Much More</span></div>
+
+  <div class="pills">
+    <span class="pill">🌟 Tonight's Best</span>
+    <span class="pill">🔭 Telescope Mode (70+ DSOs)</span>
+    <span class="pill">📹 AR Camera</span>
+    <span class="pill">🧠 AstroQuiz (50+ Qs)</span>
+    <span class="pill">🌤️ Astro Weather</span>
+    <span class="pill">🛸 NASA APOD</span>
+    <span class="pill">🌐 20+ Live Cams</span>
+    <span class="pill">📷 Photo Planner</span>
+    <span class="pill">🔔 ISS Pass Alerts</span>
+    <span class="pill">🌗 Compare Locations</span>
+    <span class="pill">🔗 Share This Sky</span>
+    <span class="pill">♿ Accessibility</span>
+    <span class="pill">✨ Star Trails</span>
+    <span class="pill">🎵 Ambient Sound</span>
+    <span class="pill">🌌 110+ Messier Objects</span>
+    <span class="pill">🌈 Aurora Borealis</span>
+  </div>
+
+  <div class="cta">
+    <a href="https://orbitaldome.com" class="cta-btn">Explore the Universe</a>
+    <br>
+    <p class="url-text">orbitaldome.com</p>
+    <div class="free-badge">100% Free · No Ads · No Account Required</div>
+    <div class="tech-row">
+      <span class="tech-tag">React 18</span>
+      <span class="tech-tag">Three.js</span>
+      <span class="tech-tag">WebGL</span>
+      <span class="tech-tag">GLSL Shaders</span>
+      <span class="tech-tag">astronomy-engine</span>
+      <span class="tech-tag">satellite.js</span>
+      <span class="tech-tag">PWA</span>
+    </div>
+  </div>
+</div>
+</body>
+</html>
