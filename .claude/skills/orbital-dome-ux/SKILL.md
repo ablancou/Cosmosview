@@ -12,15 +12,51 @@
 - Panels that slide in should slide from the edge they are anchored to (right-anchored panels slide from right, left from left).
 - The 3D visualization (Earth globe, Moon globe, sky view, solar system) is always the hero — it must be **fully visible and unobstructed** at all times unless the user explicitly opens a panel.
 
-## 2. Responsive Design (Mobile-First)
+## 2. Responsive Design — ALL THREE VIEWPORTS ARE MANDATORY
 
-- Every component must work on these breakpoints:
-  - **Mobile**: < 640px (single column, collapsible panels, touch-friendly targets >= 44px)
-  - **Tablet**: 640–1024px (panels can be toggleable sidebars)
-  - **Desktop**: > 1024px (side-by-side layouts allowed)
-- Never use fixed pixel widths that break on small screens (no `w-[740px]` without `max-w-[95vw]`).
-- Full-screen features (Solar System, Earth Observatory, Moon Globe) should use `calc(100vw - 32px)` / `calc(100vh - 32px)` or `inset-0`, not constrained boxes.
-- Touch targets: minimum 44x44px for all interactive elements on mobile.
+> **CRITICAL RULE**: Every single feature, component, and panel MUST work flawlessly on ALL three viewport modes. No exceptions. If it doesn't work on all three, it is not ready for deployment.
+
+### 2a. Required Viewport Modes
+
+- **Desktop** (> 1024px): Side-by-side layouts allowed. Full visual fidelity.
+- **Mobile Portrait** (< 640px width): Single column, collapsible panels, touch-friendly targets ≥ 44px.
+- **Mobile Landscape** (< 640px height, width > height): Horizontal layout with compact UI. Panels must not consume more than 40% of screen width. 3D visualizations must remain the dominant element.
+- **Tablet** (640–1024px): Panels can be toggleable sidebars.
+
+### 2b. Mandatory Responsive Checklist (for EVERY component)
+
+1. **Test mentally in all 3 modes** before writing any JSX: "Does this look good on desktop? Portrait phone? Landscape phone?"
+2. Never use fixed pixel widths that break on small screens (no `w-[740px]` without `max-w-[95vw]`).
+3. Full-screen features (Solar System, Earth Observatory, Moon Globe, Lunar Flyover, Asteroid Tracker, Exoplanet Explorer) must use `inset-0` or `100vw`/`100vh`, never constrained boxes.
+4. Touch targets: minimum 44×44px for all interactive elements on mobile.
+5. Text must remain readable — minimum `text-xs` (12px) on mobile, never smaller.
+6. Scrollable panels must use `overflow-y-auto` and `max-h-[60vh]` on portrait, `max-h-[80vh]` on landscape.
+7. Close/dismiss buttons must be easily reachable with one thumb (bottom half of screen on mobile).
+
+### 2c. Mobile-Specific Three.js Rules (CRITICAL — prevents crashes)
+
+These rules exist because past violations caused the entire app to stop loading on iPhone:
+
+1. **React hooks ordering**: ALL `useState`, `useRef`, `useEffect`, `useMemo`, `useCallback` calls MUST be declared BEFORE any conditional `return` statement. Placing `if (!open) return null` before hooks violates React's rules of hooks and crashes the entire app.
+2. **Variable declaration order**: `const` variables are NOT hoisted. Never reference a `const` before its declaration line. Safari/iOS is stricter about this than Chrome.
+3. **Geometry complexity**: Use `≤ 16` subdivisions for `IcosahedronGeometry` / `SphereGeometry` on mobile (32+ on desktop only).
+4. **Pixel ratio clamping**: Always `renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))`.
+5. **Antialiasing**: Disable on mobile (`antialias: !isMobile`).
+6. **Texture sizes**: Max 4K on mobile, 8K on desktop only. Use progressive loading (2K → 4K → 8K).
+7. **WebGL cleanup**: Every `useEffect` that creates a renderer MUST return a cleanup function that calls `renderer.forceContextLoss()`, `renderer.dispose()`, and traverses the scene to dispose all geometries/materials/textures.
+8. **Mobile detection pattern**:
+   ```javascript
+   const [isMobile] = useState(
+     typeof navigator !== 'undefined' && /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
+   );
+   ```
+
+### 2d. Landscape-Specific Rules
+
+- Info panels in landscape mode must be **side-anchored** (left or right), never bottom-sheet style (which would consume too much vertical space).
+- HUD overlays (altitude, coordinates, telemetry) must reflow to a single compact row in landscape.
+- Control buttons must be arranged horizontally in landscape, not stacked vertically.
+- The 3D canvas must always occupy at least 60% of the viewport in landscape mode.
 
 ## 3. Navigation Pattern — Speed Dial FAB
 
@@ -120,3 +156,24 @@
 - Always test mental model: "If I were a user on a phone, can I see the globe clearly when I open this feature?"
 - Always recommend the **best, most innovative, and technologically advanced** approach — but it must be **100% free**.
 - All data must be **scientifically accurate** — use real astronomical algorithms, real NASA data, real orbital mechanics. No fake or placeholder data.
+
+## 14. Pre-Commit Quality Gate — Viewport Compliance
+
+Before any component is considered complete, mentally verify:
+
+| Check | Desktop | Portrait Mobile | Landscape Mobile |
+|-------|---------|-----------------|------------------|
+| 3D canvas visible and unobstructed | ✅ | ✅ | ✅ |
+| Panels don't cover visualization | ✅ | ✅ | ✅ |
+| All hooks declared before conditional returns | ✅ | ✅ | ✅ |
+| `const` variables declared before use | ✅ | ✅ | ✅ |
+| Touch targets ≥ 44px | — | ✅ | ✅ |
+| Geometry ≤ 16 subdivisions on mobile | — | ✅ | ✅ |
+| Pixel ratio clamped to 2 | — | ✅ | ✅ |
+| Antialiasing disabled on mobile | — | ✅ | ✅ |
+| WebGL cleanup in useEffect return | ✅ | ✅ | ✅ |
+| Textures max 4K on mobile | — | ✅ | ✅ |
+| Close button reachable with thumb | — | ✅ | ✅ |
+| No text smaller than 12px | ✅ | ✅ | ✅ |
+
+**If ANY cell would be ❌, the component is NOT ready. Fix it before proceeding.**

@@ -128,11 +128,19 @@ const TYPE_HEX = {
     change: '#4499ff',
 };
 
-/* ═══ NASA Moon Textures (public domain / CC BY) ═══ */
+/* ═══ NASA Moon Textures (public domain) ═══ */
+/* Sources: NASA SVS CGI Moon Kit (svs.gsfc.nasa.gov/4720)
+   and Solar System Scope (solarsystemscope.com) — CC BY 4.0 */
 const MOON_TEXTURES = {
-    // Solar System Scope 2K moon (CC BY 4.0, based on NASA LRO data)
-    color: 'https://www.solarsystemscope.com/textures/download/2k_moon.jpg',
-    // Fallback: three-globe bundled lunar surface
+    // NASA SVS CGI Moon Kit — LRO color map 4K (public domain)
+    color4k: 'https://svs.gsfc.nasa.gov/vis/a000000/a004700/a004720/lroc_color_poles_4k.jpg',
+    // Solar System Scope 8K moon (CC BY 4.0, based on NASA LRO data)
+    color8k: 'https://www.solarsystemscope.com/textures/download/8k_moon.jpg',
+    // Solar System Scope 2K (fast fallback)
+    color2k: 'https://www.solarsystemscope.com/textures/download/2k_moon.jpg',
+    // NASA SVS displacement map for terrain relief
+    displacement: 'https://svs.gsfc.nasa.gov/vis/a000000/a004700/a004720/ldem_16_uint.jpg',
+    // Last resort fallback
     colorFallback: 'https://unpkg.com/three-globe@2.31.1/example/img/lunar-surface.jpg',
 };
 
@@ -527,7 +535,8 @@ export default function MoonGlobe({ open, onClose }) {
         const proceduralNormal = createNormalMap(_isMobile ? 512 : 1024);
 
         // Moon sphere (lower segments on mobile for performance)
-        const moonGeom = new THREE.SphereGeometry(2, _isMobile ? 64 : 128, _isMobile ? 64 : 128);
+        // Higher segments on desktop for displacement map detail
+        const moonGeom = new THREE.SphereGeometry(2, _isMobile ? 64 : 256, _isMobile ? 64 : 256);
         const moonMat = new THREE.MeshStandardMaterial({
             map: proceduralTex,
             normalMap: proceduralNormal,
@@ -539,32 +548,52 @@ export default function MoonGlobe({ open, onClose }) {
         });
         const moon = new THREE.Mesh(moonGeom, moonMat);
 
-        // Attempt to load real NASA texture (non-blocking upgrade)
+        // Attempt to load real NASA textures (progressive enhancement)
         const tryLoadTexture = (url) => new Promise((resolve, reject) => {
             loader.load(url, resolve, undefined, reject);
         });
 
+        // Progressive texture upgrade: procedural → 2K → 4K NASA → 8K (desktop only)
         (async () => {
-            try {
-                const realTex = await tryLoadTexture(MOON_TEXTURES.color);
-                realTex.colorSpace = THREE.SRGBColorSpace;
-                moonMat.map = realTex;
-                moonMat.bumpMap = realTex;
+            const applyTex = (tex) => {
+                tex.colorSpace = THREE.SRGBColorSpace;
+                tex.anisotropy = renderer.capabilities.getMaxAnisotropy();
+                moonMat.map = tex;
+                moonMat.bumpMap = tex;
                 moonMat.needsUpdate = true;
+            };
+            // Step 1: Quick 2K load
+            try {
+                const tex2k = await tryLoadTexture(MOON_TEXTURES.color2k);
+                applyTex(tex2k);
                 proceduralTex.dispose();
-            } catch {
+            } catch { /* keep procedural */ }
+
+            // Step 2: Upgrade to NASA 4K
+            try {
+                const tex4k = await tryLoadTexture(MOON_TEXTURES.color4k);
+                const oldMap = moonMat.map;
+                applyTex(tex4k);
+                if (oldMap && oldMap !== proceduralTex) oldMap.dispose();
+            } catch { /* stay at 2K */ }
+
+            // Step 3: On desktop, upgrade to 8K for maximum quality
+            if (!_isMobile) {
                 try {
-                    const fallbackTex = await tryLoadTexture(MOON_TEXTURES.colorFallback);
-                    fallbackTex.colorSpace = THREE.SRGBColorSpace;
-                    moonMat.map = fallbackTex;
-                    moonMat.bumpMap = fallbackTex;
-                    moonMat.needsUpdate = true;
-                    proceduralTex.dispose();
-                } catch {
-                    // Keep procedural texture — already applied
-                    console.log('Using procedural moon texture (NASA textures unavailable)');
-                }
+                    const tex8k = await tryLoadTexture(MOON_TEXTURES.color8k);
+                    const oldMap = moonMat.map;
+                    applyTex(tex8k);
+                    if (oldMap) oldMap.dispose();
+                } catch { /* stay at 4K */ }
             }
+
+            // Step 4: Load displacement map for real terrain relief
+            try {
+                const dispTex = await tryLoadTexture(MOON_TEXTURES.displacement);
+                moonMat.displacementMap = dispTex;
+                moonMat.displacementScale = _isMobile ? 0.04 : 0.06;
+                moonMat.needsUpdate = true;
+            } catch { /* no displacement — fine */ }
         })();
         moon.rotation.x = THREE.MathUtils.degToRad(1.54);
         scene.add(moon);

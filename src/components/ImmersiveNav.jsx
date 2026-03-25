@@ -33,6 +33,7 @@ const SUB_ITEMS = {
     celestial: [
         { id: 'earthGlobe', emoji: '🌍', label: 'Earth Observatory', flagship: true },
         { id: 'moonGlobe', emoji: '🌕', label: 'Lunar Observatory', flagship: true },
+        { id: 'lunarFlyover', emoji: '🚀', label: 'Lunar Flyover', flagship: true },
         { id: 'moon', emoji: '🌙', label: 'Moon Data' },
         { id: 'orrery', emoji: '☀️', label: 'Solar System', flagship: true },
         { id: 'orbitalTracker', emoji: '📡', label: 'Orbital Tracking', flagship: true },

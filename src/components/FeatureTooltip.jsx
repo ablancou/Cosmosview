@@ -27,6 +27,11 @@ const TOOLTIPS = {
         title: 'Moon Dashboard',
         desc: 'Current lunar phase, moonrise/set times, illumination percentage, and upcoming lunar events.',
     },
+    lunarFlyover: {
+        emoji: '🚀',
+        title: 'Lunar Flyover',
+        desc: 'Cinematic low-orbit flight over the Moon\'s surface using NASA LRO textures. Real crater terrain, dramatic lighting, and spacecraft-window perspective. Use arrow keys to look around.',
+    },
     orrery: {
         emoji: '☀️',
         title: 'Solar System Orrery',
