@@ -32,6 +32,7 @@ import ConstellationNarrator from './components/ConstellationNarrator';
 import AccessibilityPanel from './components/AccessibilityPanel';
 import MoonGlobe from './components/MoonGlobe';
 import LunarFlyover from './components/LunarFlyover';
+import LunarMissions from './components/LunarMissions';
 import LightPollutionSimulator from './components/LightPollutionSimulator';
 import AsteroidTracker from './components/AsteroidTracker';
 import ExoplanetExplorer from './components/ExoplanetExplorer';
@@ -79,6 +80,7 @@ export default function App() {
     const [accessibilityOpen, setAccessibilityOpen] = useState(false);
     const [moonGlobeOpen, setMoonGlobeOpen] = useState(false);
     const [lunarFlyoverOpen, setLunarFlyoverOpen] = useState(false);
+    const [lunarMissionsOpen, setLunarMissionsOpen] = useState(false);
     const [lightPollutionOpen, setLightPollutionOpen] = useState(false);
     const [asteroidTrackerOpen, setAsteroidTrackerOpen] = useState(false);
     const [exoplanetsOpen, setExoplanetsOpen] = useState(false);
@@ -221,6 +223,7 @@ export default function App() {
             case 'accessibility': setAccessibilityOpen(true); break;
             case 'moonGlobe': setMoonGlobeOpen(true); break;
             case 'lunarFlyover': setLunarFlyoverOpen(true); break;
+            case 'lunarMissions': setLunarMissionsOpen(true); break;
             case 'lightPollution': setLightPollutionOpen(true); break;
             case 'asteroidTracker': setAsteroidTrackerOpen(true); break;
             case 'exoplanets': setExoplanetsOpen(true); break;
@@ -329,6 +332,7 @@ export default function App() {
             {!loading && <AccessibilityPanel open={accessibilityOpen} onClose={() => setAccessibilityOpen(false)} />}
             {!loading && <MoonGlobe open={moonGlobeOpen} onClose={() => setMoonGlobeOpen(false)} />}
             {!loading && <LunarFlyover open={lunarFlyoverOpen} onClose={() => setLunarFlyoverOpen(false)} />}
+            {!loading && <LunarMissions open={lunarMissionsOpen} onClose={() => setLunarMissionsOpen(false)} />}
             {!loading && <LightPollutionSimulator open={lightPollutionOpen} onClose={() => setLightPollutionOpen(false)} />}
             {!loading && <AsteroidTracker open={asteroidTrackerOpen} onClose={() => setAsteroidTrackerOpen(false)} />}
             {!loading && <ExoplanetExplorer open={exoplanetsOpen} onClose={() => setExoplanetsOpen(false)} />}

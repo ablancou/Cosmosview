@@ -5,8 +5,133 @@ const MOON_TEXTURES = {
   color4k: 'https://svs.gsfc.nasa.gov/vis/a000000/a004700/a004720/lroc_color_poles_4k.jpg',
   color8k: 'https://www.solarsystemscope.com/textures/download/8k_moon.jpg',
   color2k: 'https://www.solarsystemscope.com/textures/download/2k_moon.jpg',
+  colorFallback: 'https://unpkg.com/three-globe@2.31.1/example/img/lunar-surface.jpg',
   displacement: 'https://svs.gsfc.nasa.gov/vis/a000000/a004700/a004720/ldem_16_uint.jpg',
 };
+
+/* ═══ Procedural Moon Texture (immediate fallback — always works) ═══ */
+function createMoonTexture(size = 2048) {
+  const canvas = document.createElement('canvas');
+  canvas.width = size; canvas.height = size;
+  const ctx = canvas.getContext('2d');
+  const seed = (x, y) => { const n = Math.sin(x * 127.1 + y * 311.7) * 43758.5453; return n - Math.floor(n); };
+  const seed2 = (x, y) => { const n = Math.sin(x * 269.5 + y * 183.3) * 21345.6789; return n - Math.floor(n); };
+  const noise = (px, py, freq, seedFn = seed) => {
+    const x = px * freq, y = py * freq;
+    const ix = Math.floor(x), iy = Math.floor(y);
+    const fx = x - ix, fy = y - iy;
+    const sx = fx * fx * (3 - 2 * fx), sy = fy * fy * (3 - 2 * fy);
+    const a = seedFn(ix, iy), b = seedFn(ix + 1, iy), c = seedFn(ix, iy + 1), d = seedFn(ix + 1, iy + 1);
+    return a + (b - a) * sx + (c - a) * sy + (a - b - c + d) * sx * sy;
+  };
+  const fbm = (px, py, octaves = 6, seedFn = seed) => {
+    let val = 0, amp = 0.5, freq = 1;
+    for (let i = 0; i < octaves; i++) { val += noise(px, py, freq * 4, seedFn) * amp; amp *= 0.5; freq *= 2.1; }
+    return val;
+  };
+  const maria = [
+    { cx: 0.55, cy: 0.38, r: 0.12, depth: 0.85 }, { cx: 0.50, cy: 0.30, r: 0.10, depth: 0.80 },
+    { cx: 0.40, cy: 0.35, r: 0.14, depth: 0.78 }, { cx: 0.35, cy: 0.50, r: 0.18, depth: 0.72 },
+    { cx: 0.55, cy: 0.48, r: 0.08, depth: 0.75 }, { cx: 0.60, cy: 0.35, r: 0.07, depth: 0.82 },
+    { cx: 0.47, cy: 0.42, r: 0.06, depth: 0.80 }, { cx: 0.48, cy: 0.55, r: 0.09, depth: 0.76 },
+    { cx: 0.42, cy: 0.28, r: 0.06, depth: 0.78 }, { cx: 0.55, cy: 0.43, r: 0.05, depth: 0.80 },
+  ];
+  const getMareInfluence = (u, v) => {
+    let m_inf = 0;
+    for (const m of maria) {
+      const dx = u - m.cx, dy = v - m.cy, dist = Math.sqrt(dx * dx + dy * dy);
+      if (dist < m.r) { const t = 1 - dist / m.r; m_inf = Math.max(m_inf, t * t * (3 - 2 * t) * m.depth); }
+    }
+    return m_inf;
+  };
+  const imageData = ctx.createImageData(size, size);
+  const d = imageData.data;
+  for (let y = 0; y < size; y++) {
+    for (let x = 0; x < size; x++) {
+      const u = x / size, v = y / size, idx = (y * size + x) * 4;
+      const mareInf = getMareInfluence(u, v);
+      const highlandBase = 0.60 + fbm(u + 0.5, v + 0.3, 5) * 0.28;
+      const mareBase = 0.22 + fbm(u + 1.7, v + 2.1, 3) * 0.15;
+      let bright = highlandBase * (1 - mareInf) + mareBase * mareInf;
+      bright += (fbm(u + 3.3, v + 0.7, 4, seed2) - 0.5) * 0.08;
+      const craterLarge = fbm(u + 2.7, v + 1.3, 5);
+      const craterEdgeL = Math.abs(craterLarge - 0.48);
+      if (craterEdgeL < 0.03) bright += 0.14;
+      if (craterEdgeL > 0.12 && craterEdgeL < 0.17) bright -= 0.07;
+      const craterMed = fbm(u * 1.5 + 5.1, v * 1.5 + 3.7, 5);
+      const craterEdgeM = Math.abs(craterMed - 0.50);
+      if (craterEdgeM < 0.025) bright += 0.10;
+      if (craterEdgeM > 0.10 && craterEdgeM < 0.14) bright -= 0.05;
+      bright += (noise(u, v, 100) - 0.5) * 0.06;
+      bright += (noise(u, v, 200) - 0.5) * 0.03;
+      const warmShift = fbm(u + 7.1, v + 4.3, 3) * 0.04;
+      d[idx] = Math.max(0, Math.min(255, (bright + warmShift * 0.5) * 255));
+      d[idx + 1] = Math.max(0, Math.min(255, bright * 252));
+      d[idx + 2] = Math.max(0, Math.min(255, (bright - warmShift * 0.3) * 248));
+      d[idx + 3] = 255;
+    }
+  }
+  ctx.putImageData(imageData, 0, 0);
+  // Overlay craters
+  const craterList = [];
+  for (let i = 0; i < 90; i++) craterList.push({ x: Math.random() * size, y: Math.random() * size, r: 3 + Math.pow(Math.random(), 2.5) * 45 });
+  ctx.globalCompositeOperation = 'multiply';
+  for (const c of craterList) {
+    const grad = ctx.createRadialGradient(c.x - c.r * 0.15, c.y - c.r * 0.15, c.r * 0.1, c.x, c.y, c.r);
+    grad.addColorStop(0, `rgba(60,58,54,${0.25 + Math.random() * 0.35})`);
+    grad.addColorStop(0.6, `rgba(120,118,114,${0.1 + Math.random() * 0.15})`);
+    grad.addColorStop(1, 'rgba(255,255,255,0)');
+    ctx.fillStyle = grad; ctx.beginPath(); ctx.arc(c.x, c.y, c.r, 0, Math.PI * 2); ctx.fill();
+  }
+  ctx.globalCompositeOperation = 'screen';
+  for (const c of craterList) {
+    ctx.strokeStyle = `rgba(210,208,200,${0.04 + Math.random() * 0.08})`;
+    ctx.lineWidth = Math.max(0.5, c.r * 0.08);
+    ctx.beginPath(); ctx.arc(c.x + c.r * 0.06, c.y + c.r * 0.06, c.r * 0.95, 0, Math.PI * 2); ctx.stroke();
+  }
+  ctx.globalCompositeOperation = 'source-over';
+  const tex = new THREE.CanvasTexture(canvas);
+  tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+  return tex;
+}
+
+function createNormalMap(size = 1024) {
+  const canvas = document.createElement('canvas');
+  canvas.width = size; canvas.height = size;
+  const ctx = canvas.getContext('2d');
+  const seed = (x, y) => { const n = Math.sin(x * 127.1 + y * 311.7) * 43758.5453; return n - Math.floor(n); };
+  const noise = (px, py, freq) => {
+    const x = px * freq, y = py * freq;
+    const ix = Math.floor(x), iy = Math.floor(y);
+    const fx = x - ix, fy = y - iy;
+    const sx = fx * fx * (3 - 2 * fx), sy = fy * fy * (3 - 2 * fy);
+    const a = seed(ix, iy), b = seed(ix + 1, iy), c = seed(ix, iy + 1), d = seed(ix + 1, iy + 1);
+    return a + (b - a) * sx + (c - a) * sy + (a - b - c + d) * sx * sy;
+  };
+  const fbm = (px, py, octaves = 5) => {
+    let val = 0, amp = 0.5, freq = 1;
+    for (let i = 0; i < octaves; i++) { val += noise(px, py, freq * 6) * amp; amp *= 0.5; freq *= 2; }
+    return val;
+  };
+  const imageData = ctx.createImageData(size, size);
+  const dd = imageData.data;
+  const step = 1 / size;
+  for (let y = 0; y < size; y++) {
+    for (let x = 0; x < size; x++) {
+      const u = x / size, v = y / size, idx = (y * size + x) * 4;
+      const nx = (fbm(u - step, v) - fbm(u + step, v)) * 3;
+      const ny = (fbm(u, v - step) - fbm(u, v + step)) * 3;
+      dd[idx] = Math.max(0, Math.min(255, (nx * 0.5 + 0.5) * 255));
+      dd[idx + 1] = Math.max(0, Math.min(255, (ny * 0.5 + 0.5) * 255));
+      dd[idx + 2] = 200;
+      dd[idx + 3] = 255;
+    }
+  }
+  ctx.putImageData(imageData, 0, 0);
+  const tex = new THREE.CanvasTexture(canvas);
+  tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+  return tex;
+}
 
 // Moon physical constants
 const MOON_RADIUS_KM = 1737.4;
@@ -148,13 +273,21 @@ const LunarFlyover = ({ open, onClose }) => {
     containerRef.current.appendChild(renderer.domElement);
     rendererRef.current = renderer;
 
-    // Moon
+    // Moon — start with procedural texture (instant, always works)
+    const texSize = _isMobile ? 1024 : 2048;
+    const proceduralTex = createMoonTexture(texSize);
+    const proceduralNormal = createNormalMap(_isMobile ? 512 : 1024);
+
     const segments = _isMobile ? 64 : 256;
     const moonGeometry = new THREE.SphereGeometry(100, segments, segments);
     const moonMaterial = new THREE.MeshStandardMaterial({
-      color: 0xaaaaaa,
-      roughness: 0.95,
+      map: proceduralTex,
+      normalMap: proceduralNormal,
+      normalScale: new THREE.Vector2(0.8, 0.8),
+      roughness: 0.92,
       metalness: 0.0,
+      bumpMap: proceduralTex,
+      bumpScale: 0.015,
     });
     const moon = new THREE.Mesh(moonGeometry, moonMaterial);
     if (!_isMobile) { moon.castShadow = true; moon.receiveShadow = true; }
@@ -202,20 +335,51 @@ const LunarFlyover = ({ open, onClose }) => {
     scene.add(stars);
     starsObjRef.current = stars;
 
-    // Textures
+    // Progressive texture upgrade: procedural → CDN fallback → NASA 2K → 4K → 8K
     const texLoader = new THREE.TextureLoader();
-    const loadTex = (url, cb) => {
+    const tryLoadTexture = (url) => new Promise((resolve, reject) => {
       texLoader.load(url, (tex) => {
         tex.anisotropy = renderer.capabilities.maxAnisotropy || 1;
-        cb(tex);
-      }, undefined, (err) => console.warn('Texture fail:', url, err));
+        resolve(tex);
+      }, undefined, reject);
+    });
+
+    // Chain texture upgrades (each replaces the previous if successful)
+    const upgradeMap = async () => {
+      // Step 1: CDN fallback (very reliable CORS)
+      try {
+        const t = await tryLoadTexture(MOON_TEXTURES.colorFallback);
+        moonMaterial.map = t; moonMaterial.needsUpdate = true;
+        proceduralTex.dispose();
+      } catch { /* keep procedural */ }
+      // Step 2: Solar System Scope 2K
+      try {
+        const old = moonMaterial.map;
+        const t = await tryLoadTexture(MOON_TEXTURES.color2k);
+        moonMaterial.map = t; moonMaterial.needsUpdate = true;
+        if (old && old !== proceduralTex) old.dispose();
+      } catch { /* keep previous */ }
+      // Step 3: NASA 4K
+      try {
+        const old = moonMaterial.map;
+        const t = await tryLoadTexture(MOON_TEXTURES.color4k);
+        moonMaterial.map = t; moonMaterial.needsUpdate = true;
+        if (old) old.dispose();
+      } catch { /* keep previous */ }
+      // Step 4: 8K desktop only
+      if (!_isMobile) {
+        try {
+          const old = moonMaterial.map;
+          const t = await tryLoadTexture(MOON_TEXTURES.color8k);
+          moonMaterial.map = t; moonMaterial.needsUpdate = true;
+          if (old) old.dispose();
+        } catch { /* keep previous */ }
+      }
     };
-    loadTex(MOON_TEXTURES.color2k, (t) => { moonMaterial.map = t; moonMaterial.needsUpdate = true; });
-    loadTex(MOON_TEXTURES.color4k, (t) => { moonMaterial.map = t; moonMaterial.needsUpdate = true; });
-    if (!_isMobile) {
-      loadTex(MOON_TEXTURES.color8k, (t) => { moonMaterial.map = t; moonMaterial.needsUpdate = true; });
-    }
-    loadTex(MOON_TEXTURES.displacement, (t) => {
+    upgradeMap();
+
+    // Displacement map (topography)
+    tryLoadTexture(MOON_TEXTURES.displacement).then((t) => {
       texturesRef.current.displacementTex = t;
       displacementLoadedRef.current = true;
       if (showTopographyRef.current) {
@@ -223,7 +387,7 @@ const LunarFlyover = ({ open, onClose }) => {
         moonMaterial.displacementScale = _isMobile ? 1.5 : 2.5;
         moonMaterial.needsUpdate = true;
       }
-    });
+    }).catch(() => { /* procedural bump is already applied */ });
 
     // Resize
     const handleResize = () => {
