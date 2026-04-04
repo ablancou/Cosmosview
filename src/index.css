@@ -9,7 +9,7 @@
   --color-cosmos-panel: rgba(12, 14, 28, 0.85);
   --color-cosmos-panel-light: rgba(245, 240, 232, 0.9);
   --color-cosmos-accent: #7eb8f7;
-  --color-cosmos-highlight: #ffd97d;
+  --color-cosmos-highlight: #7eb8f7;
   --color-cosmos-text: #e8ecf4;
   --color-cosmos-text-light: #1a1a2e;
   --color-cosmos-muted: #7a82a0;
@@ -198,7 +198,7 @@ body,
   --color-cosmos-muted: #6b7280;
   --color-cosmos-border: rgba(26, 26, 46, 0.15);
   --color-cosmos-accent: #4a90d9;
-  --color-cosmos-highlight: #d4a843;
+  --color-cosmos-highlight: #4a90d9;
 }
 
 /* Touch targets for mobile */

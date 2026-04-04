@@ -6,6 +6,7 @@ const MOON_TEXTURES = {
   color8k: 'https://www.solarsystemscope.com/textures/download/8k_moon.jpg',
   color2k: 'https://www.solarsystemscope.com/textures/download/2k_moon.jpg',
   colorFallback: 'https://unpkg.com/three-globe@2.31.1/example/img/lunar-surface.jpg',
+  colorWikimedia: 'https://upload.wikimedia.org/wikipedia/commons/a/a8/Solarsystemscope_texture_2k_moon.jpg',
   displacement: 'https://svs.gsfc.nasa.gov/vis/a000000/a004700/a004720/ldem_16_uint.jpg',
 };
 
@@ -268,6 +269,9 @@ const LunarFlyover = ({ open, onClose }) => {
     });
     renderer.setSize(width, height);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, _isMobile ? 1.5 : 2));
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.1;
     renderer.shadowMap.enabled = !_isMobile;
     if (!_isMobile) renderer.shadowMap.type = THREE.PCFShadowMap;
     containerRef.current.appendChild(renderer.domElement);
@@ -283,11 +287,12 @@ const LunarFlyover = ({ open, onClose }) => {
     const moonMaterial = new THREE.MeshStandardMaterial({
       map: proceduralTex,
       normalMap: proceduralNormal,
-      normalScale: new THREE.Vector2(0.8, 0.8),
-      roughness: 0.92,
+      normalScale: new THREE.Vector2(1.2, 1.2),
+      roughness: 1.0,
       metalness: 0.0,
       bumpMap: proceduralTex,
-      bumpScale: 0.015,
+      bumpScale: 0.025,
+      color: 0xdddddd,
     });
     const moon = new THREE.Mesh(moonGeometry, moonMaterial);
     if (!_isMobile) { moon.castShadow = true; moon.receiveShadow = true; }
@@ -295,9 +300,9 @@ const LunarFlyover = ({ open, onClose }) => {
     moonRef.current = moon;
     texturesRef.current.moonMaterial = moonMaterial;
 
-    // Lighting
-    const sunLight = new THREE.DirectionalLight(0xffd699, 2.5);
-    sunLight.position.set(150, 100, 150);
+    // Lighting — realistic solar illumination (white-yellow, not amber)
+    const sunLight = new THREE.DirectionalLight(0xfff5e6, 2.0);
+    sunLight.position.set(200, 80, 200);
     sunLight.castShadow = !_isMobile;
     if (!_isMobile) {
       sunLight.shadow.mapSize.width = 2048;
@@ -310,9 +315,16 @@ const LunarFlyover = ({ open, onClose }) => {
     }
     scene.add(sunLight);
 
-    scene.add(new THREE.AmbientLight(0xffffff, 0.05));
+    // Fill light from opposite side (very subtle — simulates scattered light)
+    const fillLight = new THREE.DirectionalLight(0xccddff, 0.15);
+    fillLight.position.set(-100, 40, -100);
+    scene.add(fillLight);
 
-    const earthshine = new THREE.DirectionalLight(0x4488cc, 0.15);
+    // Ambient — very low to preserve contrast and shadows
+    scene.add(new THREE.AmbientLight(0xd0d8ff, 0.08));
+
+    // Earthshine — cool blue tint from Earth reflection
+    const earthshine = new THREE.DirectionalLight(0x3366aa, 0.12);
     earthshine.position.set(-150, -50, -150);
     scene.add(earthshine);
     earthshineLightRef.current = earthshine;
@@ -346,12 +358,22 @@ const LunarFlyover = ({ open, onClose }) => {
 
     // Chain texture upgrades (each replaces the previous if successful)
     const upgradeMap = async () => {
-      // Step 1: CDN fallback (very reliable CORS)
+      // Step 1: CDN fallback (very reliable CORS — unpkg)
       try {
         const t = await tryLoadTexture(MOON_TEXTURES.colorFallback);
+        t.colorSpace = THREE.SRGBColorSpace;
         moonMaterial.map = t; moonMaterial.needsUpdate = true;
         proceduralTex.dispose();
-      } catch { /* keep procedural */ }
+      } catch { /* try next */ }
+      // Step 1b: Wikimedia Commons (reliable CORS)
+      if (moonMaterial.map === proceduralTex) {
+        try {
+          const t = await tryLoadTexture(MOON_TEXTURES.colorWikimedia);
+          t.colorSpace = THREE.SRGBColorSpace;
+          moonMaterial.map = t; moonMaterial.needsUpdate = true;
+          proceduralTex.dispose();
+        } catch { /* keep procedural */ }
+      }
       // Step 2: Solar System Scope 2K
       try {
         const old = moonMaterial.map;
