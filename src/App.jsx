@@ -35,6 +35,8 @@ import LunarFlyover from './components/LunarFlyover';
 import LunarMissions from './components/LunarMissions';
 import ArtemisII from './components/ArtemisII';
 import SpaceChannels from './components/SpaceChannels';
+import LiveMoonCam from './components/LiveMoonCam';
+import DiscoveryBar from './components/DiscoveryBar';
 import LightPollutionSimulator from './components/LightPollutionSimulator';
 import AsteroidTracker from './components/AsteroidTracker';
 import ExoplanetExplorer from './components/ExoplanetExplorer';
@@ -85,6 +87,7 @@ export default function App() {
     const [lunarMissionsOpen, setLunarMissionsOpen] = useState(false);
     const [artemisIIOpen, setArtemisIIOpen] = useState(false);
     const [spaceChannelsOpen, setSpaceChannelsOpen] = useState(false);
+    const [liveMoonCamOpen, setLiveMoonCamOpen] = useState(false);
     const [lightPollutionOpen, setLightPollutionOpen] = useState(false);
     const [asteroidTrackerOpen, setAsteroidTrackerOpen] = useState(false);
     const [exoplanetsOpen, setExoplanetsOpen] = useState(false);
@@ -230,6 +233,7 @@ export default function App() {
             case 'lunarMissions': setLunarMissionsOpen(true); break;
             case 'artemisII': setArtemisIIOpen(true); break;
             case 'spaceChannels': setSpaceChannelsOpen(true); break;
+            case 'liveMoonCam': setLiveMoonCamOpen(true); break;
             case 'lightPollution': setLightPollutionOpen(true); break;
             case 'asteroidTracker': setAsteroidTrackerOpen(true); break;
             case 'exoplanets': setExoplanetsOpen(true); break;
@@ -308,6 +312,11 @@ export default function App() {
                 />
             )}
 
+            {/* ═══ Discovery Bar — contextual hints ═══ */}
+            {!loading && (
+                <DiscoveryBar onAction={handleNavAction} darkMode={darkMode} />
+            )}
+
             {/* ═══ Feature Tooltip ═══ */}
             {pendingTooltip && (
                 <FeatureTooltip
@@ -341,6 +350,7 @@ export default function App() {
             {!loading && <LunarMissions open={lunarMissionsOpen} onClose={() => setLunarMissionsOpen(false)} />}
             {!loading && <ArtemisII open={artemisIIOpen} onClose={() => setArtemisIIOpen(false)} />}
             {!loading && <SpaceChannels open={spaceChannelsOpen} onClose={() => setSpaceChannelsOpen(false)} />}
+            {!loading && <LiveMoonCam open={liveMoonCamOpen} onClose={() => setLiveMoonCamOpen(false)} />}
             {!loading && <LightPollutionSimulator open={lightPollutionOpen} onClose={() => setLightPollutionOpen(false)} />}
             {!loading && <AsteroidTracker open={asteroidTrackerOpen} onClose={() => setAsteroidTrackerOpen(false)} />}
             {!loading && <ExoplanetExplorer open={exoplanetsOpen} onClose={() => setExoplanetsOpen(false)} />}

@@ -12,23 +12,31 @@ import cityList from '../utils/cityList';
    ══════════════════════════════════════════ */
 
 const CATEGORIES = [
-    { id: 'lunar', emoji: '🌕', label: 'Moon' },
-    { id: 'celestial', emoji: '🪐', label: 'Celestial' },
+    { id: 'celestial', emoji: '🌕', label: 'Cosmos' },
     { id: 'explore', emoji: '⭐', label: 'Explore' },
-    { id: 'search', emoji: '🔍', label: 'Search' },
     { id: 'tools', emoji: '🛠', label: 'Tools' },
     { id: 'learn', emoji: '🎓', label: 'Learn' },
     { id: 'settings', emoji: '⚙️', label: 'Settings' },
 ];
 
+/* Sub-items with group separators for visual sub-sections */
 const SUB_ITEMS = {
-    lunar: [
+    celestial: [
+        { id: '_group_lunar', label: 'LUNAR', isGroupHeader: true },
         { id: 'moonGlobe', emoji: '🌕', label: 'Lunar Observatory' },
         { id: 'lunarFlyover', emoji: '🚀', label: 'Lunar Flyover' },
-        { id: 'artemisII', emoji: '🏛️', label: 'Artemis II LIVE' },
+        { id: 'artemisII', emoji: '🏛️', label: 'Artemis II LIVE', badge: 'LIVE' },
         { id: 'lunarMissions', emoji: '🛰️', label: 'All Missions' },
         { id: 'moon', emoji: '🌙', label: 'Moon Data' },
+        { id: 'liveMoonCam', emoji: '🔭', label: 'Live Moon Cam', badge: 'LIVE' },
         { id: 'spaceChannels', emoji: '📺', label: 'Space Channels' },
+        { id: '_group_solar', label: 'SOLAR SYSTEM & BEYOND', isGroupHeader: true },
+        { id: 'earthGlobe', emoji: '🌍', label: 'Earth Observatory' },
+        { id: 'orrery', emoji: '☀️', label: 'Solar System' },
+        { id: 'orbitalTracker', emoji: '📡', label: 'Orbital Tracking' },
+        { id: 'asteroidTracker', emoji: '☄️', label: 'Asteroids' },
+        { id: 'exoplanets', emoji: '🪐', label: 'Exoplanets' },
+        { id: 'telescope', emoji: '🔭', label: 'Telescope' },
     ],
     explore: [
         { id: 'tonight', emoji: '🌟', label: "Tonight's Best" },
@@ -38,14 +46,6 @@ const SUB_ITEMS = {
         { id: 'dsnLive', emoji: '📡', label: 'DSN Live' },
         { id: 'apod', emoji: '🛸', label: 'NASA APOD' },
         { id: 'liveCams', emoji: '🌐', label: 'Live Cameras' },
-    ],
-    celestial: [
-        { id: 'earthGlobe', emoji: '🌍', label: 'Earth Observatory' },
-        { id: 'orrery', emoji: '☀️', label: 'Solar System' },
-        { id: 'orbitalTracker', emoji: '📡', label: 'Orbital Tracking' },
-        { id: 'asteroidTracker', emoji: '☄️', label: 'Asteroids' },
-        { id: 'exoplanets', emoji: '🪐', label: 'Exoplanets' },
-        { id: 'telescope', emoji: '🔭', label: 'Telescope' },
     ],
     tools: [
         { id: 'nightVision', emoji: '👁️', label: 'Night Vision', toggle: true },
@@ -206,14 +206,15 @@ export default function ImmersiveNav({ onAction, activeStates = {} }) {
         <>
             {/* ═══ HUD Info Pill ═══ */}
             <div
-                className="fixed top-3 left-3 z-20 pointer-events-none"
+                className="fixed top-3 left-3 z-20 flex items-center gap-2"
                 style={{
                     opacity: btnVisible ? 0.85 : 0,
                     transition: 'opacity 0.7s ease',
+                    pointerEvents: btnVisible ? 'auto' : 'none',
                 }}
             >
                 <div
-                    className="px-3 py-1.5 rounded-full flex items-center gap-2.5"
+                    className="px-3 py-1.5 rounded-full flex items-center gap-2.5 pointer-events-none"
                     style={{
                         background: darkMode ? 'rgba(0,0,0,0.35)' : 'rgba(255,255,255,0.5)',
                         backdropFilter: 'blur(12px)',
@@ -230,6 +231,23 @@ export default function ImmersiveNav({ onAction, activeStates = {} }) {
                         {time.current.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                     </span>
                 </div>
+                {/* Quick search button */}
+                <button
+                    onClick={() => { closeAll(); setSearchOpen(true); }}
+                    className="w-8 h-8 rounded-full flex items-center justify-center transition-all active:scale-90"
+                    style={{
+                        background: darkMode ? 'rgba(0,0,0,0.35)' : 'rgba(255,255,255,0.5)',
+                        backdropFilter: 'blur(12px)',
+                        WebkitBackdropFilter: 'blur(12px)',
+                        border: `1px solid ${darkMode ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.08)'}`,
+                    }}
+                    aria-label="Search"
+                >
+                    <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke={darkMode ? 'rgba(255,255,255,0.55)' : 'rgba(0,0,0,0.5)'} strokeWidth="1.5" strokeLinecap="round">
+                        <circle cx="7" cy="7" r="4.5" />
+                        <path d="M10.5 10.5L14 14" />
+                    </svg>
+                </button>
             </div>
 
             {/* ═══ Floating Search Bar ═══ */}
@@ -347,17 +365,18 @@ export default function ImmersiveNav({ onAction, activeStates = {} }) {
             {/* ═══ Sub-Item Panel ═══ */}
             {activeCategory && SUB_ITEMS[activeCategory] && (
                 <div
-                    className="fixed z-[55] animate-slideUp"
+                    className="fixed z-[55] animate-slideUp overflow-y-auto overscroll-contain"
                     style={{
                         ...panelStyle,
                         bottom: '80px',
                         right: '16px',
-                        width: 'min(280px, calc(100vw - 32px))',
+                        width: 'min(300px, calc(100vw - 32px))',
+                        maxHeight: 'calc(100vh - 120px)',
                     }}
                 >
                     <div className="p-3">
                         {/* Header with back */}
-                        <div className="flex items-center gap-2 mb-3">
+                        <div className="flex items-center gap-2 mb-3 sticky top-0 z-10 pb-1" style={{ background: panelBg }}>
                             <button
                                 onClick={() => { setActiveCategory(null); setMenuOpen(true); }}
                                 className="w-7 h-7 rounded-full flex items-center justify-center text-cosmos-muted hover:text-cosmos-text hover:bg-cosmos-border/30 transition-colors"
@@ -371,42 +390,122 @@ export default function ImmersiveNav({ onAction, activeStates = {} }) {
                             </h3>
                         </div>
 
-                        {/* Grid of sub-items */}
-                        <div className={`grid gap-2 ${SUB_ITEMS[activeCategory].length > 4 ? 'grid-cols-3' : 'grid-cols-2'}`}>
-                            {SUB_ITEMS[activeCategory].map((item) => {
-                                const tgl = item.toggle && toggleMap[item.id];
-                                const isActive = tgl && tgl.active;
+                        {/* Render sub-items with group headers */}
+                        {(() => {
+                            const items = SUB_ITEMS[activeCategory];
+                            const hasGroups = items.some(i => i.isGroupHeader);
 
-                                return (
-                                    <button
-                                        key={item.id}
-                                        onClick={() => handleSubItem(item)}
-                                        className="flex flex-col items-center justify-center p-2.5 rounded-xl transition-all active:scale-95"
-                                        style={{
-                                            background: isActive
-                                                ? (darkMode ? 'rgba(126,184,247,0.15)' : 'rgba(74,144,217,0.15)')
-                                                : (darkMode ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.03)'),
-                                            border: `1px solid ${isActive
-                                                ? (darkMode ? 'rgba(126,184,247,0.3)' : 'rgba(74,144,217,0.3)')
-                                                : (darkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.06)')
-                                            }`,
-                                        }}
-                                    >
-                                        <span className="leading-none text-xl">{item.emoji}</span>
-                                        <span
-                                            className="text-[9px] mt-1.5 leading-tight text-center"
-                                            style={{
-                                                color: isActive
-                                                    ? 'var(--color-cosmos-accent)'
-                                                    : (darkMode ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.6)')
-                                            }}
-                                        >
-                                            {item.label}
-                                        </span>
-                                    </button>
-                                );
-                            })}
-                        </div>
+                            if (hasGroups) {
+                                /* Split items into groups separated by group headers */
+                                const groups = [];
+                                let currentGroup = { label: null, items: [] };
+                                items.forEach(item => {
+                                    if (item.isGroupHeader) {
+                                        if (currentGroup.items.length > 0 || currentGroup.label) groups.push(currentGroup);
+                                        currentGroup = { label: item.label, items: [] };
+                                    } else {
+                                        currentGroup.items.push(item);
+                                    }
+                                });
+                                if (currentGroup.items.length > 0) groups.push(currentGroup);
+
+                                return groups.map((group, gi) => (
+                                    <div key={gi} className={gi > 0 ? 'mt-3' : ''}>
+                                        {group.label && (
+                                            <div className="flex items-center gap-2 mb-2">
+                                                <div className="h-px flex-1" style={{ background: darkMode ? 'rgba(126,184,247,0.12)' : 'rgba(74,144,217,0.15)' }} />
+                                                <span className="text-[8px] font-bold tracking-[2px] shrink-0" style={{ color: darkMode ? 'rgba(126,184,247,0.45)' : 'rgba(74,144,217,0.55)' }}>
+                                                    {group.label}
+                                                </span>
+                                                <div className="h-px flex-1" style={{ background: darkMode ? 'rgba(126,184,247,0.12)' : 'rgba(74,144,217,0.15)' }} />
+                                            </div>
+                                        )}
+                                        <div className="grid gap-2 grid-cols-3">
+                                            {group.items.map((item) => {
+                                                const tgl = item.toggle && toggleMap[item.id];
+                                                const isActive = tgl && tgl.active;
+                                                return (
+                                                    <button
+                                                        key={item.id}
+                                                        onClick={() => handleSubItem(item)}
+                                                        className="flex flex-col items-center justify-center p-2.5 rounded-xl transition-all active:scale-95 relative"
+                                                        style={{
+                                                            background: isActive
+                                                                ? (darkMode ? 'rgba(126,184,247,0.15)' : 'rgba(74,144,217,0.15)')
+                                                                : (darkMode ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.03)'),
+                                                            border: `1px solid ${isActive
+                                                                ? (darkMode ? 'rgba(126,184,247,0.3)' : 'rgba(74,144,217,0.3)')
+                                                                : (darkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.06)')
+                                                            }`,
+                                                        }}
+                                                    >
+                                                        {item.badge && (
+                                                            <span className="absolute top-1 right-1 text-[6px] font-bold px-1 py-0.5 rounded-full" style={{
+                                                                background: 'rgba(239,68,68,0.2)',
+                                                                color: '#ef4444',
+                                                                border: '1px solid rgba(239,68,68,0.3)',
+                                                                animation: 'pulse-glow-red 2s ease-in-out infinite',
+                                                            }}>
+                                                                {item.badge}
+                                                            </span>
+                                                        )}
+                                                        <span className="leading-none text-xl">{item.emoji}</span>
+                                                        <span
+                                                            className="text-[9px] mt-1.5 leading-tight text-center"
+                                                            style={{
+                                                                color: isActive
+                                                                    ? 'var(--color-cosmos-accent)'
+                                                                    : (darkMode ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.6)')
+                                                            }}
+                                                        >
+                                                            {item.label}
+                                                        </span>
+                                                    </button>
+                                                );
+                                            })}
+                                        </div>
+                                    </div>
+                                ));
+                            }
+
+                            /* Flat grid for categories without groups */
+                            return (
+                                <div className={`grid gap-2 ${items.length > 4 ? 'grid-cols-3' : 'grid-cols-2'}`}>
+                                    {items.map((item) => {
+                                        const tgl = item.toggle && toggleMap[item.id];
+                                        const isActive = tgl && tgl.active;
+                                        return (
+                                            <button
+                                                key={item.id}
+                                                onClick={() => handleSubItem(item)}
+                                                className="flex flex-col items-center justify-center p-2.5 rounded-xl transition-all active:scale-95"
+                                                style={{
+                                                    background: isActive
+                                                        ? (darkMode ? 'rgba(126,184,247,0.15)' : 'rgba(74,144,217,0.15)')
+                                                        : (darkMode ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.03)'),
+                                                    border: `1px solid ${isActive
+                                                        ? (darkMode ? 'rgba(126,184,247,0.3)' : 'rgba(74,144,217,0.3)')
+                                                        : (darkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.06)')
+                                                    }`,
+                                                }}
+                                            >
+                                                <span className="leading-none text-xl">{item.emoji}</span>
+                                                <span
+                                                    className="text-[9px] mt-1.5 leading-tight text-center"
+                                                    style={{
+                                                        color: isActive
+                                                            ? 'var(--color-cosmos-accent)'
+                                                            : (darkMode ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.6)')
+                                                    }}
+                                                >
+                                                    {item.label}
+                                                </span>
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+                            );
+                        })()}
                     </div>
                 </div>
             )}
